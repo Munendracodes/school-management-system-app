@@ -217,7 +217,7 @@ class HomeContent extends StatelessWidget {
       );
     } else if (hour < 17) {
       return Text(
-        "Good Afternoon,",
+        homeResponse?.heroBanner.title ?? "",
 
         style: TextStyle(
           fontSize: 18,
@@ -228,7 +228,7 @@ class HomeContent extends StatelessWidget {
       );
     } else {
       return Text(
-        "Good Evening,",
+        homeResponse?.heroBanner.title ?? "",
 
         style: TextStyle(
           fontSize: 18,

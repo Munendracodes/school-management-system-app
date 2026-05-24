@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/widgets/custom_button.dart';
 import '../../models/bootstrap_response.dart';
+import '../../services/home_service.dart';
 import '../home/home_screen.dart';
 import '../../core/widgets/app_logo.dart';
 import '../../models/login_request.dart';
@@ -455,74 +456,64 @@ class _LoginScreenState
 
                           onTap: () async {
 
-                            FocusScope.of(context).unfocus();
-
                             setState(() {
                               isLoading = true;
                             });
 
                             try {
 
-                              final response =
+                              final loginResponse =
                               await LoginService.login(
-
                                 request: LoginRequest(
-
                                   mobileNumber:
-                                  mobileController.text.trim(),
+                                  mobileController.text,
 
                                   password:
-                                  mpinController.text.trim(),
+                                  mpinController.text,
                                 ),
                               );
 
-                              debugPrint(
-                                "TOKEN : ${response.accessToken}",
-                              );
+                              /// CALL HOME API
+                              final homeResponse =
+                              await HomeService.getHomeData(
 
-                              debugPrint(
-                                "USER : ${response.user.fullName}",
-                              );
-
-                              debugPrint(
-                                "ROLE : ${response.user.role}",
+                                accessToken:
+                                loginResponse.accessToken,
                               );
 
                               if (!mounted) return;
 
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(
-
-                                const SnackBar(
-                                  content: Text(
-                                    "Login Successful",
-                                  ),
-                                ),
-                              );
-
                               Navigator.pushReplacement(
+
                                 context,
 
                                 MaterialPageRoute(
-                                  builder: (_) => HomeScreen(),
+
+                                  builder: (_) => HomeScreen(
+
+                                    accessToken:
+                                    loginResponse.accessToken,
+
+                                    homeResponse:
+                                    homeResponse,
+
+                                    userName:
+                                    loginResponse.user.fullName,
+
+                                    role:
+                                    loginResponse.user.role,
+                                  ),
                                 ),
                               );
 
                             } catch (e) {
 
-                              if (!mounted) return;
-
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(
 
                                 SnackBar(
-                                  content: Text(
-                                    e.toString()
-                                        .replaceAll(
-                                      "Exception: ",
-                                      "",
-                                    ),
-                                  ),
+                                  content:
+                                  Text(e.toString()),
                                 ),
                               );
                             }

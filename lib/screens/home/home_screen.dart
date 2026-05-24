@@ -755,7 +755,7 @@ class HomeContent extends StatelessWidget {
                         );
                       }
                       else if (section.sectionType ==
-                          "MODULE_GRID") {
+                          "MODULE_GRID1") {
 
                         return Column(
 
@@ -866,26 +866,19 @@ class HomeContent extends StatelessWidget {
 
                                           /// ICON
                                           Container(
-
-                                            height: 48,
-                                            width: 48,
+                                            height: 52,
+                                            width: 52,
 
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                              BorderRadius.circular(16),
+                                              color: Colors.white.withOpacity(0.18),
+                                              borderRadius: BorderRadius.circular(16),
                                             ),
 
                                             child: Icon(
+                                              _getIcon(item.icon),
 
-                                              _getIcon(
-                                                item.icon,
-                                              ),
-
-                                              color:
-                                              AppColors.primaryBlue,
-
-                                              size: 24,
+                                              color: Colors.white,
+                                              size: 26,
                                             ),
                                           ),
 
@@ -934,6 +927,264 @@ class HomeContent extends StatelessWidget {
                           ],
                         );
                       }
+                      else if (section.sectionType == "MODULE_GRID") {
+
+                        return Column(
+
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+
+                          children: [
+
+                            /// HEADER
+                            Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
+
+                              children: [
+
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+
+                                    children: [
+
+                                      Text(
+                                        section.title,
+
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xFF081B5C),
+                                        ),
+                                      ),
+
+
+                                    ],
+                                  ),
+                                ),
+
+                                Row(
+                                  children: [
+
+                                    Text(
+                                      "View All",
+
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.primaryBlue,
+                                      ),
+                                    ),
+
+                                    const SizedBox(width: 3),
+
+                                    Icon(
+                                      Icons.arrow_forward_ios_rounded,
+                                      size: 14,
+                                      color: AppColors.primaryBlue,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 10),
+
+                            /// HORIZONTAL CARDS
+                            SizedBox(
+                              height: 150,
+
+                              child: ListView.separated(
+
+                                scrollDirection: Axis.horizontal,
+
+                                physics:
+                                const BouncingScrollPhysics(),
+
+                                itemCount: section.items.length,
+
+                                separatorBuilder: (_, __) =>
+                                const SizedBox(width: 14),
+
+                                itemBuilder: (context, index) {
+
+                                  final item =
+                                  section.items[index];
+
+                                  return Card(
+                                    elevation: 0,
+
+                                    margin: EdgeInsets.zero,
+
+                                    color:
+                                    _hexToColor(
+                                    item.backgroundColor,
+                                  ).withOpacity(0.95),
+
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                      BorderRadius.circular(30),
+                                    ),
+
+                                    child: SizedBox(
+                                      width: width * 0.82,
+
+                                      child: Material(
+
+                                        color: Colors.transparent,
+
+                                        borderRadius:
+                                        BorderRadius.circular(30),
+
+                                        child: InkWell(
+
+                                          borderRadius:
+                                          BorderRadius.circular(30),
+
+                                          splashColor:
+                                          AppColors.primaryBlue.withOpacity(0.08),
+
+                                          highlightColor:
+                                          AppColors.primaryBlue.withOpacity(0.04),
+
+                                          onTap: () {
+
+                                            print(
+                                              item.redirectUrl,
+                                            );
+                                          },
+
+                                          child: Stack(
+
+                                            children: [
+
+                                              /// BUILDING IMAGE
+                                              Positioned(
+                                                right: 14,
+                                                bottom: 10,
+
+                                                child: Opacity(
+                                                  opacity: 0.14,
+
+                                                  child: Image.asset(
+                                                    "assets/images/school_building.png",
+
+                                                    width: 90,
+
+                                                    fit: BoxFit.contain,
+                                                  ),
+                                                ),
+                                              ),
+
+                                              Padding(
+                                                padding:
+                                                const EdgeInsets.all(18),
+
+                                                child: Row(
+
+                                                  children: [
+
+                                                    /// ICON
+                                                    Container(
+                                                      height: 52,
+                                                      width: 52,
+
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                        BorderRadius.circular(16),
+                                                      ),
+
+                                                      child: Icon(
+                                                        _getIcon(item.icon),
+
+                                                        color:
+                                                        AppColors.primaryBlue,
+
+                                                        size: 26,
+                                                      ),
+                                                    ),
+
+                                                    const SizedBox(width: 16),
+
+                                                    /// TEXTS
+                                                    Expanded(
+                                                      child: Column(
+
+                                                        crossAxisAlignment:
+                                                        CrossAxisAlignment.start,
+
+                                                        mainAxisAlignment:
+                                                        MainAxisAlignment.center,
+
+                                                        children: [
+
+                                                          Text(
+                                                            item.title,
+
+                                                            style: const TextStyle(
+                                                              fontSize: 20,
+                                                              fontWeight:
+                                                              FontWeight.w700,
+
+                                                              color:
+                                                              Color(0xFF081B5C),
+                                                            ),
+                                                          ),
+
+                                                          const SizedBox(height: 8),
+
+                                                          Text(
+                                                            item.description,
+
+                                                            maxLines: 2,
+
+                                                            overflow:
+                                                            TextOverflow.ellipsis,
+
+                                                            style: TextStyle(
+                                                              fontSize: 13,
+                                                              height: 1.5,
+
+                                                              fontWeight:
+                                                              FontWeight.w500,
+
+                                                              color:
+                                                              Colors.grey.shade700,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+
+                                                    /// ARROW
+                                                    Icon(
+                                                      Icons.arrow_forward_ios_rounded,
+
+                                                      size: 20,
+
+                                                      color:
+                                                      AppColors.primaryBlue,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+
+                            const SizedBox(height: 10),
+                          ],
+                        );
+                      }
 
 
 
@@ -970,7 +1221,7 @@ class HomeContent extends StatelessWidget {
               ),
 
               const SizedBox(height: 10),
-
+/*
               /// ======================================
               /// FEE COLLECTION SUMMARY CARD
               /// ======================================
@@ -1275,7 +1526,7 @@ class HomeContent extends StatelessWidget {
                   ],
                 ),
               ),
-
+*/
 
               const SizedBox(height: 120)
             ],
@@ -1508,6 +1759,21 @@ class HomeContent extends StatelessWidget {
         return Icons.person;
       case "student_add":
         return Icons.person_add_alt_1_rounded;
+      case "classroom":
+        return Icons.school_rounded;
+
+      case "sections":
+        return Icons.groups_rounded;
+
+      case "subjects":
+        return Icons.menu_book_rounded;
+
+      case "timetable":
+        return Icons.calendar_month_rounded;
+      case "examinations":
+        return Icons.assignment_rounded;
+      case "reports":
+        return Icons.bar_chart_rounded;
 
       default:
         return Icons.dashboard_rounded;

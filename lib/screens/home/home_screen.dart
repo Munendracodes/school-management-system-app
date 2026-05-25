@@ -500,7 +500,7 @@ class HomeContent extends StatelessWidget {
 
                                   bgColor:
                                   _hexToColor(
-                                    card.bgColor,
+                                    card.backgroundColor,
                                   ),
 
                                   iconColor:
@@ -928,8 +928,8 @@ class HomeContent extends StatelessWidget {
                           ],
                         );
                       }
-                      else if (section.sectionType == "MODULE_GRID") {
-
+                      else if (section.sectionType == "MODULE_GRID")
+                      {
                         return Column(
 
                           crossAxisAlignment:
@@ -1186,11 +1186,222 @@ class HomeContent extends StatelessWidget {
                           ],
                         );
                       }
+                      else if (
+                      section.sectionType ==
+                          "CAROUSEL_BANNER"
+                      ) {
 
+                        return Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
 
+                          children: [
 
+                            Text(
+                              section.title,
 
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF081B5C),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
 
+                            SizedBox(
+                              height: 190,
+
+                              child: ListView.separated(
+
+                                scrollDirection: Axis.horizontal,
+
+                                itemCount:
+                                section.items.length,
+
+                                separatorBuilder:
+                                    (_, __) =>
+                                const SizedBox(width: 14),
+
+                                itemBuilder:
+                                    (context, index) {
+
+                                  final item =
+                                  section.items[index];
+
+                                  return InkWell(
+
+                                    borderRadius:
+                                    BorderRadius.circular(28),
+
+                                    onTap: () {
+
+                                      debugPrint(
+                                        item.redirectUrl,
+                                      );
+                                    },
+
+                                    child: Container(
+
+                                      width: width * 0.82,
+
+                                      padding:
+                                      const EdgeInsets.all(22),
+
+                                      decoration: BoxDecoration(
+
+                                        color:
+                                        _hexToColor(
+                                          item.backgroundColor,
+                                        ),
+
+                                        borderRadius:
+                                        BorderRadius.circular(28),
+
+                                        boxShadow: [
+
+                                          BoxShadow(
+                                            color:
+                                            Colors.black.withOpacity(
+                                              0.04,
+                                            ),
+
+                                            blurRadius: 14,
+
+                                            offset:
+                                            const Offset(0, 6),
+                                          ),
+                                        ],
+                                      ),
+
+                                      child: Column(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+
+                                        children: [
+
+                                          Row(
+
+                                            children: [
+
+                                              Container(
+
+                                                padding:
+                                                const EdgeInsets.all(10),
+
+                                                decoration:
+                                                BoxDecoration(
+
+                                                  color:
+                                                  Colors.white
+                                                      .withOpacity(
+                                                    0.18,
+                                                  ),
+
+                                                  borderRadius:
+                                                  BorderRadius.circular(16),
+                                                ),
+
+                                                child: Icon(
+
+                                                  _getIcon(
+                                                    item.icon,
+                                                  ),
+
+                                                  color: Colors.white,
+                                                  size: 24,
+                                                ),
+                                              ),
+
+                                              const Spacer(),
+
+                                              Icon(
+                                                Icons.arrow_forward_rounded,
+
+                                                color: Colors.white
+                                                    .withOpacity(0.9),
+                                              ),
+                                            ],
+                                          ),
+
+                                          const Spacer(),
+
+                                          Text(
+                                            item.title,
+
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight:
+                                              FontWeight.w700,
+
+                                              color:
+                                              _hexToColor(
+                                                item.textColor,
+                                              ),
+                                            ),
+                                          ),
+
+                                          const SizedBox(height: 8),
+
+                                          Text(
+                                            item.subtitle,
+
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight:
+                                              FontWeight.w500,
+
+                                              color:
+                                              _hexToColor(
+                                                item.textColor,
+                                              ).withOpacity(0.92),
+                                            ),
+                                          ),
+
+                                          const SizedBox(height: 10),
+
+                                          Container(
+
+                                            padding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 18,
+                                              vertical: 10,
+                                            ),
+
+                                            decoration:
+                                            BoxDecoration(
+
+                                              color:
+                                              Colors.white
+                                                  .withOpacity(0.18),
+
+                                              borderRadius:
+                                              BorderRadius.circular(16),
+                                            ),
+
+                                            child: Text(
+                                              item.ctaText,
+
+                                              style: const TextStyle(
+                                                fontSize: 13,
+                                                fontWeight:
+                                                FontWeight.w700,
+
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+
+                            const SizedBox(height: 24),
+                          ],
+                        );
+                      }
 
                       /// FEE COLLECTION SECTION
                       else if (section.sectionType ==
@@ -1645,7 +1856,7 @@ class HomeContent extends StatelessWidget {
       decoration: BoxDecoration(
 
         color: _hexToColor(
-          card.bgColor,
+          card.backgroundColor,
         ),
 
         borderRadius:

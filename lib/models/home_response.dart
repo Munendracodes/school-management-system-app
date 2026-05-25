@@ -6,10 +6,13 @@ class HomeResponse {
 
   final List<HomeSection> sections;
 
+  final UserData user;
+
   HomeResponse({
     required this.header,
     required this.heroBanner,
     required this.sections,
+    required this.user
   });
 
   factory HomeResponse.fromJson(
@@ -17,6 +20,10 @@ class HomeResponse {
       ) {
 
     return HomeResponse(
+      user:
+      UserData.fromJson(
+        json["user"] ?? {},
+      ),
       header:
       HeaderData.fromJson(
         json["header"] ?? {},
@@ -30,11 +37,43 @@ class HomeResponse {
       sections:
       (json["sections"] as List? ?? [])
 
+          .asMap()
+
+          .entries
+
           .map(
-            (e) => HomeSection.fromJson(e),
+            (entry) => HomeSection.fromJson(
+          entry.value,
+          entry.key,
+        ),
       )
 
           .toList(),
+    );
+  }
+}
+class UserData {
+
+  final String fullName;
+
+  final String role;
+
+  UserData({
+    required this.fullName,
+    required this.role,
+  });
+
+  factory UserData.fromJson(
+      Map<String, dynamic> json,
+      ) {
+
+    return UserData(
+
+      fullName:
+      json["full_name"] ?? "",
+
+      role:
+      json["role"] ?? "",
     );
   }
 }
@@ -129,12 +168,13 @@ class HomeSection {
 
   factory HomeSection.fromJson(
       Map<String, dynamic> json,
+      int index,
       ) {
 
     return HomeSection(
 
       sectionType:
-      json["section_type"] ?? "",
+      json["type"] ?? "",
 
       title:
       json["title"] ?? "",
@@ -142,8 +182,9 @@ class HomeSection {
       description:
       json["description"] ?? "",
 
-      displayOrder:
-      json["display_order"] ?? 0,
+     /* displayOrder:
+      json["display_order"] ?? 0,*/
+      displayOrder: index,
 
       items:
       (json["items"] as List? ?? [])
@@ -171,13 +212,19 @@ final String icon;
 
 final String iconColor;
 
-final String bgColor;
-
 final String backgroundColor;
 
 final String redirectUrl;
 
 final String moduleType;
+
+final String mediaType;
+
+final String mediaUrl;
+
+final String ctaText;
+
+final String textColor;
 
 HomeCard({
 
@@ -193,13 +240,15 @@ required this.icon,
 
 required this.iconColor,
 
-required this.bgColor,
-
 required this.backgroundColor,
 
 required this.redirectUrl,
 
 required this.moduleType,
+  required this.mediaType,
+  required this.mediaUrl,
+  required this.ctaText,
+  required this.textColor,
 });
 
 factory HomeCard.fromJson(
@@ -211,8 +260,10 @@ return HomeCard(
 title:
 json["title"] ?? "",
 
-value:
-json["value"]?.toString() ?? "",
+  value:
+  json["value"] == null
+      ? "0"
+      : json["value"].toString(),
 
 subtitle:
 json["subtitle"] ?? "",
@@ -227,10 +278,6 @@ iconColor:
 json["icon_color"] ??
 "#2457FF",
 
-bgColor:
-json["bg_color"] ??
-"#F5F7FF",
-
 backgroundColor:
 json["background_color"] ??
 "#F5F7FF",
@@ -239,7 +286,19 @@ redirectUrl:
 json["redirect_url"] ?? "",
 
 moduleType:
-json["module_type"] ?? "",
+json["type"] ?? "",
+
+  mediaType:
+  json["media_type"] ?? "",
+
+  mediaUrl:
+  json["media_url"] ?? "",
+
+  ctaText:
+  json["cta_text"] ?? "",
+
+  textColor:
+  json["text_color"] ?? "#FFFFFF",
 );
 }
 }

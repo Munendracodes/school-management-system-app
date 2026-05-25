@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../core/utils/responsive.dart';
 import '../../core/widgets/app_logo.dart';
 import '../../core/constants/app_colors.dart';
 import '../../services/home_service.dart';
@@ -450,7 +451,7 @@ class HomeContent extends StatelessWidget {
                         (section) {
 
                       /// OVERVIEW CARDS
-                      if (section.sectionType ==
+                    /*  if (section.sectionType ==
                           "OVERVIEW_CARDS") {
 
                         return Column(
@@ -527,7 +528,7 @@ class HomeContent extends StatelessWidget {
                             const SizedBox(height: 20),
                           ],
                         );
-                      }
+                      }*/
                       if (section.sectionType ==
                           "OVERVIEW_CARDS") {
 
@@ -581,7 +582,7 @@ class HomeContent extends StatelessWidget {
 
                                   bgColor:
                                   _hexToColor(
-                                    card.bgColor,
+                                    card.backgroundColor,
                                   ),
 
                                   iconColor:
@@ -691,7 +692,7 @@ class HomeContent extends StatelessWidget {
                                       ),
 
                                       decoration: BoxDecoration(
-                                        color: AppColors.blueCard,
+                                        color: _hexToColor(item.backgroundColor),
 
                                         borderRadius:
                                         BorderRadius.circular(24),
@@ -724,7 +725,7 @@ class HomeContent extends StatelessWidget {
                                             _getIcon(item.icon),
 
                                             color:
-                                            AppColors.primaryBlue,
+                                           _hexToColor(item.iconColor),
 
                                             size: 25,
                                           ),
@@ -737,7 +738,7 @@ class HomeContent extends StatelessWidget {
                                             textAlign: TextAlign.center,
 
                                             style: const TextStyle(
-                                              fontSize: 11,
+                                              fontSize: 10,
                                               fontWeight: FontWeight.w600,
                                               color: AppColors.darkText,
                                             ),
@@ -1021,7 +1022,7 @@ class HomeContent extends StatelessWidget {
                                     color:
                                     _hexToColor(
                                     item.backgroundColor,
-                                  ).withOpacity(0.95),
+                                  ),
 
                                     shape: RoundedRectangleBorder(
                                       borderRadius:
@@ -1101,7 +1102,7 @@ class HomeContent extends StatelessWidget {
                                                         _getIcon(item.icon),
 
                                                         color:
-                                                        AppColors.primaryBlue,
+                                                        _hexToColor(item.iconColor),
 
                                                         size: 26,
                                                       ),
@@ -1166,7 +1167,7 @@ class HomeContent extends StatelessWidget {
                                                       size: 20,
 
                                                       color:
-                                                      AppColors.primaryBlue,
+                                                     _hexToColor(item.iconColor),
                                                     ),
                                                   ],
                                                 ),

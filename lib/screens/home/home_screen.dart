@@ -200,45 +200,46 @@ class HomeContent extends StatelessWidget {
     required this.homeResponse,
   });
 
-  Text getGreeting() {
+  Column getGreeting() {
+    return Column(
+      crossAxisAlignment:
+      CrossAxisAlignment.start,
 
-    final hour =
-        DateTime.now().hour;
+      children: [
 
-    if (hour < 12) {
-      return Text(
-        homeResponse?.heroBanner.title ?? "",
+        Text(
+          (homeResponse?.heroBanner.title ?? "")
+              .split(",")
+              .first,
 
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-          color: Color(0xFF081B5C),
-          height: 1.2,
+          style: TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF081B5C),
+          ),
         ),
-      );
-    } else if (hour < 17) {
-      return Text(
-        homeResponse?.heroBanner.title ?? "",
 
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-          color: Color(0xFF081B5C),
-          height: 1.2,
-        ),
-      );
-    } else {
-      return Text(
-        homeResponse?.heroBanner.title ?? "",
+        const SizedBox(height: 2),
 
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-          color: Color(0xFF081B5C),
-          height: 1.2,
+        Text(
+          (homeResponse?.heroBanner.title ?? "")
+              .contains(",")
+
+              ? (homeResponse?.heroBanner.title ?? "")
+              .split(",")
+              .last
+              .trim()
+
+              : "",
+
+          style: const TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF081B5C),
+          ),
         ),
-      );
-    }
+      ],
+    );
   }
 
   @override
@@ -316,7 +317,7 @@ class HomeContent extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight:
-                                FontWeight.w700,
+                                FontWeight.bold,
 
                                 color:
                                 Color(0xFF081B5C),
@@ -387,58 +388,164 @@ class HomeContent extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 10),
 
-              /// GREETING + BUILDING
-              Row(
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
+              /// HERO BANNER
+              Container(
+                padding: const EdgeInsets.all(20),
 
-                children: [
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(28),
 
-                  /// LEFT TEXT
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.blueCard,
+                      const Color(0xFFF7F9FF),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+
+                  border: Border.all(
+                    color: const Color(0xFFE8EEFF),
+                  ),
+
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 18,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                  children: [
+
+                    /// TOP ROW
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
 
                       children: [
-                        const SizedBox(height: 10),
-                        getGreeting(),
 
-                        const SizedBox(height: 15),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
 
-                        Text(
-                          homeResponse?.heroBanner.subtitle ?? "",
+                            children: [
 
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight:
-                            FontWeight.w500,
+                              Text(
+                                homeResponse
+                                    ?.heroBanner
+                                    .title ??
+                                    "Good Morning,",
 
-                            color: Colors.grey.shade700,
+                                style: TextStyle(
+                                  fontSize: width * 0.043,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF081B5C),
+                                  height: 1.2,
+                                ),
+                              ),
+
+                              const SizedBox(height: 8),
+
+                              Row(
+                                children: [
+
+                                  Icon(
+                                    Icons.calendar_today_rounded,
+                                    size: 18,
+                                    color: AppColors.primaryBlue,
+                                  ),
+
+                                  const SizedBox(width: 8),
+
+                                  Text(
+                                    homeResponse
+                                        ?.heroBanner
+                                        .subtitle ??
+                                        "",
+
+                                    style: TextStyle(
+                                      fontSize: width * 0.032,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Container(
+                          height: 40,
+                          width: 40,
+
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.blueCard,
+                          ),
+
+                          child: Icon(
+                            Icons.wb_sunny_rounded,
+                            color: AppColors.primaryBlue,
+                            size: 25,
                           ),
                         ),
                       ],
                     ),
-                  ),
 
-                  /// BUILDING
-                  Opacity(
-                    opacity: 0.95,
+                    const SizedBox(height: 12),
 
-                    child: Image.asset(
-                      "assets/images/school_building.png",
+                    /// STATS ROW
+                    Row(
+                      children: [
 
-                      width: width * 0.42,
+                        _buildHeroStat(
+                          icon: Icons.groups_rounded,
+                          value: "91%",
+                          label: "Attendance",
+                          color: AppColors.primaryBlue,
+                        ),
+                        SizedBox(width: 3.0),
 
-                      fit: BoxFit.contain,
+                        _buildDivider(),
+
+                        _buildHeroStat(
+                          icon: Icons.currency_rupee_rounded,
+                          value: "₹8.2L",
+                          label: "Fees",
+                          color: Colors.green,
+                        ),
+
+                        _buildDivider(),
+
+                        _buildHeroStat(
+                          icon: Icons.assignment_rounded,
+                          value: "28",
+                          label: "Tasks",
+                          color: Colors.deepPurple,
+                        ),
+
+                        _buildDivider(),
+
+                        _buildHeroStat(
+                          icon: Icons.notifications_active_rounded,
+                          value: "05",
+                          label: "Alerts",
+                          color: Colors.orange,
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
 
               /// GRID
               Column(
@@ -548,7 +655,7 @@ class HomeContent extends StatelessWidget {
                               ),
                             ),
 
-                            const SizedBox(height: 14),
+                            const SizedBox(height: 10),
 
                             GridView.builder(
 
@@ -568,7 +675,7 @@ class HomeContent extends StatelessWidget {
                                 crossAxisSpacing: 10,
                                 mainAxisSpacing: 10,
 
-                                mainAxisExtent: 180,
+                                mainAxisExtent: 150,
                               ),
 
                               itemBuilder: (context, index) {
@@ -606,6 +713,7 @@ class HomeContent extends StatelessWidget {
                                 );
                               },
                             ),
+                            const SizedBox(height: 10),
                           ],
                         );
                       }
@@ -618,7 +726,6 @@ class HomeContent extends StatelessWidget {
                           CrossAxisAlignment.start,
 
                           children: [
-
                             Text(
                               section.title,
 
@@ -751,7 +858,7 @@ class HomeContent extends StatelessWidget {
                               },
                             ),
 
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 10),
                           ],
                         );
                       }
@@ -1186,9 +1293,7 @@ class HomeContent extends StatelessWidget {
                           ],
                         );
                       }
-                      else if (
-                      section.sectionType ==
-                          "CAROUSEL_BANNER"
+                      else if (section.sectionType == "CAROUSEL_BANNER"
                       ) {
 
                         return Column(
@@ -1748,15 +1853,15 @@ class HomeContent extends StatelessWidget {
     );
   }
 
-  Widget _buildOverviewCard({
+  Widget _buildOverviewCard
+      ({
     required double width,
     required Color bgColor,
     required Color iconColor,
     required String title,
     required String value,
     required String subtitle,
-    required IconData icon,
-  }) {
+    required IconData icon,}) {
 
     return Container(
       padding: EdgeInsets.all(
@@ -1775,7 +1880,7 @@ class HomeContent extends StatelessWidget {
 
           /// ICON
           Container(
-            height: width * 0.18,
+            height: width * 0.12,
             width: width * 0.18,
 
             decoration: BoxDecoration(
@@ -1829,18 +1934,83 @@ class HomeContent extends StatelessWidget {
             ),
 
             /*  Text(
-              subtitle,
-              textAlign: TextAlign.center,
+          subtitle,
+          textAlign: TextAlign.center,
 
-              style: TextStyle(
-                fontSize: width * 0.032,
-                fontWeight: FontWeight.w500,
-                color: iconColor,
-              ),
-            ),*/
+          style: TextStyle(
+            fontSize: width * 0.032,
+            fontWeight: FontWeight.w500,
+            color: iconColor,
+          ),
+        ),*/
           ],
         ],
       ),
+    );
+
+  }
+
+  Widget _buildHeroStat({
+    required IconData icon,
+    required String value,
+    required String label,
+    required Color color,
+  }) {
+
+    return Expanded(
+      child: Column(
+        children: [
+
+          Container(
+            height: 40,
+            width: 40,
+
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              shape: BoxShape.circle,
+            ),
+
+            child: Icon(
+              icon,
+              color: color,
+              size: 24,
+            ),
+          ),
+
+          const SizedBox(height: 5),
+
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
+
+          const SizedBox(height: 4),
+
+          Text(
+            label,
+            textAlign: TextAlign.center,
+
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF3B4260),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDivider() {
+
+    return Container(
+      height: 90,
+      width: 1,
+      color: const Color(0xFFE8ECF5),
     );
   }
 

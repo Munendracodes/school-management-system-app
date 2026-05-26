@@ -387,6 +387,35 @@ class HomeContent extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 10),
+
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+
+                children: [
+                  Text(
+
+                    "${homeResponse?.heroBanner.title
+                        .replaceAll(",", "")
+                        .split(" ")
+                        .take(3)
+                        .join(" ")} 👋",
+
+                    style: TextStyle(
+                      fontSize: width * 0.043,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF081B5C),
+                      height: 1.2,
+                    ),
+                  ),
+                  Spacer(),
+                  Icon(
+                    Icons.wb_sunny_rounded,
+                    color: AppColors.primaryBlue,
+                    size: 25,
+                  ),
+                ],
+              ),
 
               const SizedBox(height: 10),
 
@@ -423,85 +452,6 @@ class HomeContent extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
 
                   children: [
-
-                    /// TOP ROW
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-
-                      children: [
-
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
-
-                            children: [
-
-                              Text(
-                                homeResponse
-                                    ?.heroBanner
-                                    .title ??
-                                    "Good Morning,",
-
-                                style: TextStyle(
-                                  fontSize: width * 0.043,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color(0xFF081B5C),
-                                  height: 1.2,
-                                ),
-                              ),
-
-                              const SizedBox(height: 8),
-
-                              Row(
-                                children: [
-
-                                  Icon(
-                                    Icons.calendar_today_rounded,
-                                    size: 18,
-                                    color: AppColors.primaryBlue,
-                                  ),
-
-                                  const SizedBox(width: 8),
-
-                                  Text(
-                                    homeResponse
-                                        ?.heroBanner
-                                        .subtitle ??
-                                        "",
-
-                                    style: TextStyle(
-                                      fontSize: width * 0.032,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        Container(
-                          height: 40,
-                          width: 40,
-
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.blueCard,
-                          ),
-
-                          child: Icon(
-                            Icons.wb_sunny_rounded,
-                            color: AppColors.primaryBlue,
-                            size: 25,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
                     /// STATS ROW
                     Row(
                       children: [

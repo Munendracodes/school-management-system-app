@@ -288,7 +288,7 @@ class _WelcomeScreenState
 
                             titleColor:
                             hexToColor(
-                              banner.titleColor,
+                              banner.iconColor,
                             ),
 
                             subtitleColor:

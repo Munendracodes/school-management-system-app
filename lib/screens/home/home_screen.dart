@@ -6,6 +6,8 @@ import '../../core/constants/app_colors.dart';
 import '../../services/home_service.dart';
 import '../manage/manage_screen.dart';
 import '../../models/home_response.dart';
+import '../students/students_screen.dart';
+import 'package:flutter/services.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -51,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       HomeContent(
         homeResponse: widget.homeResponse,
+        accessToken: widget.accessToken,
       ),
 
       const ManageScreen(),
@@ -194,10 +197,12 @@ class _HomeScreenState extends State<HomeScreen> {
 class HomeContent extends StatelessWidget {
 
   final HomeResponse? homeResponse;
+  final String accessToken;
 
   const HomeContent({
     super.key,
     required this.homeResponse,
+    required this.accessToken,
   });
 
   Column getGreeting() {
@@ -634,7 +639,8 @@ class HomeContent extends StatelessWidget {
                                 section.items[index];
 
                                 return _buildOverviewCard(
-
+                                  context: context,
+                                  accessToken: accessToken,
                                   width: width,
 
                                   bgColor:
@@ -1803,98 +1809,129 @@ class HomeContent extends StatelessWidget {
     );
   }
 
-  Widget _buildOverviewCard
-      ({
+  Widget _buildOverviewCard({
+    required String accessToken,
+    required BuildContext context,
     required double width,
     required Color bgColor,
     required Color iconColor,
     required String title,
     required String value,
     required String subtitle,
-    required IconData icon,}) {
+    required IconData icon,
+  }){
 
-    return Container(
-      padding: EdgeInsets.all(
-        width * 0.035,
-      ),
+    return Material(
+      color: Colors.transparent,
 
-      decoration: BoxDecoration(
-        color: bgColor,
+      child: InkWell(
+
         borderRadius: BorderRadius.circular(28),
-      ),
 
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        splashColor:
+        iconColor.withOpacity(0.12),
 
-        children: [
+        highlightColor:
+        iconColor.withOpacity(0.06),
 
-          /// ICON
-          Container(
-            height: width * 0.12,
-            width: width * 0.18,
+        onTap: () async {
 
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.7),
-              shape: BoxShape.circle,
-            ),
+          /// HAPTIC FEEDBACK
+          await HapticFeedback.lightImpact();
 
-            child: Icon(
-              icon,
-              size: width * 0.08,
-              color: iconColor,
-            ),
+          if (title == "Total Students") {
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                 StudentsScreen(
+                  accessToken: accessToken,
+                ),
+              ),
+            );
+          }
+        },
+
+        child: Ink(
+
+          padding: EdgeInsets.all(
+            width * 0.035,
           ),
 
-          SizedBox(
-            height: width * 0.02,
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(28),
           ),
 
-          /// VALUE
-          Text(
-            value,
-            textAlign: TextAlign.center,
+          child: Column(
+            mainAxisAlignment:
+            MainAxisAlignment.center,
 
-            style: TextStyle(
-              fontSize: width * 0.048,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF081B5C),
-            ),
+            children: [
+
+              /// ICON
+              Container(
+                height: width * 0.12,
+                width: width * 0.18,
+
+                decoration: BoxDecoration(
+                  color:
+                  Colors.white.withOpacity(0.7),
+
+                  shape: BoxShape.circle,
+                ),
+
+                child: Icon(
+                  icon,
+                  size: width * 0.08,
+                  color: iconColor,
+                ),
+              ),
+
+              SizedBox(
+                height: width * 0.02,
+              ),
+
+              /// VALUE
+              Text(
+                value,
+                textAlign: TextAlign.center,
+
+                style: TextStyle(
+                  fontSize: width * 0.048,
+                  fontWeight: FontWeight.w700,
+                  color:
+                  const Color(0xFF081B5C),
+                ),
+              ),
+
+              SizedBox(
+                height: width * 0.015,
+              ),
+
+              /// TITLE
+              Text(
+                title,
+                textAlign: TextAlign.center,
+
+                style: TextStyle(
+                  fontSize: width * 0.035,
+                  fontWeight: FontWeight.w600,
+                  color:
+                  const Color(0xFF3B4260),
+                ),
+              ),
+
+              if (subtitle.isNotEmpty) ...[
+
+                SizedBox(
+                  height: width * 0.025,
+                ),
+              ],
+            ],
           ),
-
-          SizedBox(
-            height: width * 0.015,
-          ),
-
-          /// TITLE
-          Text(
-            title,
-            textAlign: TextAlign.center,
-
-            style: TextStyle(
-              fontSize: width * 0.035,
-              fontWeight: FontWeight.w600,
-              color: const Color(0xFF3B4260),
-            ),
-          ),
-
-          if (subtitle.isNotEmpty) ...[
-
-            SizedBox(
-              height: width * 0.025,
-            ),
-
-            /*  Text(
-          subtitle,
-          textAlign: TextAlign.center,
-
-          style: TextStyle(
-            fontSize: width * 0.032,
-            fontWeight: FontWeight.w500,
-            color: iconColor,
-          ),
-        ),*/
-          ],
-        ],
+        ),
       ),
     );
 

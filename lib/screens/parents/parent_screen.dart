@@ -49,11 +49,14 @@ class _AddParentScreenState
 
   bool isLoading = true;
 
+
   List<ParentData> parents = [];
 
   bool isExistingParent = false;
 
   ParentData? selectedParent;
+
+  String? selectedParentId;
 
   final fullNameController =
   TextEditingController();
@@ -80,6 +83,7 @@ class _AddParentScreenState
 
     loadParents();
   }
+
 
   Future<void> loadParents() async {
 
@@ -177,6 +181,61 @@ class _AddParentScreenState
         ),
       );
     }
+  }
+  InputDecoration _inputDecoration(
+      String hint,
+      IconData icon,
+      ) {
+
+    return InputDecoration(
+
+      hintText: hint,
+
+      prefixIcon: Icon(
+        icon,
+        color: AppColors.primaryBlue,
+      ),
+
+      filled: true,
+      fillColor: Colors.white,
+
+      contentPadding:
+      const EdgeInsets.symmetric(
+        vertical: 18,
+        horizontal: 16,
+      ),
+
+      border: OutlineInputBorder(
+
+        borderRadius:
+        BorderRadius.circular(20),
+
+        borderSide: const BorderSide(
+          color: Color(0xFFD9E2FF),
+        ),
+      ),
+
+      enabledBorder: OutlineInputBorder(
+
+        borderRadius:
+        BorderRadius.circular(20),
+
+        borderSide: const BorderSide(
+          color: Color(0xFFD9E2FF),
+        ),
+      ),
+
+      focusedBorder: OutlineInputBorder(
+
+        borderRadius:
+        BorderRadius.circular(20),
+
+        borderSide: const BorderSide(
+          color: AppColors.primaryBlue,
+          width: 1.5,
+        ),
+      ),
+    );
   }
 
   @override
@@ -400,156 +459,134 @@ class _AddParentScreenState
                   /// AUTOCOMPLETE
                   Autocomplete<ParentData>(
 
-                    displayStringForOption:
-                        (option) =>
-                    option.fullName,
+                    optionsBuilder: (textEditingValue) {
 
-                    optionsBuilder:
-                        (value) {
+                      if (textEditingValue.text.isEmpty) {
+                        return const Iterable<ParentData>.empty();
+                      }
 
-                          if (value.text.trim().isEmpty) {
+                      return parents.where((parent) {
 
-                            setState(() {
+                        return parent.fullName
+                            .toLowerCase()
+                            .contains(
+                          textEditingValue.text.toLowerCase(),
+                        );
+                      });
+                    },
 
-                              isExistingParent = false;
+                    displayStringForOption: (parent) =>
+                    parent.fullName,
 
-                              selectedParent = null;
+                    fieldViewBuilder: (
+                        context,
+                        controller,
+                        focusNode,
+                        onFieldSubmitted,
+                        ) {
 
-                              mobileController.text = "";
 
-                              emailController.text = "";
-                            });
+
+                      return TextField(
+                        controller: controller,
+                        focusNode: focusNode,
+
+                        decoration: _inputDecoration(
+                          "Full Name",
+                          Icons.person_rounded,
+                        ),
+
+                        onChanged: (value) {
+
+                          final isEmpty =
+                              value.trim().isEmpty;
+
+                          if (isEmpty) {
+
+                            mobileController.clear();
+                            emailController.clear();
+
+                            selectedParentId = null;
+
+                            setState(() {});
                           }
-
-                      return parents.where(
-
-                            (parent) {
-
-                          return parent
-                              .fullName
-                              .toLowerCase()
-                              .contains(
-
-                            value.text
-                                .toLowerCase(),
-                          );
                         },
                       );
                     },
 
                     onSelected: (parent) {
 
-                      setState(() {
+                      selectedParentId = parent.id;
 
-                        selectedParent = parent;
+                      fullNameController.text =
+                          parent.fullName;
 
-                        fullNameController.text =
-                            parent.fullName;
+                      mobileController.text =
+                          parent.mobileNumber;
 
-                        mobileController.text =
-                            parent.mobileNumber;
+                      emailController.text =
+                          parent.email;
 
-                        emailController.text =
-                            parent.email;
-                      });
+                      setState(() {});
                     },
 
-                    fieldViewBuilder: (
+                    optionsViewBuilder: (
                         context,
-                        textEditingController,
-                        focusNode,
-                        onFieldSubmitted,
+                        onSelected,
+                        options,
                         ) {
 
-                      /// sync controller
-                      textEditingController.text =
-                          fullNameController.text;
+                      return Align(
 
-                      return TextField(
-                        controller: textEditingController,
-                        focusNode: focusNode,
+                        alignment: Alignment.topLeft,
 
-                        onChanged: (value) {
+                        child: Material(
 
-                          fullNameController.text = value;
+                          elevation: 6,
+                          borderRadius: BorderRadius.circular(18),
 
-                          final matchedParent = parents.firstWhere(
+                          child: Container(
 
-                                (parent) =>
-                            parent.fullName.toLowerCase() ==
-                                value.toLowerCase(),
+                            width: MediaQuery.of(context)
+                                .size
+                                .width * 0.82,
 
-                            orElse: () => ParentData(
-                              id: "",
-                              fullName: "",
-                              mobileNumber: "",
-                              email: "",
+                            constraints: const BoxConstraints(
+                              maxHeight: 220,
                             ),
-                          );
 
-                          if (matchedParent.id.isNotEmpty) {
-
-                            setState(() {
-
-                              selectedParent = matchedParent;
-
-                              mobileController.text =
-                                  matchedParent.mobileNumber;
-
-                              emailController.text =
-                                  matchedParent.email;
-
-                              isExistingParent = true;
-                            });
-
-                          } else {
-
-                            setState(() {
-
-                              selectedParent = null;
-
-                              isExistingParent = false;
-
-                              mobileController.clear();
-
-                              emailController.clear();
-                            });
-                          }
-                        },
-
-                        decoration: InputDecoration(
-                          hintText: "Enter parent full name",
-
-                          prefixIcon: const Icon(
-                            Icons.person_search_rounded,
-                          ),
-
-                          filled: true,
-                          fillColor: Colors.white,
-
-                          border: OutlineInputBorder(
-                            borderRadius:
-                            BorderRadius.circular(18),
-
-                            borderSide: BorderSide.none,
-                          ),
-
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius:
-                            BorderRadius.circular(18),
-
-                            borderSide: BorderSide(
-                              color: const Color(0xFFE5E7EB),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius:
+                              BorderRadius.circular(18),
                             ),
-                          ),
 
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius:
-                            BorderRadius.circular(18),
+                            child: ListView.builder(
 
-                            borderSide: BorderSide(
-                              color: AppColors.primaryBlue,
-                              width: 1.5,
+                              padding: EdgeInsets.zero,
+
+                              itemCount: options.length,
+
+                              itemBuilder: (context, index) {
+
+                                final parent =
+                                options.elementAt(index);
+
+                                return ListTile(
+
+                                  title: Text(
+                                    parent.fullName,
+                                  ),
+
+                                  subtitle: Text(
+                                    parent.mobileNumber,
+                                  ),
+
+                                  onTap: () {
+                                    onSelected(parent);
+                                  },
+                                );
+                              },
                             ),
                           ),
                         ),

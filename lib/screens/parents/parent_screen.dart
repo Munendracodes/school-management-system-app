@@ -498,15 +498,20 @@ class _AddParentScreenState
 
                         onChanged: (value) {
 
+                          fullNameController.text = value;
+
                           final isEmpty =
                               value.trim().isEmpty;
 
                           if (isEmpty) {
 
-                            mobileController.clear();
-                            emailController.clear();
+                            selectedParent = null;
 
                             selectedParentId = null;
+
+                            mobileController.clear();
+
+                            emailController.clear();
 
                             setState(() {});
                           }
@@ -515,6 +520,8 @@ class _AddParentScreenState
                     },
 
                     onSelected: (parent) {
+
+                      selectedParent = parent;
 
                       selectedParentId = parent.id;
 
@@ -740,7 +747,7 @@ class _AddParentScreenState
 
                 child: Text(
 
-                  selectedParent != null
+                  selectedParentId != null
 
                       ? "Map Parent"
 

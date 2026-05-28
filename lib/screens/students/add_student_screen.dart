@@ -427,16 +427,35 @@ class _AddStudentScreenState
       const Color(0xFFF8FAFF),
 
       appBar: AppBar(
+
+        backgroundColor:
+        Colors.transparent,
+
         elevation: 0,
-        iconTheme: IconThemeData(
-          color: Colors.white
+
+        leading: IconButton(
+
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AppColors.primaryBlue,
+            size: 20,
+          ),
+
+          onPressed: () {
+
+            Navigator.pop(context);
+          },
         ),
 
-        backgroundColor: AppColors.primaryBlue,
-
         title: const Text(
+
           "Add Student",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+
+          style: TextStyle(
+            color: Color(0xFF081B5C),
+            fontWeight: FontWeight.w700,
+            fontSize: 20
+          ),
         ),
       ),
 

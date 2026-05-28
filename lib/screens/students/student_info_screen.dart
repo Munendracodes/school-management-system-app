@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/student_info_response.dart';
 import '../../services/student_info_service.dart';
+import '../parents/parent_screen.dart';
+
 
 class StudentInfoScreen extends StatefulWidget {
 
@@ -35,6 +37,7 @@ class _StudentInfoScreenState
     getStudentInfo();
   }
 
+
   Future<void> getStudentInfo() async {
 
     try {
@@ -65,6 +68,14 @@ class _StudentInfoScreenState
       });
     }
   }
+  Future<void> refreshStudentInfo() async {
+
+    setState(() {
+      isLoading = true;
+    });
+
+    await getStudentInfo();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +88,7 @@ class _StudentInfoScreenState
       required String title,
       required String value,
       required IconData icon,
+      required Color iconColor
 
     }) {
 
@@ -88,7 +100,7 @@ class _StudentInfoScreenState
 
             Icon(
               icon,
-              color: const Color(0xFF2457FF),
+              color: iconColor,
               size: 22,
             ),
 
@@ -126,7 +138,7 @@ class _StudentInfoScreenState
 
       return Container(
 
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(10),
 
         decoration: BoxDecoration(
 
@@ -197,7 +209,7 @@ class _StudentInfoScreenState
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 15,
+                  fontSize: 12,
                   color: Color(0xFF667085),
                 ),
               ),
@@ -220,7 +232,7 @@ class _StudentInfoScreenState
 
       return Container(
 
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(10),
 
         decoration: BoxDecoration(
 
@@ -250,7 +262,7 @@ class _StudentInfoScreenState
                   "Fee Information",
 
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF081B5C),
                   ),
@@ -275,13 +287,14 @@ class _StudentInfoScreenState
                     style: TextStyle(
                       color: Colors.orange,
                       fontWeight: FontWeight.w700,
+                      fontSize: 12
                     ),
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 22),
+            const SizedBox(height: 10),
 
             Row(
 
@@ -296,7 +309,7 @@ class _StudentInfoScreenState
                       Text(
                         "71%",
                         style: TextStyle(
-                          fontSize: 34,
+                          fontSize: 25,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFF2457FF),
                         ),
@@ -335,7 +348,7 @@ class _StudentInfoScreenState
                         "Total Fees : ₹45,000",
                       ),
 
-                      SizedBox(height: 12),
+                      SizedBox(height: 10),
 
                       Text(
                         "Paid : ₹32,000",
@@ -344,7 +357,7 @@ class _StudentInfoScreenState
                         ),
                       ),
 
-                      SizedBox(height: 12),
+                      SizedBox(height: 10),
 
                       Text(
                         "Pending : ₹13,000",
@@ -395,7 +408,7 @@ class _StudentInfoScreenState
             Icon(
               icon,
               color: const Color(0xFF2457FF),
-              size: 28,
+              size: 20,
             ),
 
             const SizedBox(height: 10),
@@ -430,27 +443,40 @@ class _StudentInfoScreenState
 
       appBar: AppBar(
 
-        backgroundColor: AppColors.primaryBlue,
+        backgroundColor:
+        Colors.transparent,
 
         elevation: 0,
 
-        title: const Text(
-          "Student Profile",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 18
+        leading: IconButton(
+
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AppColors.primaryBlue,
+            size: 20,
           ),
+
+          onPressed: () {
+
+            Navigator.pop(context);
+          },
         ),
 
-        iconTheme: const IconThemeData(
-          color: Colors.white,
+        title: const Text(
+
+          "Student Profile",
+
+          style: TextStyle(
+            color: Color(0xFF081B5C),
+            fontWeight: FontWeight.w700,
+            fontSize: 20
+          ),
         ),
       ),
 
       body: SingleChildScrollView(
 
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(10),
 
         child: Column(
 
@@ -459,7 +485,7 @@ class _StudentInfoScreenState
             /// PROFILE CARD
             Container(
 
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(10),
 
               decoration: BoxDecoration(
 
@@ -487,8 +513,8 @@ class _StudentInfoScreenState
                       /// IMAGE
                       Container(
 
-                        height: 80,
-                        width: 80,
+                        height: 70,
+                        width: 70,
 
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -636,6 +662,7 @@ class _StudentInfoScreenState
                         value:
                         student?.classroom.name ?? "",
                         icon: Icons.school_outlined,
+                        iconColor: AppColors.purple
                       ),
 
                       _buildTopInfo(
@@ -643,6 +670,7 @@ class _StudentInfoScreenState
                         value:
                         student?.section.name ?? "",
                         icon: Icons.groups_rounded,
+                        iconColor: AppColors.orange
                       ),
 
                       _buildTopInfo(
@@ -651,6 +679,7 @@ class _StudentInfoScreenState
                         student?.academicYear.name ?? "",
                         icon:
                         Icons.calendar_today_rounded,
+                        iconColor: AppColors.primaryBlue
                       ),
                     ],
                   ),
@@ -699,12 +728,12 @@ class _StudentInfoScreenState
               ],
             ),
 
-            const SizedBox(height: 22),
+            const SizedBox(height: 10),
 
             /// PARENT DETAILS
             Container(
 
-              padding: const EdgeInsets.all(18),
+              padding: const EdgeInsets.all(10),
 
               decoration: BoxDecoration(
 
@@ -737,56 +766,94 @@ class _StudentInfoScreenState
                         "Parent Details",
 
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.w700,
                           color: Color(0xFF081B5C),
                         ),
                       ),
 
-                      Container(
+                      InkWell(
 
-                        padding:
-                        const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
+                        borderRadius: BorderRadius.circular(14),
 
-                        decoration: BoxDecoration(
+                        onTap: () async {
 
-                          color:
-                          const Color(0xFFF2F5FF),
+                          await Navigator.push(
 
-                          borderRadius:
-                          BorderRadius.circular(14),
-                        ),
+                            context,
 
-                        child: const Row(
+                            MaterialPageRoute(
 
-                          children: [
+                              builder: (_) => AddParentScreen(
 
-                            Icon(
-                              Icons.add,
-                              size: 18,
-                              color: Color(0xFF2457FF),
-                            ),
+                                accessToken: widget.accessToken,
 
-                            SizedBox(width: 4),
+                                studentId: widget.studentId,
 
-                            Text(
-                              "Add Parent",
-                              style: TextStyle(
-                                color: Color(0xFF2457FF),
-                                fontWeight:
-                                FontWeight.w600,
+                                studentName:
+                                student?.fullName ?? "",
+
+                                className:
+                                student?.classroom.name ?? "",
+
+                                sectionName:
+                                student?.section.name ?? "",
+
+                                academicYear:
+                                student?.academicYear.name ?? "",
                               ),
                             ),
-                          ],
+                          );
+
+                          refreshStudentInfo();
+                        },
+
+                        child: Container(
+
+                          padding:
+                          const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+
+                          decoration: BoxDecoration(
+
+                            color:
+                            const Color(0xFFF2F5FF),
+
+                            borderRadius:
+                            BorderRadius.circular(14),
+                          ),
+
+                          child: const Row(
+
+                            children: [
+
+                              Icon(
+                                Icons.add,
+                                size: 18,
+                                color: Color(0xFF2457FF),
+                              ),
+
+                              SizedBox(width: 4),
+
+                              Text(
+                                "Add Parent",
+                                style: TextStyle(
+                                  color: Color(0xFF2457FF),
+                                  fontWeight:
+                                  FontWeight.w600,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                      )
                     ],
                   ),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 10),
 
                   ...student!.parents.map(
 
@@ -892,12 +959,12 @@ class _StudentInfoScreenState
               ),
             ),
 
-            const SizedBox(height: 22),
+            const SizedBox(height: 10),
 
             /// FEE INFORMATION
             _buildFeeCard(),
 
-            const SizedBox(height: 22),
+            const SizedBox(height: 10),
 
             /// QUICK ACTIONS
             Column(
@@ -923,7 +990,7 @@ class _StudentInfoScreenState
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
 
                 Row(
 

@@ -212,7 +212,7 @@ class _AddStudentScreenState
             ),
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
 
           TextField(
             controller: controller,
@@ -225,8 +225,8 @@ class _AddStudentScreenState
 
               contentPadding:
               const EdgeInsets.symmetric(
-                horizontal: 18,
-                vertical: 16,
+                horizontal: 10,
+                vertical: 10,
               ),
 
               enabledBorder: OutlineInputBorder(
@@ -292,8 +292,8 @@ class _AddStudentScreenState
 
               contentPadding:
               const EdgeInsets.symmetric(
-                horizontal: 18,
-                vertical: 16,
+                horizontal: 10,
+                vertical: 10,
               ),
 
               enabledBorder: OutlineInputBorder(
@@ -427,14 +427,16 @@ class _AddStudentScreenState
       const Color(0xFFF8FAFF),
 
       appBar: AppBar(
-
         elevation: 0,
+        iconTheme: IconThemeData(
+          color: Colors.white
+        ),
 
-        backgroundColor:
-        const Color(0xFFF8FAFF),
+        backgroundColor: AppColors.primaryBlue,
 
         title: const Text(
           "Add Student",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
 
@@ -479,7 +481,7 @@ class _AddStudentScreenState
                     controller: admissionNumberController,
                   ),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 5),
 
                   /// FULL NAME
                   _buildTextField(
@@ -488,9 +490,9 @@ class _AddStudentScreenState
                     controller: fullNameController,
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   _buildDateField(),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
 
                   Row(
                     children: [
@@ -521,7 +523,7 @@ class _AddStudentScreenState
               ),
             ),
 
-            const SizedBox(height: 28),
+            const SizedBox(height: 10),
 
             /// ACADEMIC INFO
             const Text(
@@ -534,7 +536,7 @@ class _AddStudentScreenState
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
 
             Container(
               padding: const EdgeInsets.all(18),
@@ -584,7 +586,7 @@ class _AddStudentScreenState
                     },
                   ),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 10),
 
                   /// CLASS
                   _buildStringDropdownField(
@@ -617,15 +619,15 @@ class _AddStudentScreenState
                     },
                   ),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 10),
 
                   /// SECTION
                   _buildSectionDropdown(),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
 
                   Container(
-                    padding: const EdgeInsets.all(14),
+                    padding: const EdgeInsets.all(10),
 
                     decoration: BoxDecoration(
                       color: const Color(0xFFF5F8FF),
@@ -662,7 +664,7 @@ class _AddStudentScreenState
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 10),
 
             /// SAVE BUTTON
             SizedBox(

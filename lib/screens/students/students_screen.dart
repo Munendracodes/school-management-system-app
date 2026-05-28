@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:school_management_app/screens/students/student_info_screen.dart';
 import '../../services/students_service.dart';
 import '../../models/students_response.dart';
 import '../../core/constants/app_colors.dart';
@@ -217,133 +219,158 @@ class _StudentsScreenState
       required String className,
       required String section,
       required String image,
+      required StudentData student,
     }) {
 
-      return Container(
-        margin: const EdgeInsets.only(bottom: 10),
+      return InkWell(
+        borderRadius: BorderRadius.circular(24),
 
-        padding: const EdgeInsets.all(15),
+        onTap: () {
 
-        decoration: BoxDecoration(
-          color: Colors.white,
+          HapticFeedback.lightImpact();
 
-          borderRadius:
-          BorderRadius.circular(24),
+          Navigator.push(
 
-          border: Border.all(
-            color: const Color(0xFFE9EEF9),
+            context,
+
+            MaterialPageRoute(
+
+              builder: (_) => StudentInfoScreen(
+
+                accessToken: widget.accessToken,
+
+                studentId: student.id,
+              ),
+            ),
+          );
+        },
+
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 10),
+
+          padding: const EdgeInsets.all(15),
+
+          decoration: BoxDecoration(
+            color: Colors.white,
+
+            borderRadius:
+            BorderRadius.circular(24),
+
+            border: Border.all(
+              color: const Color(0xFFE9EEF9),
+            ),
+
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
 
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+          child: Row(
+            children: [
 
-        child: Row(
-          children: [
+              /// PROFILE IMAGE
+              Container(
+                height: 50,
+                width: 50,
 
-            /// PROFILE IMAGE
-            Container(
-              height: 50,
-              width: 50,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFF4FF),
+                  shape: BoxShape.circle,
+                ),
 
-              decoration: BoxDecoration(
-                color: const Color(0xFFEFF4FF),
-                shape: BoxShape.circle,
+                child: const Icon(
+                  Icons.person_rounded,
+                  size: 30,
+                  color: AppColors.purple,
+                ),
               ),
 
-              child: const Icon(
-                Icons.person_rounded,
-                size: 30,
-                color: AppColors.purple,
-              ),
-            ),
+              const SizedBox(width: 15),
 
-            const SizedBox(width: 15),
+              /// DETAILS
+              Expanded(
+                child: Column(
+                  crossAxisAlignment:
+                  CrossAxisAlignment.start,
 
-            /// DETAILS
-            Expanded(
-              child: Column(
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
+                  children: [
 
-                children: [
+                    Text(
+                      name,
 
-                  Text(
-                    name,
-
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF081B5C),
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF081B5C),
+                      ),
                     ),
-                  ),
 
-                  const SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
-                  Row(
-                    children: [
+                    Row(
+                      children: [
 
-                      const Icon(
-                        Icons.school_rounded,
-                        size: 16,
-                        color: AppColors.primaryBlue,
-                      ),
-
-                      const SizedBox(width: 6),
-
-                      Text(
-                        className,
-
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF667085),
+                        const Icon(
+                          Icons.school_rounded,
+                          size: 16,
+                          color: AppColors.primaryBlue,
                         ),
-                      ),
 
-                      const SizedBox(width: 5),
+                        const SizedBox(width: 6),
 
-                      Container(
-                        width: 1,
-                        height: 14,
-                        color: Color(0xFFD0D5DD),
-                      ),
+                        Text(
+                          className,
 
-                      const SizedBox(width: 5),
-
-                      const Icon(
-                        Icons.groups_rounded,
-                        size: 16,
-                        color: AppColors.orange,
-                      ),
-
-                      const SizedBox(width: 6),
-
-                      Text(
-                        section,
-
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF667085),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF667085),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+
+                        const SizedBox(width: 5),
+
+                        Container(
+                          width: 1,
+                          height: 14,
+                          color: Color(0xFFD0D5DD),
+                        ),
+
+                        const SizedBox(width: 5),
+
+                        const Icon(
+                          Icons.groups_rounded,
+                          size: 16,
+                          color: AppColors.orange,
+                        ),
+
+                        const SizedBox(width: 6),
+
+                        Text(
+                          section,
+
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF667085),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            /// ARROW
-            const Icon(
-              Icons.chevron_right_rounded,
-              size: 30,
-              color: Color(0xFF98A2B3),
-            ),
-          ],
+              /// ARROW
+              const Icon(
+                Icons.chevron_right_rounded,
+                size: 30,
+                color: Color(0xFF98A2B3),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -641,7 +668,7 @@ class _StudentsScreenState
                           students.map((student) {
 
                             return _buildStudentCard(
-
+                              student: student,
                               name:
                               student.fullName,
 

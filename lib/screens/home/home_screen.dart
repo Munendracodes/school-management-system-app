@@ -6,6 +6,7 @@ import '../../core/constants/app_colors.dart';
 import '../../services/home_service.dart';
 import '../manage/manage_screen.dart';
 import '../../models/home_response.dart';
+import '../students/add_student_screen.dart';
 import '../students/students_screen.dart';
 import 'package:flutter/services.dart';
 
@@ -736,7 +737,23 @@ class HomeContent extends StatelessWidget {
 
                                     onTap: () {
 
-                                      print("items");
+                                      if(item.title == "Add Student"){
+                                        Navigator.push(
+
+                                          context,
+
+                                          MaterialPageRoute(
+
+                                            builder: (_) => AddStudentScreen(
+                                              accessToken: accessToken,
+
+                                              onStudentAdded: () {
+
+                                              },
+                                            ),
+                                          ),
+                                        );
+                                      }
 
                                       // TODO:
                                       // Navigate based on redirect_url

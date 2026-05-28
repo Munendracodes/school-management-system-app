@@ -27,6 +27,8 @@ class StudentData {
 
   final String fullName;
 
+  final String id;
+
   final String className;
 
   final String sectionName;
@@ -34,6 +36,7 @@ class StudentData {
   final String profileImage;
 
   StudentData({
+    required this.id,
     required this.fullName,
     required this.className,
     required this.sectionName,
@@ -45,6 +48,9 @@ class StudentData {
       ) {
 
     return StudentData(
+
+      id:
+      json["id"] ?? "",
 
       fullName:
       json["full_name"] ?? "",

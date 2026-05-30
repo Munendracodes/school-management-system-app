@@ -139,11 +139,13 @@ class ParentData {
   final String id;
   final String fullName;
   final String relationshipType;
+  final String mobileNumber;
 
   ParentData({
     required this.id,
     required this.fullName,
     required this.relationshipType,
+    required this.mobileNumber,
   });
 
   factory ParentData.fromJson(
@@ -159,6 +161,9 @@ class ParentData {
 
       relationshipType:
       json["relationship_type"] ?? "",
+
+      mobileNumber:
+      json["mobile_number"] ?? ""
     );
   }
 }

@@ -427,7 +427,7 @@ class HomeContent extends StatelessWidget {
 
               /// HERO BANNER
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(10),
 
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(28),

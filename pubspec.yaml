@@ -17,6 +17,12 @@ dependencies:
   google_fonts: ^6.2.1
   flutter_svg: ^2.0.10+1
   http: ^1.2.1
+  intl: ^0.20.2
+  screenshot: ^3.0.0
+  share_plus: ^10.0.0
+  gallery_saver_plus: ^3.2.1
+  path_provider: ^2.1.4
+  url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:school_management_app/screens/parents/parents_screen.dart';
+import 'package:school_management_app/screens/teachers/add_teacher_screen.dart';
+import 'package:school_management_app/screens/teachers/teachers_screen.dart';
 import '../../core/utils/responsive.dart';
 import '../../core/widgets/app_logo.dart';
 import '../../core/constants/app_colors.dart';
@@ -748,6 +751,23 @@ class HomeContent extends StatelessWidget {
                                               accessToken: accessToken,
 
                                               onStudentAdded: () {
+
+                                              },
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      if(item.title == "Add Teacher"){
+                                        Navigator.push(
+
+                                          context,
+
+                                          MaterialPageRoute(
+
+                                            builder: (_) => AddTeacherScreen(
+                                              accessToken: accessToken,
+
+                                              onTeacherAdded: () {
 
                                               },
                                             ),
@@ -1864,7 +1884,34 @@ class HomeContent extends StatelessWidget {
                 builder: (_) =>
                  StudentsScreen(
                   accessToken: accessToken,
+                   backgroundColor: iconColor
                 ),
+              ),
+            );
+          }
+          if (title == "Total Teachers") {
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    TeachersScreen(
+                      accessToken: accessToken,
+                        backgroundColor: iconColor
+                    ),
+              ),
+            );
+          }
+          if (title == "Total Parents") {
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    ParentsScreen(
+                      accessToken: accessToken,
+                        backgroundColor: iconColor
+                    ),
               ),
             );
           }

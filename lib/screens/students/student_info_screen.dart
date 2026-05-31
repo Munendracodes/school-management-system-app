@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/student_info_response.dart';
 import '../../services/student_info_service.dart';
-import '../parents/parent_screen.dart';
+import '../parents/add_parent_screen.dart';
 import 'dart:io';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
@@ -741,13 +741,86 @@ class _StudentInfoScreenState
 
           children: [
 
+            Row(
+
+
+              children: [
+                SizedBox(width: 10),
+                Text("Identity Card",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF081B5C),
+                      fontSize: 20
+                  ),),
+                Spacer(),
+
+                /// DOWNLOAD
+                GestureDetector(
+
+                  onTap: downloadIdCard,
+
+                  child: Container(
+
+                    padding: const EdgeInsets.all(10),
+
+                    decoration: BoxDecoration(
+
+                      color: Color(0xFFF4F7FF),
+
+                      borderRadius:
+                      BorderRadius.circular(14),
+                      border: Border.all(
+                        color: Colors.white70,
+                      ),
+                    ),
+
+                    child: const Icon(
+                      Icons.download_rounded,
+                      color: AppColors.primaryBlue,
+                      size: 25,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 12),
+
+                /// SHARE
+                GestureDetector(
+
+                  onTap: shareIdCard,
+
+                  child: Container(
+
+                    padding: const EdgeInsets.all(10),
+
+                    decoration: BoxDecoration(
+
+                      color: Color(0xFFF4F7FF),
+
+                      borderRadius:
+                      BorderRadius.circular(14),
+
+                      border: Border.all(
+                        color: Colors.white24,
+                      ),
+                    ),
+
+                    child: const Icon(
+                      Icons.share_rounded,
+                      color: AppColors.primaryBlue,
+                      size: 22,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 5),
+
             /// PROFILE CARD
             Screenshot(
 
               controller: screenshotController,
-
               child: Container(
-
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -786,79 +859,19 @@ class _StudentInfoScreenState
                           children: [
 
                         /// ACTION BUTTONS
-                        Row(
-
-
+                       /* Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Identity Card",
+                            Text("Sunshine Public School",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                               fontSize: 20
                             ),),
-                            Spacer(),
 
-                            /// DOWNLOAD
-                            GestureDetector(
-
-                              onTap: downloadIdCard,
-
-                              child: Container(
-
-                                padding: const EdgeInsets.all(10),
-
-                                decoration: BoxDecoration(
-
-                                  color: Colors.white.withOpacity(0.18),
-
-                                  borderRadius:
-                                  BorderRadius.circular(14),
-                                  border: Border.all(
-                                    color: Colors.white24,
-                                  ),
-                                ),
-
-                                child: const Icon(
-                                  Icons.download_rounded,
-                                  color: Colors.white,
-                                  size: 25,
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(width: 12),
-
-                            /// SHARE
-                            GestureDetector(
-
-                              onTap: shareIdCard,
-
-                              child: Container(
-
-                                padding: const EdgeInsets.all(10),
-
-                                decoration: BoxDecoration(
-
-                                  color: Colors.white.withOpacity(0.18),
-
-                                  borderRadius:
-                                  BorderRadius.circular(14),
-
-                                  border: Border.all(
-                                    color: Colors.white24,
-                                  ),
-                                ),
-
-                                child: const Icon(
-                                  Icons.share_rounded,
-                                  color: Colors.white,
-                                  size: 22,
-                                ),
-                              ),
-                            ),
                           ],
                         ),
-                        SizedBox(height: 10.0),
+                        SizedBox(height: 10.0),*/
 
                   /// WHITE BODY
 
@@ -1009,7 +1022,9 @@ class _StudentInfoScreenState
                                         Icons.calendar_month_rounded,
                                         Colors.white,
                                         "Mobile No ",
-                                        student?.parents.first.mobileNumber ?? "",
+                                        student?.parents.isNotEmpty == true
+                                            ? student!.parents.first.mobileNumber
+                                            : "-",
                                       ),
                                     ],
                                   ),

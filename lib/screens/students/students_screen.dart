@@ -9,10 +9,12 @@ import 'add_student_screen.dart';
 class StudentsScreen extends StatefulWidget {
 
   final String accessToken;
+  final Color backgroundColor;
 
   const StudentsScreen({
     super.key,
     required this.accessToken,
+    required this.backgroundColor
   });
 
   @override
@@ -282,10 +284,10 @@ class _StudentsScreenState
                   shape: BoxShape.circle,
                 ),
 
-                child: const Icon(
+                child: Icon(
                   Icons.person_rounded,
                   size: 30,
-                  color: AppColors.purple,
+                  color: widget.backgroundColor,
                 ),
               ),
 
@@ -317,7 +319,7 @@ class _StudentsScreenState
                         const Icon(
                           Icons.school_rounded,
                           size: 16,
-                          color: AppColors.primaryBlue,
+                          color: Color(0xFF081B5C),
                         ),
 
                         const SizedBox(width: 6),
@@ -341,10 +343,10 @@ class _StudentsScreenState
 
                         const SizedBox(width: 5),
 
-                        const Icon(
+                        Icon(
                           Icons.groups_rounded,
                           size: 16,
-                          color: AppColors.orange,
+                          color: Color(0xFF081B5C)
                         ),
 
                         const SizedBox(width: 6),
@@ -367,7 +369,7 @@ class _StudentsScreenState
               const Icon(
                 Icons.chevron_right_rounded,
                 size: 30,
-                color: Color(0xFF98A2B3),
+                color: Color(0xFF081B5C),
               ),
             ],
           ),
@@ -421,12 +423,11 @@ class _StudentsScreenState
 
       backgroundColor:
       const Color(0xFFF8FAFF),
-
       floatingActionButton:
       FloatingActionButton(
 
         backgroundColor:
-        const Color(0xFF2457FF),
+        widget.backgroundColor,
 
         onPressed: () {
 
@@ -468,9 +469,7 @@ class _StudentsScreenState
               ),
 
               child: Row(
-
                 children: [
-
                   GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
@@ -512,7 +511,6 @@ class _StudentsScreenState
 
                         Text(
                           "Students",
-
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
@@ -617,9 +615,9 @@ class _StudentsScreenState
                             BorderRadius.circular(18),
                           ),
 
-                          child: const Icon(
+                          child: Icon(
                             Icons.tune_rounded,
-                            color: Color(0xFF2457FF),
+                            color: widget.backgroundColor,
                           ),
                         ),
                       ],

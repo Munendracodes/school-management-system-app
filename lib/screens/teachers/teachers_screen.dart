@@ -3,6 +3,7 @@ import 'package:school_management_app/core/constants/app_colors.dart';
 import 'package:school_management_app/models/teachers_response.dart';
 import 'package:school_management_app/screens/parents/add_parent_screen.dart';
 import 'package:school_management_app/screens/teachers/add_teacher_screen.dart';
+import 'package:school_management_app/screens/teachers/teacher_info_screen.dart';
 import 'package:school_management_app/services/teachers_service.dart';
 import 'package:flutter/services.dart';
 
@@ -113,7 +114,7 @@ class _TeachersScreenState extends State<TeachersScreen> {
             )
           );
         },
-        backgroundColor: widget.backgroundColor,
+        backgroundColor: AppColors.primaryBlue,
        child: Icon(Icons.add,
        color: Colors.white,
       ),
@@ -275,7 +276,7 @@ class _TeachersScreenState extends State<TeachersScreen> {
 
                             child: Icon(
                               Icons.tune_rounded,
-                              color: widget.backgroundColor ,
+                              color: AppColors.primaryBlue ,
                             ),
                           ),
                         ],
@@ -308,6 +309,21 @@ class _TeachersScreenState extends State<TeachersScreen> {
                         onTap: () {
 
                           HapticFeedback.lightImpact();
+
+                          Navigator.push(
+
+                            context,
+
+                            MaterialPageRoute(
+
+                              builder: (_) => TeacherInfoScreen(
+
+                                accessToken: widget.accessToken,
+
+                                teacherId: teacher.id,
+                              ),
+                            ),
+                          );
                         },
 
                         child: Container(
@@ -354,7 +370,7 @@ class _TeachersScreenState extends State<TeachersScreen> {
                                 child: Icon(
                                   Icons.person_rounded,
                                   size: 30,
-                                  color: widget.backgroundColor,
+                                  color: AppColors.primaryBlue,
                                 ),
                               ),
 

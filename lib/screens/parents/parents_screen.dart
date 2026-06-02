@@ -52,7 +52,7 @@ class _ParentsScreenState extends State<ParentsScreen> {
       print(parentsList.first.fullName);
     }
     catch(e){
-      print("Teacher API Error");
+      print("Parent API Error");
       print(e);
       setState(() {
         isLoading = false;
@@ -278,7 +278,7 @@ class _ParentsScreenState extends State<ParentsScreen> {
 
                             child: Icon(
                               Icons.tune_rounded,
-                              color: widget.backgroundColor,
+                              color: AppColors.primaryBlue,
                             ),
                           ),
                         ],
@@ -358,7 +358,7 @@ class _ParentsScreenState extends State<ParentsScreen> {
                                 child: Icon(
                                   Icons.person_rounded,
                                   size: 30,
-                                  color: widget.backgroundColor,
+                                  color: AppColors.primaryBlue,
                                 ),
                               ),
 
@@ -375,7 +375,6 @@ class _ParentsScreenState extends State<ParentsScreen> {
                                     /// NAME
                                     Text(
                                       teacher.fullName,
-
                                       style: const TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w700,
@@ -385,27 +384,65 @@ class _ParentsScreenState extends State<ParentsScreen> {
 
                                     const SizedBox(height: 10),
 
-                                   Row(
-                                      children: [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
 
-                                        /// SUBJECT
-                                        const Icon(
-                                          Icons.task ,
-                                          size: 16,
-                                          color: Color(0xFF081B5C),
-                                        ),
+                                      children: teacher.children.map((child) {
 
-                                        const SizedBox(width: 6),
+                                        return Container(
+                                          width: double.infinity,
 
-                                        const Text(
-                                          "Software Engineer",
+                                          margin: const EdgeInsets.only(bottom: 8),
 
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: Color(0xFF667085),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 10,
                                           ),
-                                        ),
-                                      ],
+
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFF5F7FF),
+                                            borderRadius: BorderRadius.circular(14),
+                                          ),
+
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+
+                                            children: [
+
+                                              /// CLASS
+                                              Text(
+                                                "${child.className} : ",
+
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Color(0xFF667085),
+                                                ),
+                                              ),
+
+                                              const SizedBox(width: 6),
+
+                                              /// STUDENT NAME
+                                              Expanded(
+                                                child: Text(
+                                                  child.fullName,
+
+                                                  maxLines: 2,
+                                                  overflow: TextOverflow.ellipsis,
+
+                                                  style: const TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Color(0xFF344054),
+                                                    height: 1.3,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+
+                                      }).toList(),
                                     )
                                   ],
                                 ),

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:school_management_app/models/teachers_response.dart';
-
+import '../models/teacher_info_response.dart';
 import '../models/create_teacher_request.dart';
 
 class TeachersService{
@@ -25,6 +25,44 @@ class TeachersService{
     }
     else{
       throw Exception("Failded to Load Teachers");
+    }
+  }
+
+  static Future<TeacherInfoResponse>
+  getTeacherById({
+
+    required String accessToken,
+    required String teacherId,
+
+  }) async {
+
+    final response = await get(
+
+      Uri.parse(
+        "https://school-management-system-1ba9.onrender.com/teachers/$teacherId",
+      ),
+
+      headers: {
+
+        "Accept": "application/json",
+
+        "Authorization":
+        "Bearer $accessToken",
+      },
+    );
+
+    if (response.statusCode == 200) {
+
+      final data =
+      jsonDecode(response.body);
+
+      return TeacherInfoResponse.fromJson(data);
+
+    } else {
+
+      throw Exception(
+        "Failed to load teacher info",
+      );
     }
   }
   

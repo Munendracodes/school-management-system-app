@@ -1,5 +1,6 @@
 
 
+
 class StudentInfoResponse {
 
   final String id;
@@ -11,6 +12,7 @@ class StudentInfoResponse {
   final Classroom classroom;
   final Section section;
   final AcademicYear academicYear;
+  final FeeInformation feeInformation;
 
   final List<ParentData> parents;
 
@@ -24,6 +26,7 @@ class StudentInfoResponse {
     required this.section,
     required this.academicYear,
     required this.parents,
+    required this.feeInformation
   });
 
   factory StudentInfoResponse.fromJson(
@@ -54,6 +57,11 @@ class StudentInfoResponse {
       section:
       Section.fromJson(
         json["section"] ?? {},
+      ),
+
+      feeInformation:
+      FeeInformation.fromJson(
+        json["fee_information"] ?? {},
       ),
 
       academicYear:
@@ -109,6 +117,27 @@ class Section {
     return Section(
       id: json["id"] ?? "",
       name: json["name"] ?? "",
+    );
+  }
+}
+
+class FeeInformation {
+
+  final int totalFee;
+  final int paidFee;
+
+  FeeInformation({
+    required this.totalFee,
+    required this.paidFee,
+  });
+
+  factory FeeInformation.fromJson(
+      Map<String, dynamic> json,
+      ) {
+
+    return FeeInformation(
+      totalFee: json["total_fee"] ?? "",
+      paidFee: json["paid_fee"] ?? "",
     );
   }
 }

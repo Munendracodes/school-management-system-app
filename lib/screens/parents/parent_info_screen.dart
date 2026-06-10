@@ -2,72 +2,62 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/constants/app_colors.dart';
-import '../../models/teacher_info_response.dart';
-import '../../services/teachers_service.dart';
+import '../../models/parent_info_response.dart';
+import '../../services/parents_service.dart';
 
-
-class TeacherInfoScreen extends StatefulWidget {
-
+class ParentInfoScreen extends StatefulWidget {
   final String accessToken;
-  final String teacherId;
+  final String parentId;
 
-  const TeacherInfoScreen({
+  const ParentInfoScreen({
     super.key,
     required this.accessToken,
-    required this.teacherId,
+    required this.parentId,
   });
 
   @override
-  State<TeacherInfoScreen> createState() =>
-      _TeacherInfoScreenState();
+  State<ParentInfoScreen> createState() => _ParentInfoScreenState();
 }
 
-class _TeacherInfoScreenState
-    extends State<TeacherInfoScreen> {
+class _ParentInfoScreenState extends State<ParentInfoScreen> {
 
   bool isLoading = true;
 
-  TeacherInfoResponse? teacher;
+  ParentInfoResponse? parent;
 
   @override
   void initState() {
     super.initState();
 
-    getTeacherById();
+    loadParentInfo();
   }
-
-  Future<void> getTeacherById() async {
+  Future<void> loadParentInfo() async {
 
     try {
 
       final response =
-      await TeachersService.getTeacherById(
+      await ParentsService.getParentById(
 
         accessToken:
         widget.accessToken,
 
-        teacherId:
-        widget.teacherId,
+        parentId:
+        widget.parentId,
       );
 
       setState(() {
 
-        teacher = response;
+        parent = response;
 
         isLoading = false;
       });
 
     } catch (e) {
 
-      debugPrint(
-        "TEACHER INFO ERROR",
-      );
-
-      debugPrint(
-        e.toString(),
-      );
+      print(e);
 
       setState(() {
+
         isLoading = false;
       });
     }
@@ -75,21 +65,15 @@ class _TeacherInfoScreenState
 
   @override
   Widget build(BuildContext context) {
-
-    final width =
-        MediaQuery.of(context).size.width;
-
     if (isLoading) {
 
       return const Scaffold(
 
         body: Center(
-          child:
-          CircularProgressIndicator(),
+          child: CircularProgressIndicator(),
         ),
       );
     }
-
     return Scaffold(
 
       backgroundColor:
@@ -150,7 +134,7 @@ class _TeacherInfoScreenState
                             ],
                           ),
 
-                          child: const Icon(
+                          child: Icon(
                             Icons.arrow_back_ios_new_rounded,
                             color: AppColors.primaryBlue,
                             size: 18,
@@ -161,9 +145,7 @@ class _TeacherInfoScreenState
                       const SizedBox(width: 10),
 
                       const Text(
-
-                        "Teacher Info",
-
+                        "Parent Info",
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
@@ -272,7 +254,7 @@ class _TeacherInfoScreenState
                                     Expanded(
                                       child: Text(
 
-                                        teacher?.fullName ?? "",
+                                        parent?.fullName ?? "",
 
                                         style: const TextStyle(
                                           fontSize: 15,
@@ -359,7 +341,7 @@ class _TeacherInfoScreenState
                                   icon: Icons.call_rounded,
                                   title: "Mobile Number",
                                   value:
-                                  teacher?.mobileNumber ?? "",
+                                  parent?.mobileNumber ?? "",
                                   color:
                                   AppColors.primaryBlue,
                                 ),
@@ -376,7 +358,7 @@ class _TeacherInfoScreenState
                                   icon: Icons.email_rounded,
                                   title: "Email",
                                   value:
-                                  teacher?.email ?? "",
+                                  parent?.email ?? "",
                                   color:
                                   AppColors.purple,
                                 ),
@@ -392,8 +374,10 @@ class _TeacherInfoScreenState
                               Expanded(
                                 child: _buildMiniInfo(
                                   icon: Icons.menu_book_rounded,
-                                  title: "Department",
-                                  value: "Mathematics",
+                                  title: "Relationship",
+                                  value: parent!.children.isNotEmpty
+                                      ? parent!.children.first.relationshipType
+                                      : "",
                                   color:
                                   AppColors.orange,
                                 ),
@@ -408,8 +392,9 @@ class _TeacherInfoScreenState
                               Expanded(
                                 child: _buildMiniInfo(
                                   icon: Icons.work_rounded,
-                                  title: "Experience",
-                                  value: "6+ Years",
+                                  title: "Total Children",
+                                  value:
+                                  "${parent?.children.length ?? 0} Student",
                                   color:
                                   AppColors.green,
                                 ),
@@ -428,120 +413,136 @@ class _TeacherInfoScreenState
               /// ACADEMIC INFO
               _buildSectionCard(
 
-                title: "Academic Information",
+                title: "Children Information",
 
                 icon: Icons.menu_book_rounded,
 
-                child: Row(
+                child:  ListView.builder(
 
-                  children: [
+                shrinkWrap: true,
 
-                    Expanded(
-                      child: _buildStatTile(
-                        icon: Icons.groups_rounded,
-                        label: "Classes",
-                        value: "2",
-                        color: AppColors.primaryBlue,
+                physics:
+                const NeverScrollableScrollPhysics(),
+
+                itemCount:
+                parent?.children.length ?? 0,
+
+                itemBuilder: (context, index) {
+
+                  final child =
+                  parent!.children[index];
+
+                  return Container(
+
+                    margin:
+                    const EdgeInsets.only(bottom: 10),
+
+                    padding:
+                    const EdgeInsets.all(14),
+
+                    decoration: BoxDecoration(
+
+                      color:
+                      const Color(0xFFF8FAFF),
+
+                      borderRadius:
+                      BorderRadius.circular(20),
+
+                      border: Border.all(
+                        color:
+                        const Color(0xFFE7ECF8),
                       ),
                     ),
 
-                    Expanded(
-                      child: _buildStatTile(
-                        icon: Icons.school_rounded,
-                        label: "Sections",
-                        value: "2",
-                        color: AppColors.green,
-                      ),
-                    ),
+                    child: Row(
 
-                    Expanded(
-                      child: _buildStatTile(
-                        icon: Icons.book_rounded,
-                        label: "Subjects",
-                        value: "Maths",
-                        color: AppColors.purple,
-                      ),
+                      crossAxisAlignment:
+                      CrossAxisAlignment.start,
+
+                      children: [
+
+                        /// PHOTO
+                        Container(
+
+                          height: 60,
+                          width: 60,
+
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                "https://i.pravatar.cc/300?img=10",
+                              ),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        Expanded(
+
+                          child: Column(
+
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
+
+                            children: [
+
+                              Text(
+                                child.fullName,
+
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF081B5C),
+                                ),
+                              ),
+
+                              const SizedBox(height: 12),
+
+                              _buildChildRow(
+                                Icons.school_rounded,
+                                Colors.blue,
+                                "Class",
+                                child.className,
+                              ),
+
+                              const SizedBox(height: 8),
+
+                              _buildChildRow(
+                                Icons.meeting_room_rounded,
+                                Colors.green,
+                                "Section",
+                                child.sectionName,
+                              ),
+
+                              const SizedBox(height: 8),
+
+                              _buildChildRow(
+                                Icons.calendar_month_rounded,
+                                Colors.orange,
+                                "Academic Year",
+                                child.academicYear,
+                              ),
+
+                         /*     const SizedBox(height: 8),
+
+                              _buildChildRow(
+                                Icons.people_rounded,
+                                Colors.purple,
+                                "Relationship",
+                                child.relationshipType,
+                              ),*/
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
-
-              const SizedBox(height: 10),
-
-              /// ATTENDANCE
-              _buildSectionCard(
-
-                title: "Attendance Overview",
-
-                icon: Icons.calendar_month_rounded,
-
-                child: Row(
-
-                  children: [
-
-                    Expanded(
-                      child: Container(
-
-                        padding: const EdgeInsets.all(16),
-
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF6F4FF),
-                          borderRadius:
-                          BorderRadius.circular(24),
-                        ),
-
-                        child: Column(
-                          children: const [
-
-                            Text(
-                              "92%",
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.primaryBlue,
-                              ),
-                            ),
-
-                            SizedBox(height: 6),
-
-                            Text(
-                              "Attendance",
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Color(0xFF667085),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    Expanded(
-                      child: Column(
-                        children: [
-
-                          _buildAttendanceTile(
-                            title: "Working Days",
-                            value: "22",
-                            color:
-                            AppColors.green,
-                          ),
-
-                          const SizedBox(height: 10),
-
-                          _buildAttendanceTile(
-                            title: "Leaves",
-                            value: "2",
-                            color:
-                            AppColors.orange,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
               ),
 
               const SizedBox(height: 10),
@@ -551,7 +552,7 @@ class _TeacherInfoScreenState
 
                 title: "Contact Information",
 
-                icon: Icons.call_rounded,
+                icon: Icons.contacts,
 
                 child: Column(
 
@@ -561,7 +562,7 @@ class _TeacherInfoScreenState
                       icon: Icons.call_rounded,
                       title: "Mobile Number",
                       value:
-                      teacher?.mobileNumber ?? "",
+                      parent?.mobileNumber ?? "",
                       actionText: "Call",
                     ),
 
@@ -571,14 +572,57 @@ class _TeacherInfoScreenState
                       icon: Icons.email_rounded,
                       title: "Email Address",
                       value:
-                      teacher?.email ?? "",
+                      parent?.email ?? "",
                       actionText: "Email",
                     ),
                   ],
                 ),
               ),
-
               const SizedBox(height: 10),
+
+              _buildSectionCard(
+
+                title: "Family Summary",
+
+                icon: Icons.family_restroom_rounded,
+
+                child: Row(
+
+                  children: [
+
+                    Expanded(
+                      child: _buildStatTile(
+                        icon: Icons.people_alt_rounded,
+                        label: "Children",
+                        value:
+                        "${parent?.children.length ?? 0}",
+                        color: Colors.blue,
+                      ),
+                    ),
+
+                    Expanded(
+                      child: _buildStatTile(
+                        icon: Icons.school_rounded,
+                        label: "Students",
+                        value:
+                        "${parent?.children.length ?? 0}",
+                        color: Colors.green,
+                      ),
+                    ),
+
+                    Expanded(
+                      child: _buildStatTile(
+                        icon: Icons.calendar_month_rounded,
+                        label: "Years",
+                        value: "1",
+                        color: Colors.orange,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10.0),
+
 
               /// QUICK ACTIONS
               _buildSectionCard(
@@ -604,8 +648,13 @@ class _TeacherInfoScreenState
                   children: [
 
                     _buildQuickAction(
-                      Icons.assignment_ind_rounded,
-                      "Assign Class",
+                      Icons.family_restroom_rounded,
+                      "View Children",
+                    ),
+
+                    _buildQuickAction(
+                      Icons.account_balance_wallet_rounded,
+                      "Fee Details",
                     ),
 
                     _buildQuickAction(
@@ -614,33 +663,28 @@ class _TeacherInfoScreenState
                     ),
 
                     _buildQuickAction(
-                      Icons.account_balance_wallet_rounded,
-                      "Salary",
-                    ),
-
-                    _buildQuickAction(
                       Icons.folder_rounded,
                       "Documents",
                     ),
 
                     _buildQuickAction(
-                      Icons.schedule_rounded,
-                      "Timetable",
+                      Icons.call_rounded,
+                      "Contact",
                     ),
 
                     _buildQuickAction(
-                      Icons.note_alt_rounded,
-                      "Leave",
+                      Icons.email_rounded,
+                      "Send Message",
                     ),
 
                     _buildQuickAction(
-                      Icons.bar_chart_rounded,
-                      "Performance",
+                      Icons.notifications_rounded,
+                      "Notifications",
                     ),
 
                     _buildQuickAction(
                       Icons.edit_rounded,
-                      "Edit",
+                      "Edit Parent",
                     ),
                   ],
                 ),
@@ -676,7 +720,6 @@ class _TeacherInfoScreenState
       ),
 
       child: Icon(
-        size: 22,
         icon,
         color: AppColors.primaryBlue,
       ),
@@ -700,7 +743,7 @@ class _TeacherInfoScreenState
 
         children: [
 
-        /*  Container(
+          /*  Container(
 
             padding: const EdgeInsets.all(10),
 
@@ -755,6 +798,53 @@ class _TeacherInfoScreenState
     );
   }
 
+  Widget _buildChildRow(
+      IconData icon,
+      Color color,
+      String label,
+      String value,
+      ) {
+
+    return Row(
+
+      children: [
+
+        Icon(
+          icon,
+          size: 18,
+          color: color,
+        ),
+
+        const SizedBox(width: 10),
+
+        SizedBox(
+          width: 90,
+          child: Text(
+            label,
+
+            style: const TextStyle(
+              fontSize: 13,
+              color: Color(0xFF667085),
+            ),
+          ),
+        ),
+        SizedBox(width: 1.0),
+
+        Expanded(
+          child: Text(
+            value,
+
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF081B5C),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildSectionCard({
     required String title,
     required IconData icon,
@@ -803,7 +893,6 @@ class _TeacherInfoScreenState
                 ),
 
                 child: Icon(
-                  size: 22,
                   icon,
                   color: AppColors.primaryBlue,
                 ),
@@ -911,7 +1000,7 @@ class _TeacherInfoScreenState
             title,
 
             style: const TextStyle(
-              fontSize: 13,
+              fontSize: 14,
               color: Color(0xFF667085),
             ),
           ),
@@ -954,6 +1043,8 @@ class _TeacherInfoScreenState
 
         children: [
 
+
+
           Container(
 
             padding: const EdgeInsets.all(12),
@@ -985,6 +1076,7 @@ class _TeacherInfoScreenState
                   title,
 
                   style: const TextStyle(
+                    fontSize: 13,
                     color: Color(0xFF667085),
                   ),
                 ),
@@ -995,7 +1087,7 @@ class _TeacherInfoScreenState
                   value,
 
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: FontWeight.normal,
                     color: Color(0xFF081B5C),
                   ),
@@ -1004,7 +1096,9 @@ class _TeacherInfoScreenState
             ),
           ),
 
-        /*  Container(
+
+
+       /*   Container(
 
             padding:
             const EdgeInsets.symmetric(
@@ -1039,6 +1133,41 @@ class _TeacherInfoScreenState
       IconData icon,
       String title,
       ) {
+    Color bgColor;
+
+    switch (title) {
+
+      case "View Children":
+        bgColor = const Color(0xFFF3F6FF);
+        break;
+
+      case "Fee Details":
+        bgColor = const Color(0xFFF2FFF6);
+        break;
+
+      case "Attendance":
+        bgColor = const Color(0xFFF7F4FF);
+        break;
+
+      case "Documents":
+        bgColor = const Color(0xFFFFF8F0);
+        break;
+
+      case "Contact":
+        bgColor = const Color(0xFFF3FFF7);
+        break;
+
+      case "Send Message":
+        bgColor = const Color(0xFFF4F8FF);
+        break;
+
+      case "Notifications":
+        bgColor = const Color(0xFFFFF8F0);
+        break;
+
+      default:
+        bgColor = const Color(0xFFF7F4FF);
+    }
 
     return InkWell(
 
@@ -1052,8 +1181,10 @@ class _TeacherInfoScreenState
 
       child: Container(
 
+
         decoration: BoxDecoration(
-          color: Colors.white,
+
+          color: bgColor,
 
           borderRadius:
           BorderRadius.circular(20),
@@ -1072,8 +1203,23 @@ class _TeacherInfoScreenState
 
             Icon(
               icon,
-              color: AppColors.primaryBlue,
-              size: 25,
+              color:
+
+              title == "Fee Details"
+                  ? Colors.green
+
+                  : title == "Documents"
+                  ? Colors.orange
+
+                  : title == "Contact"
+                  ? Colors.green
+
+                  : title == "Notifications"
+                  ? Colors.orange
+
+                  : AppColors.primaryBlue,
+
+              size: 26,
             ),
 
             const SizedBox(height: 5),
@@ -1092,4 +1238,5 @@ class _TeacherInfoScreenState
       ),
     );
   }
-}
+  }
+

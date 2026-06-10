@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../../core/constants/app_colors.dart';
-import '../../core/widgets/module_card.dart';
+
 
 class ManageScreen extends StatelessWidget {
   const ManageScreen({super.key});
@@ -9,263 +8,134 @@ class ManageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
+    final academicItems = [
+      ManageItem("Academic Year", Icons.calendar_month_rounded, const Color(0xFF8B5CF6)),
+      ManageItem("Class", Icons.school_rounded, const Color(0xFF3B82F6)),
+      ManageItem("Section", Icons.apartment_rounded, const Color(0xFF22C55E)),
+      ManageItem("Subject", Icons.menu_book_rounded, const Color(0xFFF97316)),
+      ManageItem("Exams", Icons.assignment_rounded, const Color(0xFFEC4899)),
+    ];
 
-      backgroundColor: Colors.white,
+    final peopleItems = [
+      ManageItem("Students", Icons.person_rounded, const Color(0xFF3B82F6)),
+      ManageItem("Teachers", Icons.co_present_rounded, const Color(0xFF22C55E)),
+      ManageItem("Parents", Icons.family_restroom_rounded, const Color(0xFFF97316)),
+      ManageItem("Roles", Icons.security_rounded, const Color(0xFF8B5CF6)),
+    ];
+
+    final operationItems = [
+      ManageItem("Mark Attendance", Icons.check_circle_rounded, const Color(0xFF22C55E)),
+      ManageItem("Fees", Icons.account_balance_wallet_rounded, const Color(0xFFF97316)),
+      ManageItem("Bus Route", Icons.directions_bus_rounded, const Color(0xFF3B82F6)),
+      ManageItem("Notifications", Icons.notifications_rounded, const Color(0xFF8B5CF6)),
+    ];
+
+    final reportItems = [
+      ManageItem("Attendance Report", Icons.bar_chart_rounded, const Color(0xFF22C55E)),
+      ManageItem("Fee Report", Icons.credit_card_rounded, const Color(0xFFF97316)),
+      ManageItem("Student Report", Icons.school_rounded, const Color(0xFF3B82F6)),
+      ManageItem("Teacher Report", Icons.co_present_rounded, const Color(0xFF8B5CF6)),
+    ];
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF7F9FC),
 
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
 
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-
             children: [
 
               /// HEADER
               Row(
-                mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-
                 children: [
 
-                  Column(
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
 
-                    children: [
+                  /// MENU
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10),
 
-                      const Text(
-                        "Manage",
+                    child: Icon(
+                        Icons.menu_rounded,
+                        size: 23
+                    ),
+                  ),
+                  const SizedBox(width: 15),
 
-                        style: TextStyle(
-                          fontSize: 34,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.darkText,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment:
+                      CrossAxisAlignment.start,
+
+                      children: const [
+
+                        Text(
+                          "Manage",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.darkText,
+                          ),
                         ),
-                      ),
 
-                      const SizedBox(height: 8),
 
-                      const Text(
-                        "Manage school operations",
 
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.lightText,
+                        Text(
+                          "Manage all school operations",
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.lightText,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
 
                   Container(
-                    padding: const EdgeInsets.all(14),
+                    height: 45,
+                    width: 45,
 
                     decoration: BoxDecoration(
-                      color: AppColors.blueCard,
-                      borderRadius:
-                      BorderRadius.circular(18),
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: const Color(0xFFE4E7EC),
+                      ),
                     ),
 
                     child: const Icon(
                       Icons.search_rounded,
-                      size: 30,
                       color: AppColors.primaryBlue,
                     ),
                   ),
                 ],
               ),
 
-              const SizedBox(height: 36),
+              const SizedBox(height: 10),
 
-              /// QUICK ACTIONS
-              const Text(
-                "Quick Actions",
-
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.darkText,
-                ),
+              _buildSection(
+                title: "Academic Setup",
+                icon: Icons.school_rounded,
+                items: academicItems,
               ),
 
-              const SizedBox(height: 20),
-
-              Row(
-                children: [
-
-                  Expanded(
-                    child: _buildQuickAction(
-                      title: "Add Student",
-                      icon: Icons.person_add_alt_1_rounded,
-                      color: AppColors.blueCard,
-                      iconColor: AppColors.primaryBlue,
-                    ),
-                  ),
-
-                  const SizedBox(width: 16),
-
-                  Expanded(
-                    child: _buildQuickAction(
-                      title: "Attendance",
-                      icon: Icons.fact_check_rounded,
-                      color: AppColors.greenCard,
-                      iconColor: AppColors.green,
-                    ),
-                  ),
-
-                  const SizedBox(width: 16),
-
-                  Expanded(
-                    child: _buildQuickAction(
-                      title: "Invoices",
-                      icon:
-                      Icons.account_balance_wallet_rounded,
-                      color: AppColors.orangeCard,
-                      iconColor: AppColors.orange,
-                    ),
-                  ),
-                ],
+              _buildSection(
+                title: "People Management",
+                icon: Icons.people_rounded,
+                items: peopleItems,
               ),
 
-              const SizedBox(height: 40),
-
-              /// ACADEMIC STRUCTURE
-              _buildSectionTitle("Academic Structure"),
-
-              const SizedBox(height: 20),
-
-              GridView.count(
-                shrinkWrap: true,
-                physics:
-                const NeverScrollableScrollPhysics(),
-
-                crossAxisCount: 2,
-                crossAxisSpacing: 18,
-                mainAxisSpacing: 18,
-                childAspectRatio: 0.95,
-
-                children: [
-
-                  ModuleCard(
-                    title: "Classes",
-                    subtitle: "Manage all classes",
-
-                    icon: Icons.school_rounded,
-
-                    iconColor: AppColors.primaryBlue,
-
-                    backgroundColor:
-                    AppColors.blueCard,
-                  ),
-
-                  ModuleCard(
-                    title: "Sections",
-                    subtitle: "Manage sections",
-
-                    icon: Icons.grid_view_rounded,
-
-                    iconColor: AppColors.green,
-
-                    backgroundColor:
-                    AppColors.greenCard,
-                  ),
-
-                  ModuleCard(
-                    title: "Subjects",
-                    subtitle: "Manage subjects",
-
-                    icon: Icons.menu_book_rounded,
-
-                    iconColor: AppColors.orange,
-
-                    backgroundColor:
-                    AppColors.orangeCard,
-                  ),
-
-                  ModuleCard(
-                    title: "Timetables",
-                    subtitle: "Manage schedules",
-
-                    icon: Icons.schedule_rounded,
-
-                    iconColor: AppColors.purple,
-
-                    backgroundColor:
-                    AppColors.purpleCard,
-                  ),
-                ],
+              _buildSection(
+                title: "Operations",
+                icon: Icons.settings_rounded,
+                items: operationItems,
               ),
 
-              const SizedBox(height: 40),
-
-              /// STUDENT OPERATIONS
-              _buildSectionTitle("Student Operations"),
-
-              const SizedBox(height: 20),
-
-              GridView.count(
-                shrinkWrap: true,
-                physics:
-                const NeverScrollableScrollPhysics(),
-
-                crossAxisCount: 2,
-                crossAxisSpacing: 18,
-                mainAxisSpacing: 18,
-                childAspectRatio: 0.95,
-
-                children: [
-
-                  ModuleCard(
-                    title: "Students",
-                    subtitle: "Student management",
-
-                    icon: Icons.groups_rounded,
-
-                    iconColor: AppColors.primaryBlue,
-
-                    backgroundColor:
-                    AppColors.blueCard,
-                  ),
-
-                  ModuleCard(
-                    title: "Attendance",
-                    subtitle: "Track attendance",
-
-                    icon:
-                    Icons.event_available_rounded,
-
-                    iconColor: AppColors.green,
-
-                    backgroundColor:
-                    AppColors.greenCard,
-                  ),
-
-                  ModuleCard(
-                    title: "Examinations",
-                    subtitle: "Manage exams",
-
-                    icon: Icons.description_rounded,
-
-                    iconColor: AppColors.orange,
-
-                    backgroundColor:
-                    AppColors.orangeCard,
-                  ),
-
-                  ModuleCard(
-                    title: "Progress Reports",
-                    subtitle: "Academic reports",
-
-                    icon: Icons.analytics_rounded,
-
-                    iconColor: AppColors.purple,
-
-                    backgroundColor:
-                    AppColors.purpleCard,
-                  ),
-                ],
+              _buildSection(
+                title: "Reports",
+                icon: Icons.bar_chart_rounded,
+                items: reportItems,
               ),
 
               const SizedBox(height: 120),
@@ -274,61 +144,173 @@ class ManageScreen extends StatelessWidget {
         ),
       ),
     );
+
   }
 
-  Widget _buildSectionTitle(String title) {
-
-    return Text(
-      title,
-
-      style: const TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.w700,
-        color: AppColors.darkText,
-      ),
-    );
-  }
-
-  Widget _buildQuickAction({
+  Widget _buildSection({
     required String title,
     required IconData icon,
-    required Color color,
-    required Color iconColor,
+    required List<ManageItem> items,
   }) {
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 18,
-      ),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(18),
 
       decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(24),
+        color: Colors.white,
+
+        borderRadius:
+        BorderRadius.circular(28),
+
+        border: Border.all(
+          color: const Color(0xFFE9EEF9),
+        ),
+
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 12,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
 
       child: Column(
         children: [
 
-          Icon(
-            icon,
-            color: iconColor,
-            size: 34,
+          Row(
+            children: [
+
+            /*  Container(
+                padding: const EdgeInsets.all(10),
+
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF4F3FF),
+                  borderRadius:
+                  BorderRadius.circular(14),
+                ),
+
+                child: Icon(
+                  icon,
+                  color: AppColors.primaryBlue,
+                ),
+              ),*/
+
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.darkText,
+                  ),
+                ),
+              ),
+
+              Text(
+                "${items.length} Items",
+                style: const TextStyle(
+                  color: AppColors.primaryBlue,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.primaryBlue,
+              ),
+            ],
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 18),
 
-          Text(
-            title,
-            textAlign: TextAlign.center,
+          GridView.builder(
+            shrinkWrap: true,
 
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.darkText,
+            physics:
+            const NeverScrollableScrollPhysics(),
+
+            itemCount: items.length,
+
+            gridDelegate:
+            const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 2,
             ),
+
+            itemBuilder: (context, index) {
+              return _buildMenuCard(items[index]);
+            },
           ),
         ],
       ),
     );
   }
+
+  Widget _buildMenuCard(
+      ManageItem item,
+      ) {
+    return InkWell(
+
+      borderRadius:
+      BorderRadius.circular(20),
+
+      onTap: () {},
+
+      child: Container(
+
+        padding: const EdgeInsets.all(15),
+
+        decoration: BoxDecoration(
+          color: item.color.withOpacity(0.06),
+
+          borderRadius:
+          BorderRadius.circular(20),
+        ),
+
+        child: Row(
+          children: [
+
+            Icon(
+              item.icon,
+              color: item.color,
+            ),
+
+            const SizedBox(width: 7),
+
+            Expanded(
+              child: Text(
+                item.title,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.darkText,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+  }
 }
+
+class ManageItem {
+
+  final String title;
+  final IconData icon;
+  final Color color;
+
+  ManageItem(
+      this.title,
+      this.icon,
+      this.color,
+      );
+}
+

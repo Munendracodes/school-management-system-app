@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:school_management_app/core/constants/app_colors.dart';
 import 'package:school_management_app/models/teachers_response.dart';
 import 'package:school_management_app/screens/parents/add_parent_screen.dart';
+import 'package:school_management_app/screens/parents/parent_info_screen.dart';
 import 'package:school_management_app/screens/teachers/add_teacher_screen.dart';
 import 'package:school_management_app/services/parents_service.dart';
 import 'package:school_management_app/services/teachers_service.dart';
@@ -311,6 +312,16 @@ class _ParentsScreenState extends State<ParentsScreen> {
                         onTap: () {
 
                           HapticFeedback.lightImpact();
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ParentInfoScreen(
+                                accessToken: widget.accessToken,
+                                parentId: teacher.id,
+                              ),
+                            ),
+                          );
                         },
 
                         child: Container(

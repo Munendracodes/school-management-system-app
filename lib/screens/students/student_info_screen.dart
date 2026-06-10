@@ -377,7 +377,10 @@ class _StudentInfoScreenState
       );
     }
 
-    Widget _buildFeeCard() {
+    Widget _buildFeeCard(int totalFee, int paidFee) {
+      int pendingFee=0;
+      double paidpercentage = (paidFee/totalFee)*100;
+      pendingFee = totalFee - paidFee;
 
       return Container(
 
@@ -416,7 +419,7 @@ class _StudentInfoScreenState
                     color: Color(0xFF081B5C),
                   ),
                 ),
-
+                if(pendingFee >0)
                 Container(
 
                   padding:
@@ -431,7 +434,7 @@ class _StudentInfoScreenState
                     BorderRadius.circular(30),
                   ),
 
-                  child: const Text(
+                  child: Text(
                     "PENDING",
                     style: TextStyle(
                       color: Colors.orange,
@@ -440,6 +443,30 @@ class _StudentInfoScreenState
                     ),
                   ),
                 ),
+                if(pendingFee <=0)
+                  Container(
+
+                    padding:
+                    const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius:
+                      BorderRadius.circular(30),
+                    ),
+
+                    child: Text(
+                      "PAID",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12
+                      ),
+                    ),
+                  ),
               ],
             ),
 
@@ -470,7 +497,7 @@ class _StudentInfoScreenState
 
                     child: CircularProgressIndicator(
 
-                      value: 0.71,
+                      value: paidpercentage/100,
 
                       strokeWidth: 10,
 
@@ -479,7 +506,7 @@ class _StudentInfoScreenState
 
                       valueColor:
                       const AlwaysStoppedAnimation<Color>(
-                        Color(0xFF2457FF),
+                       AppColors.primaryBlue,
                       ),
                     ),
                   ),
@@ -488,21 +515,21 @@ class _StudentInfoScreenState
                     mainAxisAlignment:
                     MainAxisAlignment.center,
 
-                    children: const [
+                    children: [
 
                       Text(
-                        "71%",
+                        "$paidpercentage%",
 
-                        style: TextStyle(
-                          fontSize: 24,
+                        style: const TextStyle(
+                          fontSize: 22,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFF2457FF),
+                          color: AppColors.primaryBlue,
                         ),
                       ),
 
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
 
-                      Text(
+                      const Text(
                         "Paid",
                         style: TextStyle(
                           fontSize: 13,
@@ -527,7 +554,7 @@ class _StudentInfoScreenState
 
                 const SizedBox(width: 20),
 
-                const Expanded(
+                Expanded(
 
                   child: Column(
 
@@ -537,24 +564,24 @@ class _StudentInfoScreenState
                     children: [
 
                       Text(
-                        "Total Fees : ₹45,000",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        "Total Fees : ₹ $totalFee",
+                        style: const TextStyle(fontWeight: FontWeight.bold,color: Color(0xFF081B5C)),
                       ),
 
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
                       Text(
-                        "Paid : ₹32,000",
+                        "Paid : ₹ $paidFee",
                         style: TextStyle(
                           color: Colors.green,
                           fontWeight: FontWeight.bold
                         ),
                       ),
 
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
                       Text(
-                        "Pending : ₹13,000",
+                        "Pending : ₹ $pendingFee",
                         style: TextStyle(
                           color: Colors.red,
                           fontWeight: FontWeight.bold
@@ -1413,7 +1440,7 @@ class _StudentInfoScreenState
             const SizedBox(height: 10),
 
             /// FEE INFORMATION
-            _buildFeeCard(),
+            _buildFeeCard(student!.feeInformation.totalFee, student!.feeInformation.paidFee),
 
             const SizedBox(height: 10),
 

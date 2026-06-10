@@ -294,8 +294,7 @@ class HomeContent extends StatelessWidget {
 
                     child: Icon(
                       Icons.menu_rounded,
-                      size: 28,
-                      color: AppColors.primaryBlue,
+                      size: 23
                     ),
                   ),
 
@@ -396,9 +395,9 @@ class HomeContent extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+             // const SizedBox(height: 10),
 
-              Row(
+            /*  Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
 
                 children: [
@@ -424,7 +423,7 @@ class HomeContent extends StatelessWidget {
                     size: 25,
                   ),
                 ],
-              ),
+              ), */
 
               const SizedBox(height: 10),
 

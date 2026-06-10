@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/parent_response.dart';
+import '../models/parent_info_response.dart';
 
 class ParentsService {
 
@@ -152,6 +153,45 @@ class ParentsService {
 
       throw Exception(
         "Failed to map parent",
+      );
+    }
+  }
+
+  static Future<ParentInfoResponse>
+  getParentById({
+
+    required String accessToken,
+
+    required String parentId,
+
+  }) async {
+
+    final response = await http.get(
+
+      Uri.parse(
+        "https://school-management-system-1ba9.onrender.com/parents/$parentId",
+      ),
+
+      headers: {
+
+        "Accept": "application/json",
+
+        "Authorization":
+        "Bearer $accessToken",
+      },
+    );
+
+    if (response.statusCode == 200) {
+
+      final data =
+      jsonDecode(response.body);
+
+      return ParentInfoResponse.fromJson(data);
+
+    } else {
+
+      throw Exception(
+        "Failed to load parent details",
       );
     }
   }

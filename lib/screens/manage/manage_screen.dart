@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:school_management_app/screens/academicyear/academic_year_screen.dart';
 import '../../core/constants/app_colors.dart';
 
 
@@ -244,7 +246,7 @@ class ManageScreen extends StatelessWidget {
             ),
 
             itemBuilder: (context, index) {
-              return _buildMenuCard(items[index]);
+              return _buildMenuCard(items[index],context);
             },
           ),
         ],
@@ -254,13 +256,27 @@ class ManageScreen extends StatelessWidget {
 
   Widget _buildMenuCard(
       ManageItem item,
+      BuildContext context
       ) {
     return InkWell(
 
       borderRadius:
       BorderRadius.circular(20),
 
-      onTap: () {},
+      onTap: () async{
+        /// HAPTIC FEEDBACK
+        await HapticFeedback.lightImpact();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) =>
+                AcademicYearScreen(
+
+                ),
+          ),
+        );
+      },
 
       child: Container(
 

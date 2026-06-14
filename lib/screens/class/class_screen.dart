@@ -1,48 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:school_management_app/screens/students/students_screen.dart';
 
 import '../../core/constants/app_colors.dart';
+import 'class_info_screen.dart';
 
-class AcademicYearScreen extends StatefulWidget {
-  const AcademicYearScreen({super.key});
+class ClassScreen extends StatefulWidget {
+  final String accessToken;
+  final Color backgroundColor;
+
+  const ClassScreen({
+    super.key,
+    required this.accessToken,
+    required this.backgroundColor
+  });
 
   @override
-  State<AcademicYearScreen> createState() =>
-      _AcademicYearScreenState();
+  State<ClassScreen> createState() =>
+      _ClassScreenState();
 }
 
-class _AcademicYearScreenState
-    extends State<AcademicYearScreen> {
+class _ClassScreenState
+    extends State<ClassScreen> {
 
-  final List<Map<String, dynamic>> _academicYears = [
+  final List<Map<String, dynamic>> classrooms = [
 
     {
-      "name": "2026-2027",
-      "startDate": "2026-06-01",
-      "endDate": "2027-03-31",
+      "name": "Class 1",
       "createdAt": "2026-05-26",
-      "isActive": true,
-      "color": const Color(0xFF3B82F6),
     },
 
     {
-      "name": "2025-2026",
-      "startDate": "2025-06-01",
-      "endDate": "2026-03-31",
-      "createdAt": "2025-04-20",
-      "isActive": false,
-      "color": const Color(0xFF8B5CF6),
+      "name": "Class 2",
+      "createdAt": "2026-05-26",
     },
 
     {
-      "name": "2024-2025",
-      "startDate": "2024-06-01",
-      "endDate": "2025-03-31",
-      "createdAt": "2024-04-15",
-      "isActive": false,
-      "color": const Color(0xFFF97316),
+      "name": "Class 3",
+      "createdAt": "2026-05-26",
     },
+
   ];
+
 
   String formatDate(String date) {
     return DateFormat(
@@ -55,11 +55,7 @@ class _AcademicYearScreenState
   @override
   Widget build(BuildContext context) {
 
-    final activeYear =
-    _academicYears.firstWhere(
-          (e) => e["isActive"] == true,
-      orElse: () => {},
-    );
+    const String academicYear = "2026-2027";
 
     return Scaffold(
 
@@ -75,7 +71,7 @@ class _AcademicYearScreenState
         onPressed: () {
 
           /// TODO:
-          /// Navigate Add Academic Year Screen
+          /// Navigate Add Class Scree
         },
 
         icon: const Icon(
@@ -84,7 +80,7 @@ class _AcademicYearScreenState
         ),
 
         label: const Text(
-          "Add Academic Year",
+          "Add Class",
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w600,
@@ -163,7 +159,7 @@ class _AcademicYearScreenState
                       children: const [
 
                         Text(
-                          "Academic Years",
+                          "Class",
 
                           style: TextStyle(
                             fontSize: 20,
@@ -174,7 +170,7 @@ class _AcademicYearScreenState
                           ),
                         ),
                         Text(
-                          "Manage academic years",
+                          "Manage Class",
 
                           style: TextStyle(
                             color:
@@ -263,7 +259,7 @@ class _AcademicYearScreenState
                               ),
 
                               child: const Icon(
-                                Icons.calendar_month_rounded,
+                                Icons.menu_book_rounded,
                                 color:
                                 AppColors.primaryBlue,
                                 size: 25,
@@ -275,7 +271,7 @@ class _AcademicYearScreenState
                             const Expanded(
 
                               child: Text(
-                                "Academic Years Overview",
+                                "Class Overview",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
@@ -303,7 +299,7 @@ class _AcademicYearScreenState
                                 children: [
 
                                   const Text(
-                                    "Total Academic Years",
+                                    "Total Classes",
 
                                     style: TextStyle(
                                       color:
@@ -315,7 +311,7 @@ class _AcademicYearScreenState
                                       height: 8),
 
                                   Text(
-                                    _academicYears.length
+                                    classrooms.length
                                         .toString(),
 
                                     style:
@@ -350,7 +346,7 @@ class _AcademicYearScreenState
                                 children: [
 
                                   const Text(
-                                    "Active Academic Year",
+                                    "Academic Year",
 
                                     style: TextStyle(
                                       color:
@@ -362,8 +358,7 @@ class _AcademicYearScreenState
                                       height: 8),
 
                                   Text(
-                                    activeYear["name"]
-                                        .toString(),
+                                    "2026-2027",
 
                                     style:
                                     const TextStyle(
@@ -388,7 +383,7 @@ class _AcademicYearScreenState
                     children: [
                       const Expanded(
                         child: Text(
-                          "All Academic Years",
+                          "All Classes",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight:
@@ -412,10 +407,10 @@ class _AcademicYearScreenState
                   const SizedBox(height: 5),
 
                   /// LIST
-                  ..._academicYears.map(
+                  ...classrooms.map(
 
                         (year) =>
-                        _buildAcademicYearCard(
+                            _buildClassCard(
                           year,
                         ),
                   ),
@@ -428,164 +423,170 @@ class _AcademicYearScreenState
     );
   }
 
-  Widget _buildAcademicYearCard(
-      Map<String, dynamic> year,
+  Widget _buildClassCard(
+      Map<String, dynamic> classroom,
       ) {
 
-    final bool isActive =
-    year["isActive"];
+    final bool isActive =false;
 
-    return Container(
+    return InkWell(
+      onTap: (){
+        HapticFeedback.lightImpact();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) =>
+                  ClassInfoScreen(accessToken: widget.accessToken, backgroundColor: AppColors.primaryBlue)
+          ),
+        );
+      },
+      child: Container(
 
-      margin:
-      const EdgeInsets.only(bottom: 18),
+        margin:
+        const EdgeInsets.only(bottom: 10),
 
-      padding:
-      const EdgeInsets.all(18),
+        padding:
+        const EdgeInsets.all(18),
 
-      decoration: BoxDecoration(
+        decoration: BoxDecoration(
 
-        color: Colors.white,
+          color: Colors.white,
 
-        borderRadius:
-        BorderRadius.circular(28),
+          borderRadius:
+          BorderRadius.circular(28),
 
-        border: Border.all(
-          color: isActive
-              ? const Color(0xFF4F8CFF)
-              : const Color(0xFFE5E7EB),
+          border: Border.all(
+            color: const Color(0xFFE5E7EB)
+          ),
+
+          boxShadow: [
+            BoxShadow(
+              color:
+              Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
         ),
 
-        boxShadow: [
-          BoxShadow(
-            color:
-            Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
+        child: Row(
 
-      child: Row(
+          crossAxisAlignment:
+          CrossAxisAlignment.center,
 
-        crossAxisAlignment:
-        CrossAxisAlignment.center,
+          children: [
 
-        children: [
+            Container(
 
-          Container(
+              height: 50,
+              width: 50,
 
-            height: 50,
-            width: 50,
+              decoration: BoxDecoration(
 
-            decoration: BoxDecoration(
+                color: AppColors.blueCard,
 
-              color:
-              year["color"].withOpacity(0.10),
+                borderRadius:
+                BorderRadius.circular(16),
+              ),
 
-              borderRadius:
-              BorderRadius.circular(22),
+              child: const Icon(
+                Icons.menu_book_rounded,
+                size: 28,
+                color: AppColors.primaryBlue,
+              ),
             ),
 
-            child: Icon(
-              Icons.calendar_month_rounded,
-              size: 30,
-              color: year["color"],
-            ),
-          ),
+            const SizedBox(width: 15),
 
-          const SizedBox(width: 15),
+            Expanded(
 
-          Expanded(
+              child: Column(
 
-            child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
 
-              crossAxisAlignment:
-              CrossAxisAlignment.start,
+                children: [
 
-              children: [
+                  Row(
 
-                Row(
+                    children: [
 
-                  children: [
+                      Expanded(
 
-                    Expanded(
+                        child: Text(
+                          classroom["name"],
 
-                      child: Text(
-                        year["name"],
-
-                        style:
-                        const TextStyle(
-                          fontSize: 15,
-                          fontWeight:
-                          FontWeight.bold,
-                          color:
-                          AppColors.darkText,
+                          style:
+                          const TextStyle(
+                            fontSize: 15,
+                            fontWeight:
+                            FontWeight.bold,
+                            color:
+                            AppColors.darkText,
+                          ),
                         ),
                       ),
-                    ),
+                      Container(
 
-                    Text(
+                        padding:
+                        const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
 
-                      isActive
-                          ? "ACTIVE"
-                          : "INACTIVE",
+                        decoration: BoxDecoration(
 
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight:
-                        FontWeight.w700,
+                          color:
+                          AppColors.blueCard,
 
-                        color: isActive
-                            ? Colors.green
-                            : Colors.grey,
+                          borderRadius:
+                          BorderRadius.circular(20),
+                        ),
+
+                        child: const Text(
+
+                          "PRIMARY",
+
+                          style: TextStyle(
+                            color:
+                            AppColors.primaryBlue,
+                            fontWeight:
+                            FontWeight.w700,
+                            fontSize: 11,
+                          ),
+                        ),
                       ),
+
+                      const Icon(
+                        Icons.more_vert_rounded,
+                        size: 20,
+                        color:
+                        Colors.grey,
+                      ),
+
+                    ],
+                  ),
+
+
+                 /* _infoRow(
+                    Icons.access_time_rounded,
+                    "Academic Year",
+                    "2026-2027",
+                  ),*/
+                /*  SizedBox(height: 10.0),
+                  _infoRow(
+                    Icons.access_time_rounded,
+                    "Created At",
+                    formatDate(
+                      classroom["createdAt"],
                     ),
+                  ),*/
 
-                    const SizedBox(width: 10),
-
-                    const Icon(
-                      Icons.more_vert_rounded,
-                      size: 20,
-                      color:
-                      Colors.grey,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 15),
-
-                _infoRow(
-                  Icons.calendar_today_rounded,
-                  "Start Date",
-                  formatDate(
-                    year["startDate"],
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
-                _infoRow(
-                  Icons.calendar_today_rounded,
-                  "End Date",
-                  formatDate(
-                    year["endDate"],
-                  ),
-                ),
-
-              /*  const Divider(height: 30),
-
-                _infoRow(
-                  Icons.access_time_rounded,
-                  "Created At",
-                  formatDate(
-                    year["createdAt"],
-                  ),
-                ),*/
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

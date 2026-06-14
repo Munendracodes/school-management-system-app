@@ -1,13 +1,9 @@
 class CreateStudentRequest {
 
   final String admissionNumber;
-
   final String fullName;
-
   final String gender;
-
   final String dateOfBirth;
-
   final String sectionId;
 
   CreateStudentRequest({

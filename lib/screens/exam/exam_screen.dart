@@ -3,44 +3,48 @@ import 'package:intl/intl.dart';
 
 import '../../core/constants/app_colors.dart';
 
-class AcademicYearScreen extends StatefulWidget {
-  const AcademicYearScreen({super.key});
+class ExamScreen extends StatefulWidget {
+  const ExamScreen({super.key});
 
   @override
-  State<AcademicYearScreen> createState() =>
-      _AcademicYearScreenState();
+  State<ExamScreen> createState() =>
+      _ExamScreenState();
 }
 
-class _AcademicYearScreenState
-    extends State<AcademicYearScreen> {
+class _ExamScreenState
+    extends State<ExamScreen> {
 
-  final List<Map<String, dynamic>> _academicYears = [
+  final List<Map<String, dynamic>> exams = [
 
     {
-      "name": "2026-2027",
-      "startDate": "2026-06-01",
-      "endDate": "2027-03-31",
+      "name": "Unit Test 1",
+      "className": "Class 1 - Class 10",
+      "startDate": "2026-05-01",
+      "endDate": "2026-05-20",
       "createdAt": "2026-05-26",
-      "isActive": true,
-      "color": const Color(0xFF3B82F6),
     },
 
     {
-      "name": "2025-2026",
-      "startDate": "2025-06-01",
-      "endDate": "2026-03-31",
-      "createdAt": "2025-04-20",
-      "isActive": false,
-      "color": const Color(0xFF8B5CF6),
+      "name": "Quarterly",
+      "className": "Class 1 - Class 10",
+      "startDate": "2026-05-01",
+      "endDate": "2026-05-20",
+      "createdAt": "2026-05-26",
     },
 
     {
-      "name": "2024-2025",
-      "startDate": "2024-06-01",
-      "endDate": "2025-03-31",
-      "createdAt": "2024-04-15",
-      "isActive": false,
-      "color": const Color(0xFFF97316),
+      "name": "Half Yearly",
+      "className": "Class 1 - Class 10",
+      "startDate": "2026-05-01",
+      "endDate": "2026-05-20",
+      "createdAt": "2026-05-26",
+    },
+    {
+      "name": "Annually",
+      "className": "Class 1 - Class 10",
+      "startDate": "2026-05-01",
+      "endDate": "2026-05-20",
+      "createdAt": "2026-05-26",
     },
   ];
 
@@ -55,11 +59,7 @@ class _AcademicYearScreenState
   @override
   Widget build(BuildContext context) {
 
-    final activeYear =
-    _academicYears.firstWhere(
-          (e) => e["isActive"] == true,
-      orElse: () => {},
-    );
+    const String academicYear = "2026-2027";
 
     return Scaffold(
 
@@ -75,7 +75,7 @@ class _AcademicYearScreenState
         onPressed: () {
 
           /// TODO:
-          /// Navigate Add Academic Year Screen
+          /// Navigate Add Section Screen
         },
 
         icon: const Icon(
@@ -84,7 +84,7 @@ class _AcademicYearScreenState
         ),
 
         label: const Text(
-          "Add Academic Year",
+          "Add Exam",
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w600,
@@ -163,7 +163,7 @@ class _AcademicYearScreenState
                       children: const [
 
                         Text(
-                          "Academic Years",
+                          "Examination",
 
                           style: TextStyle(
                             fontSize: 20,
@@ -174,7 +174,7 @@ class _AcademicYearScreenState
                           ),
                         ),
                         Text(
-                          "Manage academic years",
+                          "Manage Examinations",
 
                           style: TextStyle(
                             color:
@@ -263,7 +263,7 @@ class _AcademicYearScreenState
                               ),
 
                               child: const Icon(
-                                Icons.calendar_month_rounded,
+                                Icons.menu_book_rounded,
                                 color:
                                 AppColors.primaryBlue,
                                 size: 25,
@@ -275,7 +275,7 @@ class _AcademicYearScreenState
                             const Expanded(
 
                               child: Text(
-                                "Academic Years Overview",
+                                "Exams Overview",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
@@ -303,7 +303,7 @@ class _AcademicYearScreenState
                                 children: [
 
                                   const Text(
-                                    "Total Academic Years",
+                                    "Total Exams",
 
                                     style: TextStyle(
                                       color:
@@ -315,7 +315,7 @@ class _AcademicYearScreenState
                                       height: 8),
 
                                   Text(
-                                    _academicYears.length
+                                    exams.length
                                         .toString(),
 
                                     style:
@@ -350,7 +350,7 @@ class _AcademicYearScreenState
                                 children: [
 
                                   const Text(
-                                    "Active Academic Year",
+                                    "Classes Covered",
 
                                     style: TextStyle(
                                       color:
@@ -362,8 +362,7 @@ class _AcademicYearScreenState
                                       height: 8),
 
                                   Text(
-                                    activeYear["name"]
-                                        .toString(),
+                                    exams.length.toString(),
 
                                     style:
                                     const TextStyle(
@@ -388,7 +387,7 @@ class _AcademicYearScreenState
                     children: [
                       const Expanded(
                         child: Text(
-                          "All Academic Years",
+                          "All Exams",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight:
@@ -412,10 +411,10 @@ class _AcademicYearScreenState
                   const SizedBox(height: 5),
 
                   /// LIST
-                  ..._academicYears.map(
+                  ...exams.map(
 
                         (year) =>
-                        _buildAcademicYearCard(
+                        _buildExamCard(
                           year,
                         ),
                   ),
@@ -428,17 +427,16 @@ class _AcademicYearScreenState
     );
   }
 
-  Widget _buildAcademicYearCard(
-      Map<String, dynamic> year,
+  Widget _buildExamCard(
+      Map<String, dynamic> section,
       ) {
 
-    final bool isActive =
-    year["isActive"];
+    final bool isActive =false;
 
     return Container(
 
       margin:
-      const EdgeInsets.only(bottom: 18),
+      const EdgeInsets.only(bottom: 10),
 
       padding:
       const EdgeInsets.all(18),
@@ -451,9 +449,7 @@ class _AcademicYearScreenState
         BorderRadius.circular(28),
 
         border: Border.all(
-          color: isActive
-              ? const Color(0xFF4F8CFF)
-              : const Color(0xFFE5E7EB),
+            color: const Color(0xFFE5E7EB)
         ),
 
         boxShadow: [
@@ -480,17 +476,16 @@ class _AcademicYearScreenState
 
             decoration: BoxDecoration(
 
-              color:
-              year["color"].withOpacity(0.10),
+              color: AppColors.blueCard,
 
               borderRadius:
-              BorderRadius.circular(22),
+              BorderRadius.circular(16),
             ),
 
-            child: Icon(
-              Icons.calendar_month_rounded,
-              size: 30,
-              color: year["color"],
+            child: const Icon(
+              Icons.menu_book_rounded,
+              size: 28,
+              color: AppColors.primaryBlue,
             ),
           ),
 
@@ -512,7 +507,7 @@ class _AcademicYearScreenState
                     Expanded(
 
                       child: Text(
-                        year["name"],
+                        section["name"],
 
                         style:
                         const TextStyle(
@@ -525,24 +520,6 @@ class _AcademicYearScreenState
                       ),
                     ),
 
-                    Text(
-
-                      isActive
-                          ? "ACTIVE"
-                          : "INACTIVE",
-
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight:
-                        FontWeight.w700,
-
-                        color: isActive
-                            ? Colors.green
-                            : Colors.grey,
-                      ),
-                    ),
-
-                    const SizedBox(width: 10),
 
                     const Icon(
                       Icons.more_vert_rounded,
@@ -550,38 +527,44 @@ class _AcademicYearScreenState
                       color:
                       Colors.grey,
                     ),
+
                   ],
                 ),
-
-                const SizedBox(height: 15),
-
-                _infoRow(
-                  Icons.calendar_today_rounded,
-                  "Start Date",
-                  formatDate(
-                    year["startDate"],
+                SizedBox(height: 10.0),
+              /*  Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
                   ),
-                ),
-
-                const SizedBox(height: 10),
-
-                _infoRow(
-                  Icons.calendar_today_rounded,
-                  "End Date",
-                  formatDate(
-                    year["endDate"],
+                  decoration: BoxDecoration(
+                    color: AppColors.greenCard,
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                ),
-
-              /*  const Divider(height: 30),
-
-                _infoRow(
-                  Icons.access_time_rounded,
-                  "Created At",
-                  formatDate(
-                    year["createdAt"],
+                  child: Text(
+                    section["className"],
+                    style: const TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                    ),
                   ),
                 ),*/
+                SizedBox(height: 10.0),
+                _infoRow(
+                  Icons.access_time_rounded,
+                  "Start Date",
+                  formatDate(
+                    section["startDate"],
+                  ),
+                ),
+                SizedBox(height: 10.0),
+                _infoRow(
+                  Icons.access_time_rounded,
+                  "End Date",
+                  formatDate(
+                    section["endDate"],
+                  ),
+                ),
               ],
             ),
           ),

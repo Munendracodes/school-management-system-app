@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:school_management_app/screens/academicyear/academic_year_screen.dart';
+import 'package:school_management_app/screens/class/class_screen.dart';
+import 'package:school_management_app/screens/exam/exam_screen.dart';
+import 'package:school_management_app/screens/parents/parents_screen.dart';
+import 'package:school_management_app/screens/students/students_screen.dart';
+import 'package:school_management_app/screens/teachers/teachers_screen.dart';
 import '../../core/constants/app_colors.dart';
+import '../section/section_screen.dart';
+import '../subject/subject_screen.dart';
 
 
 class ManageScreen extends StatelessWidget {
-  const ManageScreen({super.key});
+
+  final String accessToken;
+  final Color backgroundColor;
+
+  const ManageScreen({
+    super.key,
+    required this.accessToken,
+    required this.backgroundColor
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -266,16 +281,76 @@ class ManageScreen extends StatelessWidget {
       onTap: () async{
         /// HAPTIC FEEDBACK
         await HapticFeedback.lightImpact();
-
-        Navigator.push(
+        if(item.title == "Academic Year")
+          Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) =>
                 AcademicYearScreen(
-
                 ),
           ),
         );
+        if(item.title == "Class")
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  ClassScreen(
+                      accessToken: accessToken, backgroundColor: backgroundColor
+                  ),
+            ),
+          );
+        if(item.title == "Section")
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  SectionScreen(
+                      accessToken: accessToken, backgroundColor: backgroundColor
+                  ),
+            ),
+          );
+        if(item.title == "Subject")
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  SubjectScreen(
+                  ),
+            ),
+          );
+        if(item.title == "Exams")
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  ExamScreen()
+            ),
+          );
+        if(item.title == "Students")
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) =>
+                    StudentsScreen(accessToken: accessToken, backgroundColor: backgroundColor)
+            ),
+          );
+        if(item.title == "Teachers")
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) =>
+                    TeachersScreen(accessToken: accessToken, backgroundColor: backgroundColor)
+            ),
+          );
+        if(item.title == "Parents")
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) =>
+                    ParentsScreen(accessToken: accessToken, backgroundColor: backgroundColor)
+            ),
+          );
       },
 
       child: Container(

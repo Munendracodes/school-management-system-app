@@ -1,46 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:school_management_app/screens/section/section_info_screen.dart';
 
 import '../../core/constants/app_colors.dart';
 
-class AcademicYearScreen extends StatefulWidget {
-  const AcademicYearScreen({super.key});
+class SectionScreen extends StatefulWidget {
+
+  final String accessToken;
+  final Color backgroundColor;
+
+  const SectionScreen({
+    super.key,
+    required this.accessToken,
+    required this.backgroundColor
+  });
 
   @override
-  State<AcademicYearScreen> createState() =>
-      _AcademicYearScreenState();
+  State<SectionScreen> createState() =>
+      _SectionScreenState();
 }
 
-class _AcademicYearScreenState
-    extends State<AcademicYearScreen> {
+class _SectionScreenState
+    extends State<SectionScreen> {
 
-  final List<Map<String, dynamic>> _academicYears = [
+  final List<Map<String, dynamic>> sections = [
 
     {
-      "name": "2026-2027",
-      "startDate": "2026-06-01",
-      "endDate": "2027-03-31",
+      "name": "Section A",
+      "className": "Class 1",
       "createdAt": "2026-05-26",
-      "isActive": true,
-      "color": const Color(0xFF3B82F6),
     },
 
     {
-      "name": "2025-2026",
-      "startDate": "2025-06-01",
-      "endDate": "2026-03-31",
-      "createdAt": "2025-04-20",
-      "isActive": false,
-      "color": const Color(0xFF8B5CF6),
+      "name": "Section B",
+      "className": "Class 1",
+      "createdAt": "2026-05-26",
     },
 
     {
-      "name": "2024-2025",
-      "startDate": "2024-06-01",
-      "endDate": "2025-03-31",
-      "createdAt": "2024-04-15",
-      "isActive": false,
-      "color": const Color(0xFFF97316),
+      "name": "Section A",
+      "className": "Class 2",
+      "createdAt": "2026-05-26",
     },
   ];
 
@@ -55,11 +56,7 @@ class _AcademicYearScreenState
   @override
   Widget build(BuildContext context) {
 
-    final activeYear =
-    _academicYears.firstWhere(
-          (e) => e["isActive"] == true,
-      orElse: () => {},
-    );
+    const String academicYear = "2026-2027";
 
     return Scaffold(
 
@@ -75,7 +72,7 @@ class _AcademicYearScreenState
         onPressed: () {
 
           /// TODO:
-          /// Navigate Add Academic Year Screen
+          /// Navigate Add Section Screen
         },
 
         icon: const Icon(
@@ -84,7 +81,7 @@ class _AcademicYearScreenState
         ),
 
         label: const Text(
-          "Add Academic Year",
+          "Add Section",
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w600,
@@ -163,7 +160,7 @@ class _AcademicYearScreenState
                       children: const [
 
                         Text(
-                          "Academic Years",
+                          "Section",
 
                           style: TextStyle(
                             fontSize: 20,
@@ -174,7 +171,7 @@ class _AcademicYearScreenState
                           ),
                         ),
                         Text(
-                          "Manage academic years",
+                          "Manage Sections",
 
                           style: TextStyle(
                             color:
@@ -263,7 +260,7 @@ class _AcademicYearScreenState
                               ),
 
                               child: const Icon(
-                                Icons.calendar_month_rounded,
+                                Icons.menu_book_rounded,
                                 color:
                                 AppColors.primaryBlue,
                                 size: 25,
@@ -275,7 +272,7 @@ class _AcademicYearScreenState
                             const Expanded(
 
                               child: Text(
-                                "Academic Years Overview",
+                                "Section Overview",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
@@ -303,7 +300,7 @@ class _AcademicYearScreenState
                                 children: [
 
                                   const Text(
-                                    "Total Academic Years",
+                                    "Total Sections",
 
                                     style: TextStyle(
                                       color:
@@ -315,7 +312,7 @@ class _AcademicYearScreenState
                                       height: 8),
 
                                   Text(
-                                    _academicYears.length
+                                    sections.length
                                         .toString(),
 
                                     style:
@@ -350,7 +347,7 @@ class _AcademicYearScreenState
                                 children: [
 
                                   const Text(
-                                    "Active Academic Year",
+                                    "Classes Covered",
 
                                     style: TextStyle(
                                       color:
@@ -362,8 +359,7 @@ class _AcademicYearScreenState
                                       height: 8),
 
                                   Text(
-                                    activeYear["name"]
-                                        .toString(),
+                                    "5",
 
                                     style:
                                     const TextStyle(
@@ -388,7 +384,7 @@ class _AcademicYearScreenState
                     children: [
                       const Expanded(
                         child: Text(
-                          "All Academic Years",
+                          "All Classes",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight:
@@ -412,10 +408,10 @@ class _AcademicYearScreenState
                   const SizedBox(height: 5),
 
                   /// LIST
-                  ..._academicYears.map(
+                  ...sections.map(
 
                         (year) =>
-                        _buildAcademicYearCard(
+                            _buildSectionCard(
                           year,
                         ),
                   ),
@@ -428,164 +424,153 @@ class _AcademicYearScreenState
     );
   }
 
-  Widget _buildAcademicYearCard(
-      Map<String, dynamic> year,
+  Widget _buildSectionCard(
+      Map<String, dynamic> section,
       ) {
 
-    final bool isActive =
-    year["isActive"];
+    final bool isActive =false;
 
-    return Container(
+    return InkWell(
+      onTap: (){
+        HapticFeedback.lightImpact();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) =>
+                SectionInfoScreen(
+                    accessToken: widget.accessToken, backgroundColor: widget.backgroundColor
+                ),
+          ),
+        );
+      },
+      child: Container(
 
-      margin:
-      const EdgeInsets.only(bottom: 18),
+        margin:
+        const EdgeInsets.only(bottom: 10),
 
-      padding:
-      const EdgeInsets.all(18),
+        padding:
+        const EdgeInsets.all(18),
 
-      decoration: BoxDecoration(
+        decoration: BoxDecoration(
 
-        color: Colors.white,
+          color: Colors.white,
 
-        borderRadius:
-        BorderRadius.circular(28),
+          borderRadius:
+          BorderRadius.circular(28),
 
-        border: Border.all(
-          color: isActive
-              ? const Color(0xFF4F8CFF)
-              : const Color(0xFFE5E7EB),
+          border: Border.all(
+              color: const Color(0xFFE5E7EB)
+          ),
+
+          boxShadow: [
+            BoxShadow(
+              color:
+              Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
         ),
 
-        boxShadow: [
-          BoxShadow(
-            color:
-            Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
+        child: Row(
 
-      child: Row(
+          crossAxisAlignment:
+          CrossAxisAlignment.center,
 
-        crossAxisAlignment:
-        CrossAxisAlignment.center,
+          children: [
 
-        children: [
+            Container(
 
-          Container(
+              height: 50,
+              width: 50,
 
-            height: 50,
-            width: 50,
+              decoration: BoxDecoration(
 
-            decoration: BoxDecoration(
+                color: AppColors.blueCard,
 
-              color:
-              year["color"].withOpacity(0.10),
+                borderRadius:
+                BorderRadius.circular(16),
+              ),
 
-              borderRadius:
-              BorderRadius.circular(22),
+              child: const Icon(
+                Icons.menu_book_rounded,
+                size: 28,
+                color: AppColors.primaryBlue,
+              ),
             ),
 
-            child: Icon(
-              Icons.calendar_month_rounded,
-              size: 30,
-              color: year["color"],
-            ),
-          ),
+            const SizedBox(width: 15),
 
-          const SizedBox(width: 15),
+            Expanded(
 
-          Expanded(
+              child: Column(
 
-            child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.center,
 
-              crossAxisAlignment:
-              CrossAxisAlignment.start,
+                children: [
 
-              children: [
+                  Row(
 
-                Row(
+                    children: [
 
-                  children: [
+                      Expanded(
 
-                    Expanded(
+                        child: Text(
+                          section["name"],
 
-                      child: Text(
-                        year["name"],
-
-                        style:
-                        const TextStyle(
-                          fontSize: 15,
-                          fontWeight:
-                          FontWeight.bold,
-                          color:
-                          AppColors.darkText,
+                          style:
+                          const TextStyle(
+                            fontSize: 15,
+                            fontWeight:
+                            FontWeight.bold,
+                            color:
+                            AppColors.darkText,
+                          ),
                         ),
                       ),
-                    ),
-
-                    Text(
-
-                      isActive
-                          ? "ACTIVE"
-                          : "INACTIVE",
-
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight:
-                        FontWeight.w700,
-
-                        color: isActive
-                            ? Colors.green
-                            : Colors.grey,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.greenCard,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          section["className"],
+                          style: const TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
+                        ),
                       ),
+
+                      const Icon(
+                        Icons.more_vert_rounded,
+                        size: 20,
+                        color:
+                        Colors.grey,
+                      ),
+
+                    ],
+                  ),
+             /*     SizedBox(height: 5.0),
+                  _infoRow(
+                    Icons.access_time_rounded,
+                    "Created At",
+                    formatDate(
+                      section["createdAt"],
                     ),
+                  ),*/
 
-                    const SizedBox(width: 10),
-
-                    const Icon(
-                      Icons.more_vert_rounded,
-                      size: 20,
-                      color:
-                      Colors.grey,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 15),
-
-                _infoRow(
-                  Icons.calendar_today_rounded,
-                  "Start Date",
-                  formatDate(
-                    year["startDate"],
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
-                _infoRow(
-                  Icons.calendar_today_rounded,
-                  "End Date",
-                  formatDate(
-                    year["endDate"],
-                  ),
-                ),
-
-              /*  const Divider(height: 30),
-
-                _infoRow(
-                  Icons.access_time_rounded,
-                  "Created At",
-                  formatDate(
-                    year["createdAt"],
-                  ),
-                ),*/
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -60,7 +60,11 @@ class _HomeScreenState extends State<HomeScreen> {
         accessToken: widget.accessToken,
       ),
 
-      const ManageScreen(),
+      ManageScreen(
+          accessToken: widget.accessToken,
+          backgroundColor: AppColors.primaryBlue
+
+      ),
     ];
 
     return Scaffold(

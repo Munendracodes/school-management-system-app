@@ -534,7 +534,7 @@ class _ClassInfoScreenState
             ),
 
             /// SEARCH + FILTER
-            Padding(
+           /* Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 20,
               ),
@@ -626,9 +626,234 @@ class _ClassInfoScreenState
                   ),
                 ],
               ),
-            ),
+            ),*/
 
-            const SizedBox(height: 5),
+            Container(
+              margin: EdgeInsets.all(10.0),
+
+              padding:
+              const EdgeInsets.all(20),
+
+              decoration: BoxDecoration(
+
+                gradient:
+                const LinearGradient(
+
+                  colors: [
+                    Color(0xFF4F8CFF),
+                    Color(0xFF2457FF),
+                  ],
+                ),
+
+                borderRadius:
+                BorderRadius.circular(28),
+              ),
+
+              child: Column(
+
+
+                children: [
+
+                  Row(
+
+                    children: [
+
+                      Container(
+
+                        padding:
+                        const EdgeInsets.all(10),
+
+                        decoration:
+                        BoxDecoration(
+                          color: Colors.white,
+
+                          borderRadius:
+                          BorderRadius.circular(
+                            20,
+                          ),
+                        ),
+
+                        child: const Icon(
+                          Icons.menu_book_rounded,
+                          color:
+                          AppColors.primaryBlue,
+                          size: 25,
+                        ),
+                      ),
+
+                      const SizedBox(width: 15),
+
+                      const Expanded(
+
+                        child: Text(
+                          "Class 1",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight:
+                            FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+                    children: [
+
+                      Expanded(
+
+                        child: Column(
+
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+
+                          children: [
+
+                            const Text(
+                              "Total Sections",
+
+                              style: TextStyle(
+                                color:
+                                Colors.white70,
+                              ),
+                            ),
+
+                            const SizedBox(
+                                height: 8),
+
+                            Text(
+                          "3",
+
+                              style:
+                              const TextStyle(
+                                color:
+                                Colors.white,
+                                fontSize: 15,
+                                fontWeight:
+                                FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+
+                      Container(
+                        width: 1,
+                        height: 60,
+                        color:
+                        Colors.white24,
+                      ),
+
+                      const SizedBox(width: 10),
+
+                      Expanded(
+
+                        child: Column(
+
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+
+                          children: [
+
+                            const Text(
+                              "Total Students",
+
+                              style: TextStyle(
+                                color:
+                                Colors.white70,
+                              ),
+                            ),
+
+                            const SizedBox(
+                                height: 8),
+
+                            Text(
+                              "30",
+
+                              style:
+                              const TextStyle(
+                                color:
+                                Colors.white,
+                                fontSize: 15,
+                                fontWeight:
+                                FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      Container(
+                        width: 1,
+                        height: 60,
+                        color:
+                        Colors.white24,
+                      ),
+
+                      const SizedBox(width: 10),
+                      Expanded(
+
+                        child: Column(
+
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+
+                          children: [
+
+                            const Text(
+                              "Class Teachers",
+
+                              style: TextStyle(
+                                color:
+                                Colors.white70,
+                              ),
+                            ),
+
+                            const SizedBox(
+                                height: 8),
+
+                            Text(
+                              "Raja Ram",
+
+                              style:
+                              const TextStyle(
+                                color:
+                                Colors.white,
+                                fontSize: 15,
+                                fontWeight:
+                                FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(
+                                height: 5),
+
+                            Text(
+                              "Rajasekhar",
+
+                              style:
+                              const TextStyle(
+                                color:
+                                Colors.white,
+                                fontSize: 15,
+                                fontWeight:
+                                FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    ],
+                  ),
+                ],
+              ),
+            ),
 
             /// STUDENTS LIST
             Expanded(

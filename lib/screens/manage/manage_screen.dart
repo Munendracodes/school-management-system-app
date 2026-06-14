@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:school_management_app/screens/academicyear/academic_year_screen.dart';
+import 'package:school_management_app/screens/attendance/mark_attendance_screen.dart';
 import 'package:school_management_app/screens/class/class_screen.dart';
 import 'package:school_management_app/screens/exam/exam_screen.dart';
 import 'package:school_management_app/screens/parents/parents_screen.dart';
@@ -349,6 +350,14 @@ class ManageScreen extends StatelessWidget {
             MaterialPageRoute(
                 builder: (_) =>
                     ParentsScreen(accessToken: accessToken, backgroundColor: backgroundColor)
+            ),
+          );
+        if(item.title == "Mark Attendance")
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) =>
+                    MarkAttendanceScreen()
             ),
           );
       },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:school_management_app/screens/attendance/mark_attendance_screen.dart';
 import 'package:school_management_app/screens/parents/parents_screen.dart';
 import 'package:school_management_app/screens/teachers/add_teacher_screen.dart';
 import 'package:school_management_app/screens/teachers/teachers_screen.dart';
@@ -401,39 +402,11 @@ class HomeContent extends StatelessWidget {
               ),
              // const SizedBox(height: 10),
 
-            /*  Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-
-                children: [
-                  Text(
-
-                    "${homeResponse?.heroBanner.title
-                        .replaceAll(",", "")
-                        .split(" ")
-                        .take(3)
-                        .join(" ")} 👋",
-
-                    style: TextStyle(
-                      fontSize: width * 0.043,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF081B5C),
-                      height: 1.2,
-                    ),
-                  ),
-                  Spacer(),
-                  Icon(
-                    Icons.wb_sunny_rounded,
-                    color: AppColors.primaryBlue,
-                    size: 25,
-                  ),
-                ],
-              ), */
-
               const SizedBox(height: 10),
 
               /// HERO BANNER
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(15),
 
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(28),
@@ -464,6 +437,47 @@ class HomeContent extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
 
                   children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+
+                      children: [
+                        Text(
+
+                          "${homeResponse?.heroBanner.title
+                              .replaceAll(",", "")
+                              .split(" ")
+                              .take(3)
+                              .join(" ")} 👋",
+
+                          style: TextStyle(
+                            fontSize: width * 0.043,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF081B5C),
+                            height: 1.2,
+                          ),
+                        ),
+                        Spacer(),
+                        if(homeResponse!.heroBanner.title.contains("Morning"))
+                        Icon(
+                          Icons.wb_sunny_rounded,
+                          color: Colors.orange,
+                          size: 25,
+                        ),
+                        if(homeResponse!.heroBanner.title.contains("Afternoon"))
+                          Icon(
+                            Icons.wb_sunny_rounded,
+                            color: Colors.red,
+                            size: 25,
+                          ),
+                        if(homeResponse!.heroBanner.title.contains("Evening"))
+                          Icon(
+                            Icons.wb_sunny_rounded,
+                            color: Colors.black,
+                            size: 25,
+                          ),
+                      ],
+                    ),
+                    SizedBox(height: 10.0),
                     /// STATS ROW
                     Row(
                       children: [
@@ -773,6 +787,19 @@ class HomeContent extends StatelessWidget {
                                               onTeacherAdded: () {
 
                                               },
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      if(item.title == "Mark Attendance"){
+                                        Navigator.push(
+
+                                          context,
+
+                                          MaterialPageRoute(
+
+                                            builder: (_) => MarkAttendanceScreen(
+
                                             ),
                                           ),
                                         );

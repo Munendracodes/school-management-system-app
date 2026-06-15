@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:school_management_app/models/section_with_class.dart';
 import 'package:school_management_app/screens/students/student_info_screen.dart';
+import '../../models/active_academic_year_response.dart';
+import '../../services/academic_year_service.dart';
 import '../../services/students_service.dart';
 import '../../models/students_response.dart';
 import '../../core/constants/app_colors.dart';
@@ -11,11 +14,16 @@ class SectionInfoScreen extends StatefulWidget {
 
   final String accessToken;
   final Color backgroundColor;
+  final String selectedClass;
+  final String selectedSection;
+
 
   const SectionInfoScreen({
     super.key,
     required this.accessToken,
-    required this.backgroundColor
+    required this.backgroundColor,
+    required this.selectedClass,
+    required this.selectedSection
   });
 
   @override
@@ -25,6 +33,7 @@ class SectionInfoScreen extends StatefulWidget {
 class _SectionInfoScreenState
     extends State<SectionInfoScreen> {
   StudentsResponse? studentsResponse;
+  List<StudentData> currentsectionstudents=[];
 
   bool isLoading = true;
   final TextEditingController searchController =
@@ -33,12 +42,50 @@ class _SectionInfoScreenState
   List<StudentData> filteredStudents = [];
   List<StudentData> studentsList = [];
 
+  List<ActiveAcademicYearResponse> academicYears = [];
+  String? selectedAcademicYear;
+
+  List<ClassroomData> classrooms = [];
+
+
   @override
   void initState() {
     super.initState();
     loadStudents();
+  }
+
+  Future<void> loadAcademicYear() async {
+
+    try {
+
+      final response =
+      await AcademicYearService
+          .getActiveAcademicYear(
+
+        accessToken:
+        widget.accessToken,
+      );
+
+      setState(() {
+
+        academicYears = [response];
+
+        selectedAcademicYear = "2026-2027";
+
+        classrooms = response.classrooms;
 
 
+        isLoading = false;
+        print("printed");
+      });
+
+    } catch (e) {
+
+      setState(() {
+
+        isLoading = false;
+      });
+    }
   }
   void filterStudents(String query) {
 
@@ -93,6 +140,10 @@ class _SectionInfoScreenState
       setState(() {
 
         studentsList = response.students;
+        currentsectionstudents = studentsList.where(
+                (student) =>
+            student.className == widget.selectedClass && student.sectionName == widget.selectedSection
+        ).toList();
 
         setState(() {
 
@@ -134,88 +185,6 @@ class _SectionInfoScreenState
         MediaQuery.of(context).size.width;
 
 
-
-    Widget _buildClassSection({
-
-      required String className,
-
-      required List<Widget> sections,
-
-    }) {
-
-      return Column(
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
-
-        children: [
-
-          /// CLASS TITLE
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 4,
-              bottom: 12,
-              top: 10,
-            ),
-
-            child: Text(
-              className,
-
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF081B5C),
-              ),
-            ),
-          ),
-
-          /// SECTION LIST
-          ...sections,
-
-        ],
-      );
-    }
-
-    Widget _buildSectionGroup({
-      required String sectionName,
-      required List<Widget> students,
-    }) {
-
-      return Column(
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
-
-        children: [
-
-          /// SECTION TAG
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 18,
-              vertical: 8,
-            ),
-
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F5FF),
-              borderRadius:
-              BorderRadius.circular(30),
-            ),
-
-            child: Text(
-              "Section "+sectionName,
-
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF2457FF),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          ...students,
-        ],
-      );
-    }
 
     Widget _buildStudentCard({
       required String name,
@@ -392,13 +361,10 @@ class _SectionInfoScreenState
     <String, Map<String, List<StudentData>>>{};
     final studentsToDisplay =
     searchController.text.trim().isEmpty
-
-        ? studentsResponse?.students ?? []
-
+        ? currentsectionstudents
         : filteredStudents;
-    final students = filteredStudents;
 
-    for (var student in filteredStudents) {
+    for (var student in studentsToDisplay) {
 
       final className =
           student.className;
@@ -684,10 +650,10 @@ class _SectionInfoScreenState
 
                       const SizedBox(width: 15),
 
-                      const Expanded(
+                      Expanded(
 
                         child: Text(
-                          "Class 1 - Section A",
+                          "${widget.selectedClass} - Section ${widget.selectedSection}",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -725,20 +691,18 @@ class _SectionInfoScreenState
 
                           children: [
 
-                            const Text(
+                            Text(
                               "Total Students",
-
-                              style: TextStyle(
-                                color:
-                                Colors.white70,
-                              ),
+                              style: TextStyle(color: Colors.white70),
                             ),
 
                             const SizedBox(
                                 height: 8),
 
                             Text(
-                              "30",
+                              currentsectionstudents
+                                  .length
+                                  .toString(),
 
                               style:
                               const TextStyle(
@@ -807,64 +771,38 @@ class _SectionInfoScreenState
             /// STUDENTS LIST
             Expanded(
 
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+              child: ListView.builder(
 
-                  children: [
-                    /// CLASS 1
-                    ...groupedStudents.entries.map((classEntry) {
+                padding: const EdgeInsets.fromLTRB(
+                  20,
+                  0,
+                  20,
+                  120,
+                ),
 
-                      final className =
-                          classEntry.key;
+                itemCount: currentsectionstudents.length,
 
-                      final sections =
-                          classEntry.value;
+                itemBuilder: (context, index) {
 
-                      return _buildClassSection(
+                  final student =
+                  currentsectionstudents[index];
 
-                        className: className,
+                  return _buildStudentCard(
 
-                        sections:
+                    student: student,
 
-                        sections.entries.map((sectionEntry) {
+                    name: student.fullName,
 
-                          final sectionName =
-                              sectionEntry.key;
+                    className: student.className,
 
-                          final students = sectionEntry.value;
-                          return _buildSectionGroup(
+                    section:
+                    "Section ${student.sectionName}",
 
-                            sectionName: sectionName,
-
-                            students:
-
-                            students.map((student) {
-
-                              return _buildStudentCard(
-                                student: student,
-                                name:
-                                student.fullName,
-
-                                className:
-                                student.className,
-
-                                section:
-                                "Section ${student.sectionName}",
-
-                                image:
-                                student.profileImage,
-                              );
-
-                            }).toList(),
-                          );
-
-                        }).toList(),
-                      );
-
-                    }),
-                  ],
-                )
-            ),
+                    image: student.profileImage,
+                  );
+                },
+              ),
+            )
           ],
         ),
       ),

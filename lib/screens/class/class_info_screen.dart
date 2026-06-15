@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:school_management_app/screens/students/student_info_screen.dart';
+import '../../models/active_academic_year_response.dart';
+import '../../services/academic_year_service.dart';
 import '../../services/students_service.dart';
 import '../../models/students_response.dart';
 import '../../core/constants/app_colors.dart';
@@ -11,11 +13,13 @@ class ClassInfoScreen extends StatefulWidget {
 
   final String accessToken;
   final Color backgroundColor;
+  final String selectedClass;
 
   const ClassInfoScreen({
     super.key,
     required this.accessToken,
-    required this.backgroundColor
+    required this.backgroundColor,
+    required this.selectedClass
   });
 
   @override
@@ -25,6 +29,14 @@ class ClassInfoScreen extends StatefulWidget {
 class _ClassInfoScreenState
     extends State<ClassInfoScreen> {
   StudentsResponse? studentsResponse;
+
+  List<ActiveAcademicYearResponse> academicYears = [];
+
+  List<StudentData> currentclassstudents =[];
+
+  String? selectedAcademicYear;
+
+  List<ClassroomData> classrooms = [];
 
   bool isLoading = true;
   final TextEditingController searchController =
@@ -36,6 +48,7 @@ class _ClassInfoScreenState
   @override
   void initState() {
     super.initState();
+    loadAcademicYear();
     loadStudents();
 
 
@@ -113,6 +126,13 @@ class _ClassInfoScreenState
         response.students.first.fullName,
       );
 
+      setState(() {
+        currentclassstudents = studentsList.where(
+              (student) =>
+          student.className == widget.selectedClass
+        ).toList();
+      });
+
     } catch (e) {
 
       print(
@@ -127,6 +147,39 @@ class _ClassInfoScreenState
     }
   }
 
+  Future<void> loadAcademicYear() async {
+
+    try {
+
+      final response =
+      await AcademicYearService
+          .getActiveAcademicYear(
+
+        accessToken:
+        widget.accessToken,
+      );
+
+      setState(() {
+
+        academicYears = [response];
+
+        selectedAcademicYear = "2026-2027";
+
+        classrooms = response.classrooms;
+
+        isLoading = false;
+        print("printed");
+      });
+
+    } catch (e) {
+
+      setState(() {
+
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -135,45 +188,7 @@ class _ClassInfoScreenState
 
 
 
-    Widget _buildClassSection({
 
-      required String className,
-
-      required List<Widget> sections,
-
-    }) {
-
-      return Column(
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
-
-        children: [
-
-          /// CLASS TITLE
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 4,
-              bottom: 12,
-              top: 10,
-            ),
-
-            child: Text(
-              className,
-
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF081B5C),
-              ),
-            ),
-          ),
-
-          /// SECTION LIST
-          ...sections,
-
-        ],
-      );
-    }
 
     Widget _buildSectionGroup({
       required String sectionName,
@@ -389,34 +404,16 @@ class _ClassInfoScreenState
     }
 
     final groupedStudents =
-    <String, Map<String, List<StudentData>>>{};
-    final studentsToDisplay =
-    searchController.text.trim().isEmpty
+    <String, List<StudentData>>{};
 
-        ? studentsResponse?.students ?? []
-
-        : filteredStudents;
-    final students = filteredStudents;
-
-    for (var student in filteredStudents) {
-
-      final className =
-          student.className;
-
-      final sectionName =
-          student.sectionName;
+    for (var student in currentclassstudents) {
 
       groupedStudents.putIfAbsent(
-        className,
-            () => {},
-      );
-
-      groupedStudents[className]!.putIfAbsent(
-        sectionName,
+        student.sectionName,
             () => [],
       );
 
-      groupedStudents[className]![sectionName]!
+      groupedStudents[student.sectionName]!
           .add(student);
     }
 
@@ -683,10 +680,10 @@ class _ClassInfoScreenState
 
                       const SizedBox(width: 15),
 
-                      const Expanded(
+                       Expanded(
 
                         child: Text(
-                          "Class 1",
+                         widget.selectedClass ,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -727,7 +724,7 @@ class _ClassInfoScreenState
                                 height: 8),
 
                             Text(
-                          "3",
+                              currentclassstudents.map((student)=> student.sectionName).toSet().length.toString(),
 
                               style:
                               const TextStyle(
@@ -774,7 +771,7 @@ class _ClassInfoScreenState
                                 height: 8),
 
                             Text(
-                              "30",
+                              currentclassstudents.length.toString(),
 
                               style:
                               const TextStyle(
@@ -796,59 +793,6 @@ class _ClassInfoScreenState
                         Colors.white24,
                       ),
 
-                      const SizedBox(width: 10),
-                      Expanded(
-
-                        child: Column(
-
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-
-                          children: [
-
-                            const Text(
-                              "Class Teachers",
-
-                              style: TextStyle(
-                                color:
-                                Colors.white70,
-                              ),
-                            ),
-
-                            const SizedBox(
-                                height: 8),
-
-                            Text(
-                              "Raja Ram",
-
-                              style:
-                              const TextStyle(
-                                color:
-                                Colors.white,
-                                fontSize: 15,
-                                fontWeight:
-                                FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(
-                                height: 5),
-
-                            Text(
-                              "Rajasekhar",
-
-                              style:
-                              const TextStyle(
-                                color:
-                                Colors.white,
-                                fontSize: 15,
-                                fontWeight:
-                                FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
                     ],
                   ),
                 ],
@@ -863,55 +807,36 @@ class _ClassInfoScreenState
 
                   children: [
                     /// CLASS 1
-                    ...groupedStudents.entries.map((classEntry) {
+                    ...groupedStudents.entries.map((sectionEntry) {
 
-                      final className =
-                          classEntry.key;
+                      final sectionName =
+                          sectionEntry.key;
 
-                      final sections =
-                          classEntry.value;
+                      final students =
+                          sectionEntry.value;
 
-                      return _buildClassSection(
+                      return _buildSectionGroup(
 
-                        className: className,
+                        sectionName: sectionName,
 
-                        sections:
+                        students: students.map((student) {
 
-                        sections.entries.map((sectionEntry) {
+                          return _buildStudentCard(
 
-                          final sectionName =
-                              sectionEntry.key;
+                            student: student,
 
-                          final students = sectionEntry.value;
-                          return _buildSectionGroup(
+                            name: student.fullName,
 
-                            sectionName: sectionName,
+                            className: student.className,
 
-                            students:
+                            section:
+                            "Section ${student.sectionName}",
 
-                            students.map((student) {
-
-                              return _buildStudentCard(
-                                student: student,
-                                name:
-                                student.fullName,
-
-                                className:
-                                student.className,
-
-                                section:
-                                "Section ${student.sectionName}",
-
-                                image:
-                                student.profileImage,
-                              );
-
-                            }).toList(),
+                            image:
+                            student.profileImage,
                           );
-
                         }).toList(),
                       );
-
                     }),
                   ],
                 )

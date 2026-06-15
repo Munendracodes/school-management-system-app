@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:school_management_app/screens/students/students_screen.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../models/active_academic_year_response.dart';
+import '../../services/academic_year_service.dart';
 import 'class_info_screen.dart';
 
 class ClassScreen extends StatefulWidget {
@@ -24,7 +26,16 @@ class ClassScreen extends StatefulWidget {
 class _ClassScreenState
     extends State<ClassScreen> {
 
-  final List<Map<String, dynamic>> classrooms = [
+  List<ActiveAcademicYearResponse> academicYears = [];
+
+
+  bool isLoading = true;
+
+  String? selectedAcademicYear;
+
+  List<ClassroomData> classrooms = [];
+
+  final List<Map<String, dynamic>> classrooms1 = [
 
     {
       "name": "Class 1",
@@ -52,10 +63,60 @@ class _ClassScreenState
     );
   }
 
+  void initState() {
+
+    super.initState();
+
+    loadAcademicYear();
+  }
+
+  Future<void> loadAcademicYear() async {
+
+    try {
+
+      final response =
+      await AcademicYearService
+          .getActiveAcademicYear(
+
+        accessToken:
+        widget.accessToken,
+      );
+
+      setState(() {
+
+        academicYears = [response];
+
+        selectedAcademicYear = "2026-2027";
+
+        classrooms = response.classrooms;
+
+        isLoading = false;
+        print("printed");
+      });
+
+    } catch (e) {
+
+      setState(() {
+
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
 
     const String academicYear = "2026-2027";
+
+    if (isLoading) {
+
+      return const Scaffold(
+
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     return Scaffold(
 
@@ -358,7 +419,7 @@ class _ClassScreenState
                                       height: 8),
 
                                   Text(
-                                    "2026-2027",
+                                    academicYear,
 
                                     style:
                                     const TextStyle(
@@ -424,7 +485,7 @@ class _ClassScreenState
   }
 
   Widget _buildClassCard(
-      Map<String, dynamic> classroom,
+      ClassroomData classroom,
       ) {
 
     final bool isActive =false;
@@ -436,7 +497,12 @@ class _ClassScreenState
           context,
           MaterialPageRoute(
               builder: (_) =>
-                  ClassInfoScreen(accessToken: widget.accessToken, backgroundColor: AppColors.primaryBlue)
+                  ClassInfoScreen(
+                      accessToken: widget.accessToken,
+                      backgroundColor: AppColors.primaryBlue,
+                    selectedClass: classroom.name,
+                  ),
+
           ),
         );
       },
@@ -514,7 +580,7 @@ class _ClassScreenState
                       Expanded(
 
                         child: Text(
-                          classroom["name"],
+                          classroom.name,
 
                           style:
                           const TextStyle(

@@ -799,7 +799,7 @@ class HomeContent extends StatelessWidget {
                                           MaterialPageRoute(
 
                                             builder: (_) => MarkAttendanceScreen(
-
+                                              accessToken: accessToken,
                                             ),
                                           ),
                                         );

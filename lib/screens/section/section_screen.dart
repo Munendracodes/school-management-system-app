@@ -4,16 +4,21 @@ import 'package:intl/intl.dart';
 import 'package:school_management_app/screens/section/section_info_screen.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../models/active_academic_year_response.dart';
+import '../../models/section_with_class.dart';
+import '../../services/academic_year_service.dart';
 
 class SectionScreen extends StatefulWidget {
 
   final String accessToken;
   final Color backgroundColor;
 
+
+
   const SectionScreen({
     super.key,
     required this.accessToken,
-    required this.backgroundColor
+    required this.backgroundColor,
   });
 
   @override
@@ -23,6 +28,18 @@ class SectionScreen extends StatefulWidget {
 
 class _SectionScreenState
     extends State<SectionScreen> {
+
+  List<SectionWithClass> sectionList =[];
+
+  List<ClassroomData> classrooms = [];
+
+  bool isLoading = true;
+
+  int classesCovered=0;
+
+  List<ActiveAcademicYearResponse> academicYears = [];
+
+   String? selectedAcademicYear;
 
   final List<Map<String, dynamic>> sections = [
 
@@ -54,9 +71,74 @@ class _SectionScreenState
   }
 
   @override
+  void initState() {
+    super.initState();
+    loadAcademicYear();
+  }
+
+  Future<void> loadAcademicYear() async {
+
+    try {
+
+      final response =
+      await AcademicYearService
+          .getActiveAcademicYear(
+
+        accessToken:
+        widget.accessToken,
+      );
+
+      setState(() {
+
+        academicYears = [response];
+
+        selectedAcademicYear = "2026-2027";
+
+        classrooms = response.classrooms;
+
+        isLoading = false;
+        print("printed");
+
+
+        sectionList =
+        academicYears
+            .expand((academicYear) => academicYear.classrooms)
+            .expand(
+              (classroom) => classroom.sections.map(
+                (section) => SectionWithClass(
+              className: classroom.name,
+              section: section,
+            ),
+          ),
+        )
+            .toList();
+        classesCovered = academicYears[0].classrooms.length;
+      print(sectionList[0].className);
+      });
+
+    } catch (e) {
+
+      setState(() {
+
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     const String academicYear = "2026-2027";
+
+    if (isLoading) {
+
+      return const Scaffold(
+
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     return Scaffold(
 
@@ -312,7 +394,7 @@ class _SectionScreenState
                                       height: 8),
 
                                   Text(
-                                    sections.length
+                                    sectionList.length
                                         .toString(),
 
                                     style:
@@ -359,7 +441,7 @@ class _SectionScreenState
                                       height: 8),
 
                                   Text(
-                                    "5",
+                                    classesCovered.toString(),
 
                                     style:
                                     const TextStyle(
@@ -408,11 +490,12 @@ class _SectionScreenState
                   const SizedBox(height: 5),
 
                   /// LIST
-                  ...sections.map(
+                  ...sectionList.map(
 
-                        (year) =>
+                        (sections) =>
                             _buildSectionCard(
-                          year,
+                          sections.section,
+                              sections.className
                         ),
                   ),
                 ],
@@ -425,7 +508,8 @@ class _SectionScreenState
   }
 
   Widget _buildSectionCard(
-      Map<String, dynamic> section,
+      SectionData section,
+      String className
       ) {
 
     final bool isActive =false;
@@ -438,7 +522,8 @@ class _SectionScreenState
           MaterialPageRoute(
             builder: (_) =>
                 SectionInfoScreen(
-                    accessToken: widget.accessToken, backgroundColor: widget.backgroundColor
+                    accessToken: widget.accessToken, backgroundColor: widget.backgroundColor,
+                  selectedClass: className,selectedSection: section.name,
                 ),
           ),
         );
@@ -517,7 +602,7 @@ class _SectionScreenState
                       Expanded(
 
                         child: Text(
-                          section["name"],
+                          "Section ${section.name}",
 
                           style:
                           const TextStyle(
@@ -539,7 +624,7 @@ class _SectionScreenState
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          section["className"],
+                          className,
                           style: const TextStyle(
                             color: Colors.green,
                             fontWeight: FontWeight.w700,

@@ -2,10 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:school_management_app/core/constants/app_colors.dart';
 
+import '../../models/active_academic_year_response.dart';
 import '../../models/student_attendance_model.dart';
+import '../../models/students_response.dart';
+import '../../services/academic_year_service.dart';
+import '../../services/students_service.dart';
 
 class MarkAttendanceScreen extends StatefulWidget {
-  const MarkAttendanceScreen({super.key});
+  final String accessToken;
+
+  const MarkAttendanceScreen({
+    super.key,
+    required this.accessToken,
+  });
 
   @override
   State<MarkAttendanceScreen> createState() => _MarkAttendanceScreenState();
@@ -14,7 +23,7 @@ class MarkAttendanceScreen extends StatefulWidget {
 class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
   String? selectedClass;
 
-  String? selectedSection;
+  String? selectedSections;
 
   DateTime selectedDate = DateTime.now();
 
@@ -25,6 +34,29 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
   bool markAbsentOnly = true;
 
   bool markPresentOnly = false;
+
+  String? selectedAcademicYear;
+
+  String? selectedClassroom;
+
+  SectionData? selectedSection;
+
+  List<ClassroomData> classrooms = [];
+
+  List<SectionData> sections = [];
+
+  List<ActiveAcademicYearResponse> academicYears = [];
+
+  bool isLoading = true;
+
+  final attendancecontroller =
+  TextEditingController();
+
+  List<StudentData> filteredStudents = [];
+  List<StudentData> studentsList = [];
+  List<StudentData> currentsectionstudents =[];
+  StudentsResponse? studentsResponse;
+
 
   List<StudentAttendanceModel> students = [
 
@@ -104,12 +136,12 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
     ),
   ];
 
-  int get totalStudents => students.length;
+  int get totalStudents => currentsectionstudents.length;
 
 
   int get absentCount {
     if(markAbsentOnly){
-      return students.where((e) => e.isAbsent).length;
+      return currentsectionstudents.where((e) => e.isAbsent).length;
     }
     else{
       return totalStudents - presentCount;
@@ -123,7 +155,7 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
       return totalStudents - absentCount;
     }
 
-    return students
+    return currentsectionstudents
         .where((e) => e.isPresent)
         .length;
   }
@@ -172,87 +204,248 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
   Widget _buildSectionDropdown() {
 
-    return DropdownButtonFormField<String>(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
 
-      value: selectedSection,
+      children: [
 
-      decoration: const InputDecoration(
-        labelText: "Section",
-        border: OutlineInputBorder(),
-      ),
+        const Text(
+          "Section",
 
-      items: const [
-
-        DropdownMenuItem(
-          value: "A",
-          child: Text("Section A"),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF5B6475),
+          ),
         ),
 
-        DropdownMenuItem(
-          value: "B",
-          child: Text("Section B"),
+        const SizedBox(height: 10),
+
+        DropdownButtonFormField<SectionData>(
+
+          value: selectedSection,
+
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+
+            contentPadding:
+            const EdgeInsets.symmetric(
+              horizontal: 18,
+              vertical: 16,
+            ),
+
+            enabledBorder: OutlineInputBorder(
+              borderRadius:
+              BorderRadius.circular(18),
+
+              borderSide: const BorderSide(
+                color: Color(0xFFDCE4F2),
+              ),
+            ),
+
+            focusedBorder: OutlineInputBorder(
+              borderRadius:
+              BorderRadius.circular(18),
+
+              borderSide: const BorderSide(
+                color: Color(0xFF2457FF),
+              ),
+            ),
+          ),
+
+          hint: const Text(
+            "Select section",
+          ),
+
+          items: sections.map((section) {
+
+            return DropdownMenuItem<SectionData>(
+
+              value: section,
+
+              child: Text(section.name),
+            );
+
+          }).toList(),
+
+          onChanged: (value) {
+
+            setState(() {
+
+              selectedSection = value;
+            });
+          },
         ),
       ],
-
-      onChanged: (value) {
-
-        setState(() {
-
-          selectedSection = value;
-        });
-      },
     );
   }
 
-  Widget _buildDatePicker() {
 
-    return InkWell(
+  Widget _buildStringDropdownField({
 
-      onTap: () async {
+    required String label,
 
-        final picked =
-        await showDatePicker(
+    required String hint,
 
-          context: context,
+    required List<String> items,
 
-          initialDate: selectedDate,
+    required String? value,
 
-          firstDate:
-          DateTime(2025),
+    required Function(String?) onChanged,
+  }) {
 
-          lastDate:
-          DateTime(2035),
-        );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
 
-        if (picked != null) {
+      children: [
 
-          setState(() {
+        Text(
+          label,
 
-            selectedDate = picked;
-          });
-        }
-      },
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF5B6475),
+          ),
+        ),
 
-      child: Container(
+        const SizedBox(height: 10),
 
-        width: double.infinity,
+        DropdownButtonFormField<String>(
 
-        padding: const EdgeInsets.all(16),
+          value: value,
 
-        decoration: BoxDecoration(
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
 
-          border: Border.all(
-            color: Colors.grey.shade300,
+            contentPadding:
+            const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 10,
+            ),
+
+            enabledBorder: OutlineInputBorder(
+              borderRadius:
+              BorderRadius.circular(18),
+
+              borderSide: const BorderSide(
+                color: Color(0xFFDCE4F2),
+              ),
+            ),
+
+            focusedBorder: OutlineInputBorder(
+              borderRadius:
+              BorderRadius.circular(18),
+
+              borderSide: const BorderSide(
+                color: Color(0xFF2457FF),
+              ),
+            ),
           ),
 
-          borderRadius:
-          BorderRadius.circular(12),
+          hint: Text(hint),
+
+          items: items.map((item) {
+
+            return DropdownMenuItem<String>(
+              value: item,
+              child: Text(item),
+            );
+
+          }).toList(),
+
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateField() {
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+
+      children: [
+
+        const Text(
+          "Attendance Date",
+
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF5B6475),
+          ),
         ),
 
-        child: Text(
-          selectedDate.toString().split(' ')[0],
+        const SizedBox(height: 10),
+
+        TextField(
+          controller: attendancecontroller,
+          readOnly: true,
+
+          decoration: InputDecoration(
+
+            hintText: "Select Attendance Date",
+
+            suffixIcon: const Icon(
+              Icons.calendar_today_outlined,
+            ),
+
+            filled: true,
+            fillColor: Colors.white,
+
+            contentPadding:
+            const EdgeInsets.symmetric(
+              horizontal: 18,
+              vertical: 16,
+            ),
+
+            enabledBorder: OutlineInputBorder(
+              borderRadius:
+              BorderRadius.circular(18),
+
+              borderSide: const BorderSide(
+                color: Color(0xFFDCE4F2),
+              ),
+            ),
+
+            focusedBorder: OutlineInputBorder(
+              borderRadius:
+              BorderRadius.circular(18),
+
+              borderSide: const BorderSide(
+                color: Color(0xFF2457FF),
+              ),
+            ),
+          ),
+
+          onTap: () async {
+
+            final pickedDate =
+            await showDatePicker(
+
+              context: context,
+
+              initialDate: DateTime.now(),
+
+              firstDate: DateTime(2000),
+
+              lastDate: DateTime.now(),
+            );
+
+            if (pickedDate != null) {
+
+              attendancecontroller.text =
+                  pickedDate
+                      .toIso8601String()
+                      .split("T")
+                      .first;
+            }
+          },
         ),
-      ),
+      ],
     );
   }
 
@@ -331,7 +524,8 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
   }
 
   Widget _buildStudentTile(
-      StudentAttendanceModel student,
+      StudentData student,
+      int id
       ) {
 
     return Container(
@@ -396,7 +590,7 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
                 Text(
 
-                  student.name,
+                  student.fullName,
 
                   style: const TextStyle(
                     fontSize: 15,
@@ -409,7 +603,7 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
                 Text(
 
-                  "ID : ${student.id}",
+                  "ID : ${id}",
 
                   style: const TextStyle(
                     fontSize: 12,
@@ -629,15 +823,81 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
 
         children: [
-          _buildClassDropdown(),
+          /// ACADEMIC YEAR
+          _buildStringDropdownField(
+            label: "Academic Year",
 
-          const SizedBox(height: 12),
+            value: selectedAcademicYear,
 
+            hint: "Select academic year",
+
+            items: academicYears
+                .map((e) => e.name)
+                .toList(),
+
+            onChanged: (value) {
+
+              setState(() {
+
+                selectedAcademicYear = value;
+
+                final year =
+                academicYears.firstWhere(
+                      (e) => e.name == value,
+                );
+
+                classrooms = year.classrooms;
+
+                selectedClassroom = null;
+                selectedSection = null;
+
+                sections = [];
+              });
+            },
+          ),
+
+          const SizedBox(height: 10),
+
+          /// CLASS
+          _buildStringDropdownField(
+            label: "Class",
+
+            value: selectedClassroom,
+
+            hint: "Select class",
+
+            items: classrooms
+                .map((e) => e.name)
+                .toList(),
+
+            onChanged: (value) {
+
+              setState(() {
+
+                selectedClassroom = value;
+
+                final classroom =
+                classrooms.firstWhere(
+                      (e) => e.name == value,
+                );
+
+                sections =
+                    classroom.sections;
+
+                selectedSection = null;
+              });
+            },
+          ),
+
+          const SizedBox(height: 10),
+
+          /// SECTION
           _buildSectionDropdown(),
 
+
           const SizedBox(height: 12),
 
-          _buildDatePicker(),
+          _buildDateField(),
 
           _buildSaveButton("Search Attendance"),
         ],
@@ -760,15 +1020,15 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
       physics:
       const NeverScrollableScrollPhysics(),
 
-      itemCount: students.length,
+      itemCount: currentsectionstudents.length,
 
       itemBuilder: (context,index) {
 
         final student =
-        students[index];
+        currentsectionstudents[index];
 
         return _buildStudentTile(
-          student,
+          student, index+1
         );
       },
     );
@@ -847,8 +1107,10 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
             if (buttonText ==
                 "Search Attendance") {
+              loadStudents();
 
               setState(() {
+                isLoading = true;
 
                 issearchTapped = true;
               });
@@ -887,10 +1149,118 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
     );
   }
 
+  void initState() {
+
+    super.initState();
+
+    loadAcademicYear();
+  }
+
+  Future<void> loadAcademicYear() async {
+
+    try {
+
+      final response =
+      await AcademicYearService
+          .getActiveAcademicYear(
+
+        accessToken:
+        widget.accessToken,
+      );
+
+      setState(() {
+
+        academicYears = [response];
+
+        selectedAcademicYear = "2026-2027";
+
+        classrooms = response.classrooms;
+
+        isLoading = false;
+        print("printed");
+      });
+
+    } catch (e) {
+
+      setState(() {
+
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> loadStudents() async {
+
+    try {
+
+      final response =
+      await StudentsService.getStudents(
+
+        accessToken:
+        widget.accessToken,
+      );
+
+      print(response);
+
+      setState(() {
+
+        studentsList = response.students;
+
+        setState(() {
+
+          studentsResponse = response;
+
+          filteredStudents =
+              response.students;
+
+          isLoading = false;
+        });
+
+        isLoading = false;
+      });
+      print(
+        response.students.length,
+      );
+      print(
+        response.students.first.fullName,
+      );
+
+     setState(() {
+       currentsectionstudents = studentsList.where(
+             (student) =>
+         student.className == selectedClassroom &&
+             student.sectionName == selectedSection?.name,
+       ).toList();
+     });
+
+    } catch (e) {
+
+      print(
+        "STUDENTS API ERROR",
+      );
+
+      print(e);
+
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
 
 
   @override
   Widget build(BuildContext context) {
+
+    if (isLoading) {
+
+      return const Scaffold(
+
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     return Scaffold(
 
@@ -921,9 +1291,42 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                         children: [
                           Chip(
 
-                            label: const Text(
+                            label: Text(
 
-                              "Class 1",
+                              "$selectedClassroom",
+
+                              style: const TextStyle(
+
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            ),
+
+                            backgroundColor:
+                            const Color(0xFFEFF4FF),
+
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+
+                            shape: RoundedRectangleBorder(
+
+                              borderRadius:
+                              BorderRadius.circular(30),
+
+                              side: const BorderSide(
+                                color: Color(0xFFD6E4FF),
+                                width: 1,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 5.0),
+                          Chip(
+
+                            label: Text(
+
+                              "Section ${selectedSection?.name}",
 
                               style: TextStyle(
 
@@ -954,44 +1357,11 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                           SizedBox(width: 5.0),
                           Chip(
 
-                            label: const Text(
+                            label: Text(
 
-                              "Section B",
+                              "${attendancecontroller.text}",
 
-                              style: TextStyle(
-
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                              ),
-                            ),
-
-                            backgroundColor:
-                            const Color(0xFFEFF4FF),
-
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-
-                            shape: RoundedRectangleBorder(
-
-                              borderRadius:
-                              BorderRadius.circular(30),
-
-                              side: const BorderSide(
-                                color: Color(0xFFD6E4FF),
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 5.0),
-                          Chip(
-
-                            label: const Text(
-
-                              "14-06-2026",
-
-                              style: TextStyle(
+                              style: const TextStyle(
 
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,

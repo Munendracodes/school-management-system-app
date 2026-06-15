@@ -35,12 +35,19 @@ class StudentData {
 
   final String profileImage;
 
+  bool isAbsent;
+
+  bool isPresent;
+
+
   StudentData({
     required this.id,
     required this.fullName,
     required this.className,
     required this.sectionName,
     required this.profileImage,
+    required this.isAbsent,
+    required this.isPresent
   });
 
   factory StudentData.fromJson(
@@ -64,6 +71,10 @@ class StudentData {
       profileImage:
       json["profile_image"] ??
           "https://i.pravatar.cc/150?img=12",
+      isAbsent:
+      false,
+      isPresent:
+      false,
     );
   }
 }

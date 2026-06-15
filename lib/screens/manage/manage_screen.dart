@@ -357,7 +357,9 @@ class ManageScreen extends StatelessWidget {
             context,
             MaterialPageRoute(
                 builder: (_) =>
-                    MarkAttendanceScreen()
+                    MarkAttendanceScreen(
+                      accessToken: accessToken,
+                    )
             ),
           );
       },

@@ -472,7 +472,7 @@ class HomeContent extends StatelessWidget {
                         if(homeResponse!.heroBanner.title.contains("Evening"))
                           Icon(
                             Icons.wb_sunny_rounded,
-                            color: Colors.black,
+                            color: Colors.orange,
                             size: 25,
                           ),
                       ],

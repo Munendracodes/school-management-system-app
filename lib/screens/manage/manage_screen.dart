@@ -4,6 +4,7 @@ import 'package:school_management_app/screens/academicyear/academic_year_screen.
 import 'package:school_management_app/screens/attendance/mark_attendance_screen.dart';
 import 'package:school_management_app/screens/class/class_screen.dart';
 import 'package:school_management_app/screens/exam/exam_screen.dart';
+import 'package:school_management_app/screens/fees/fees_screen.dart';
 import 'package:school_management_app/screens/parents/parents_screen.dart';
 import 'package:school_management_app/screens/students/students_screen.dart';
 import 'package:school_management_app/screens/teachers/teachers_screen.dart';
@@ -359,6 +360,18 @@ class ManageScreen extends StatelessWidget {
                 builder: (_) =>
                     MarkAttendanceScreen(
                       accessToken: accessToken,
+                    )
+            ),
+          );
+        if(item.title == "Fees")
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) =>
+                    FeesScreen(
+                      accessToken: accessToken,
+                      backgroundColor: backgroundColor,
+
                     )
             ),
           );

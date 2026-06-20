@@ -41,10 +41,13 @@ class ClassroomData {
 
   final List<SectionData> sections;
 
+  int studentCount ;
+
   ClassroomData({
     required this.id,
     required this.name,
     required this.sections,
+    required this.studentCount
   });
 
   factory ClassroomData.fromJson(
@@ -56,6 +59,8 @@ class ClassroomData {
       id: json["id"] ?? "",
 
       name: json["name"] ?? "",
+
+      studentCount: 0,
 
       sections:
       (json["sections"] as List? ?? [])

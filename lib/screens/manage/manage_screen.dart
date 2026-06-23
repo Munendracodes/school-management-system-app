@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:school_management_app/screens/academicyear/academic_year_screen.dart';
+import 'package:school_management_app/screens/attendance/attendance_summary_screen.dart';
 import 'package:school_management_app/screens/attendance/mark_attendance_screen.dart';
 import 'package:school_management_app/screens/class/class_screen.dart';
 import 'package:school_management_app/screens/exam/exam_screen.dart';
@@ -45,8 +46,8 @@ class ManageScreen extends StatelessWidget {
     final operationItems = [
       ManageItem("Mark Attendance", Icons.check_circle_rounded, const Color(0xFF22C55E)),
       ManageItem("Fees", Icons.account_balance_wallet_rounded, const Color(0xFFF97316)),
-      ManageItem("Bus Route", Icons.directions_bus_rounded, const Color(0xFF3B82F6)),
-      ManageItem("Notifications", Icons.notifications_rounded, const Color(0xFF8B5CF6)),
+      ManageItem("Transport", Icons.directions_bus_rounded, const Color(0xFF3B82F6)),
+      ManageItem("Time Table", Icons.timelapse, const Color(0xFF8B5CF6)),
     ];
 
     final reportItems = [
@@ -54,6 +55,11 @@ class ManageScreen extends StatelessWidget {
       ManageItem("Fee Report", Icons.credit_card_rounded, const Color(0xFFF97316)),
       ManageItem("Student Report", Icons.school_rounded, const Color(0xFF3B82F6)),
       ManageItem("Teacher Report", Icons.co_present_rounded, const Color(0xFF8B5CF6)),
+    ];
+
+    final inventoryItems = [
+      ManageItem("Books", Icons.bar_chart_rounded, const Color(0xFF22C55E)),
+      ManageItem("Uniform", Icons.credit_card_rounded, const Color(0xFFF97316))
     ];
 
     return Scaffold(
@@ -68,8 +74,10 @@ class ManageScreen extends StatelessWidget {
 
               /// HEADER
               Row(
-                children: [
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
 
+                children: [
 
                   /// MENU
                   const Padding(
@@ -80,53 +88,101 @@ class ManageScreen extends StatelessWidget {
                         size: 23
                     ),
                   ),
-                  const SizedBox(width: 15),
 
+                  const SizedBox(width: 10),
+
+                  /// LOGO + SCHOOL
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                    child: Row(
+                      children: [
 
-                      children: const [
+                        /// LOGO
+                        /*   AppLogo(
+                          size: width * 0.12,
+                        ),*/
 
-                        Text(
-                          "Manage",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.darkText,
-                          ),
-                        ),
+                        const SizedBox(width: 5),
 
+                        /// SCHOOL NAME
+                        Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
 
+                          children: [
 
-                        Text(
-                          "Manage all school operations",
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.lightText,
-                          ),
+                            Text(
+                              "Sunshine Public School",
+
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight:
+                                FontWeight.bold,
+
+                                color:
+                                Color(0xFF081B5C),
+                              ),
+                            ),
+
+                            Text(
+                              "Admin Dashboard",
+
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight:
+                                FontWeight.w500,
+
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
 
-                  Container(
-                    height: 45,
-                    width: 45,
+                  /// NOTIFICATION
+                  Stack(
+                    children: [
 
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: const Color(0xFFE4E7EC),
+                      const Padding(
+                        padding:
+                        EdgeInsets.only(top: 10),
+
+                        child: Icon(
+                          Icons.notifications_none_rounded,
+                          size: 28,
+                          color: Color(0xFF081B5C),
+                        ),
                       ),
-                    ),
 
-                    child: const Icon(
-                      Icons.search_rounded,
-                      color: AppColors.primaryBlue,
-                    ),
+                      Positioned(
+                        right: -1,
+                        top: 1,
+
+                        child: Container(
+                          height: 22,
+                          width: 22,
+
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+
+                          child: const Center(
+                            child: Text(
+                              "3",
+
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight:
+                                FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -150,12 +206,18 @@ class ManageScreen extends StatelessWidget {
                 icon: Icons.settings_rounded,
                 items: operationItems,
               ),
+              _buildSection(
+                title: "Inventory",
+                icon: Icons.bar_chart_rounded,
+                items: inventoryItems,
+              ),
 
               _buildSection(
                 title: "Reports",
                 icon: Icons.bar_chart_rounded,
                 items: reportItems,
               ),
+
 
               const SizedBox(height: 120),
             ],
@@ -358,9 +420,9 @@ class ManageScreen extends StatelessWidget {
             context,
             MaterialPageRoute(
                 builder: (_) =>
-                    MarkAttendanceScreen(
-                      accessToken: accessToken,
-                    )
+                   AttendanceSummaryScreen(
+                     accessToken: accessToken,
+                   )
             ),
           );
         if(item.title == "Fees")
@@ -402,7 +464,7 @@ class ManageScreen extends StatelessWidget {
               child: Text(
                 item.title,
                 style: const TextStyle(
-                  fontSize: 12,
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: AppColors.darkText,
                 ),

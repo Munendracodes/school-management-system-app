@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:school_management_app/screens/fees/collect_fee-screen.dart';
 import '../../core/constants/app_colors.dart';
 
 class StudentFeeSummaryScreen extends StatefulWidget {
@@ -15,6 +16,48 @@ class StudentFeeSummaryScreen extends StatefulWidget {
 
 class _StudentFeeSummaryScreenState
     extends State<StudentFeeSummaryScreen> {
+  List<Map<String, dynamic>> editableFees = [
+
+    {
+      "enabled": true,
+      "title": "School Fee",
+      "originalFee": 2500.0,
+      "discount": 0.0,
+      "finalFee": 2500.0,
+      "icon": Icons.school_rounded,
+      "color": const Color(0xFF2457FF),
+    },
+
+    {
+      "enabled": true,
+      "title": "Books Fee",
+      "originalFee": 500.0,
+      "discount": 0.0,
+      "finalFee": 500.0,
+      "icon": Icons.menu_book_rounded,
+      "color": const Color(0xFFF97316),
+    },
+
+    {
+      "enabled": true,
+      "title": "Uniform Fee",
+      "originalFee": 300.0,
+      "discount": 0.0,
+      "finalFee": 300.0,
+      "icon": Icons.checkroom_rounded,
+      "color": const Color(0xFF22C55E),
+    },
+
+    {
+      "enabled": true,
+      "title": "Admission Fee",
+      "originalFee": 200.0,
+      "discount": 0.0,
+      "finalFee": 200.0,
+      "icon": Icons.person_add_alt_rounded,
+      "color": const Color(0xFFEC4899),
+    },
+  ];
   final List<Map<String, dynamic>> paymentHistory = [
 
     {
@@ -160,101 +203,104 @@ class _StudentFeeSummaryScreenState
 
   Widget _buildHeader() {
 
-    return  Row(
+    return  Padding(
+      padding: EdgeInsets.all(10),
+      child: Row(
 
-      children: [
+        children: [
 
-        InkWell(
+          InkWell(
 
-          borderRadius:
-          BorderRadius.circular(18),
+            borderRadius:
+            BorderRadius.circular(18),
 
-          onTap: () {
+            onTap: () {
 
-            Navigator.pop(context);
+              Navigator.pop(context);
 
-          },
+            },
 
-          child: Container(
+            child: Container(
 
-            padding:
-            const EdgeInsets.all(10),
+              padding:
+              const EdgeInsets.all(10),
 
-            decoration: BoxDecoration(
+              decoration: BoxDecoration(
 
-              color: Colors.white,
+                color: Colors.white,
 
-              borderRadius:
-              BorderRadius.circular(18),
+                borderRadius:
+                BorderRadius.circular(18),
 
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+
+              child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: AppColors.primaryBlue,
+                size: 18,
+              ),
+            ),
+          ),
+          const SizedBox(width: 15),
+
+          Expanded(
+
+            child: Column(
+
+              crossAxisAlignment:
+              CrossAxisAlignment.start,
+
+              children: [
+
+                Text(
+                  "Student Fee Summary",
+
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight:
+                    FontWeight.w700,
+                    color:
+                    AppColors.darkText,
+                  ),
+                ),
+                Text(
+                  "Class 1 • Section A",
+                  style: TextStyle(
+                    color:
+                    AppColors.lightText,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
+          ),
 
-            child: Icon(
-              Icons.arrow_back_ios_new_rounded,
+          Container(
+            height: 45,
+            width: 45,
+
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: const Color(0xFFE4E7EC),
+              ),
+            ),
+
+            child: const Icon(
+              Icons.search_rounded,
               color: AppColors.primaryBlue,
-              size: 18,
             ),
           ),
-        ),
-        const SizedBox(width: 15),
-
-        Expanded(
-
-          child: Column(
-
-            crossAxisAlignment:
-            CrossAxisAlignment.start,
-
-            children: [
-
-              Text(
-                "Student Fee Summary",
-
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight:
-                  FontWeight.w700,
-                  color:
-                  AppColors.darkText,
-                ),
-              ),
-              Text(
-                "Class 1 • Section A",
-                style: TextStyle(
-                  color:
-                  AppColors.lightText,
-                  fontSize: 13,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        Container(
-          height: 45,
-          width: 45,
-
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: const Color(0xFFE4E7EC),
-            ),
-          ),
-
-          child: const Icon(
-            Icons.search_rounded,
-            color: AppColors.primaryBlue,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -298,8 +344,12 @@ class _StudentFeeSummaryScreenState
 
         onPressed: () {
 
-          /// TODO
-          /// Navigate to Collect Fee Screen
+          HapticFeedback.lightImpact();
+          Navigator.push(context,
+          MaterialPageRoute(
+              builder: (_) => CollectFeeScreen()
+          )
+          );
 
         },
 
@@ -380,7 +430,7 @@ class _StudentFeeSummaryScreenState
 
                       style:
                       const TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight:
                         FontWeight.bold,
                         color:
@@ -434,8 +484,10 @@ class _StudentFeeSummaryScreenState
                           Text(
                             "PARTIAL",
 
+
                             style:
                             TextStyle(
+                              fontSize: 12,
                               color:
                               Color(
                                   0xFF16A34A),
@@ -566,7 +618,7 @@ class _StudentFeeSummaryScreenState
 
                 style:
                 const TextStyle(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight:
                   FontWeight.w600,
                 ),
@@ -698,41 +750,71 @@ class _StudentFeeSummaryScreenState
     required Color iconColor,
     required String title,
     required String amount,
+    required String discount,
   }) {
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
+      padding: const EdgeInsets.only(
+        bottom: 14,
+      ),
 
       child: Row(
         children: [
 
-          Icon(
-            icon,
-            size: 22,
-            color: iconColor,
+          Expanded(
+            flex: 4,
+
+            child: Row(
+              children: [
+
+                Icon(
+                  icon,
+                  color: iconColor,
+                  size: 20,
+                ),
+
+                const SizedBox(width: 10),
+
+                Expanded(
+                  child: Text(
+                    title,
+
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
 
-          const SizedBox(width: 15),
-
           Expanded(
+            flex: 2,
+
             child: Text(
-              title,
+              discount,
+              textAlign: TextAlign.center,
 
               style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF344054),
+                fontSize: 15,
+                fontWeight: FontWeight.w600
               ),
             ),
           ),
 
-          Text(
-            amount,
+          Expanded(
+            flex: 2,
 
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF081B5C),
+            child: Text(
+              amount,
+              textAlign: TextAlign.end,
+
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF081B5C),
+              ),
             ),
           ),
         ],
@@ -790,16 +872,106 @@ class _StudentFeeSummaryScreenState
 
                 const SizedBox(width: 12),
 
-                const Text(
-                  "Fee Structure",
+                const Expanded(
+                  child: Text(
+                    "Fee Structure",
 
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF081B5C),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF081B5C),
+                    ),
+                  ),
+                ),
+
+                OutlinedButton.icon(
+
+                  onPressed: () {
+
+                    HapticFeedback.lightImpact();
+
+                    _showUpdateFeeStructureBottomSheet();
+
+                  },
+
+                  icon: const Icon(
+                    Icons.edit_rounded,
+                    size: 18,
+                  ),
+
+                  label: const Text("Update"),
+
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF2457FF),
+
+                    side: const BorderSide(
+                      color: Color(0xFF2457FF),
+                    ),
+
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                      BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ],
+            ),
+
+            const SizedBox(height: 10),
+
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 10,
+              ),
+
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(12),
+              ),
+
+              child: const Row(
+                children: [
+
+                  Expanded(
+                    flex: 4,
+                    child: Text(
+                      "Fee Type",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                        color: Color(0xFF667085),
+                      ),
+                    ),
+                  ),
+
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      "Disc",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                        color: Color(0xFF667085),
+                      ),
+                    ),
+                  ),
+
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      "Fee",
+                      textAlign: TextAlign.end,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                        color: Color(0xFF667085),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
 
             const SizedBox(height: 10),
@@ -808,6 +980,7 @@ class _StudentFeeSummaryScreenState
               icon: Icons.school_rounded,
               iconColor: const Color(0xFF2457FF),
               title: "School Fee",
+              discount: "0",
               amount: "₹2,000",
             ),
 
@@ -815,6 +988,7 @@ class _StudentFeeSummaryScreenState
               icon: Icons.menu_book_rounded,
               iconColor: const Color(0xFFF97316),
               title: "Books Fee",
+              discount: "0",
               amount: "₹500",
             ),
 
@@ -822,6 +996,7 @@ class _StudentFeeSummaryScreenState
               icon: Icons.checkroom_rounded,
               iconColor: const Color(0xFF22C55E),
               title: "Uniform Fee",
+              discount: "0",
               amount: "₹300",
             ),
 
@@ -829,6 +1004,7 @@ class _StudentFeeSummaryScreenState
               icon: Icons.person_add_alt_rounded,
               iconColor: const Color(0xFFEC4899),
               title: "Admission Fee",
+              discount: "0",
               amount: "₹200",
             ),
 
@@ -848,12 +1024,11 @@ class _StudentFeeSummaryScreenState
                     ),
                   ),
                 ),
-
                 const Text(
                   "₹3,000",
 
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF2457FF),
                   ),
@@ -1099,7 +1274,7 @@ class _StudentFeeSummaryScreenState
                 "Pending Dues",
 
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF081B5C),
                 ),
@@ -1218,7 +1393,7 @@ class _StudentFeeSummaryScreenState
                 "Payment History",
 
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF081B5C),
                 ),
@@ -1288,8 +1463,8 @@ class _StudentFeeSummaryScreenState
         children: [
 
           Container(
-            height: 50,
-            width: 50,
+            height: 40,
+            width: 40,
 
             decoration: BoxDecoration(
               color:
@@ -1322,7 +1497,7 @@ class _StudentFeeSummaryScreenState
 
                   style:
                   const TextStyle(
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight:
                     FontWeight.bold,
                     color:
@@ -1349,7 +1524,7 @@ class _StudentFeeSummaryScreenState
 
                   style:
                   const TextStyle(
-                    fontSize: 13,
+                    fontSize: 12,
                     color:
                     Color(0xFF98A2B3),
                   ),
@@ -1379,6 +1554,7 @@ class _StudentFeeSummaryScreenState
               mode,
 
               style: TextStyle(
+                fontSize: 13,
                 color: modeColor,
                 fontWeight:
                 FontWeight.w600,
@@ -1390,65 +1566,403 @@ class _StudentFeeSummaryScreenState
     );
   }
 
+  void _showUpdateFeeStructureBottomSheet() {
+
+    showModalBottomSheet(
+
+      context: context,
+
+      isScrollControlled: true,
+
+      backgroundColor: Colors.transparent,
+
+      builder: (context) {
+
+        return StatefulBuilder(
+
+          builder: (context, setBottomState) {
+
+            return Container(
+
+              height:
+              MediaQuery.of(context)
+                  .size
+                  .height *
+                  0.90,
+
+              decoration: const BoxDecoration(
+
+                color: Color(0xFFF7F9FC),
+
+                borderRadius:
+                BorderRadius.vertical(
+                  top: Radius.circular(30),
+                ),
+              ),
+
+              child: Column(
+
+                children: [
+
+                  _buildBottomSheetHeader(),
+
+                  Expanded(
+                    child: ListView(
+                      padding:
+                      const EdgeInsets.all(
+                          20),
+
+                      children: [
+
+                        ...editableFees.map(
+                              (fee) {
+
+                            return buildEditableFeeRow(
+                              fee,
+                              setBottomState,
+                            );
+
+                          },
+                        ),
+
+                        const SizedBox(
+                          height: 20,
+                        ),
+
+                        _buildFeeSummary(),
+
+                        const SizedBox(
+                          height: 30,
+                        ),
+
+                        SizedBox(
+                          height: 55,
+
+                          child:
+                          ElevatedButton(
+
+                            onPressed: () {
+
+                              Navigator.pop(
+                                  context);
+
+                              setState(() {
+
+                                /// Update main screen
+                              });
+                            },
+
+                            child: const Text(
+                              "Update Fee Structure",
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildBottomSheetHeader() {
+
+    return Container(
+
+      padding:
+      const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 16,
+      ),
+
+      child: Row(
+
+        children: [
+
+          const Expanded(
+
+            child: Text(
+              "Update Fee Structure",
+
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight:
+                FontWeight.w700,
+              ),
+            ),
+          ),
+
+          IconButton(
+
+            onPressed: () {
+
+              Navigator.pop(context);
+
+            },
+
+            icon: const Icon(
+              Icons.close_rounded,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildEditableFeeRow(
+      Map<String, dynamic> fee,
+      StateSetter setBottomState,
+      ) {
+
+    return Container(
+
+      margin:
+      const EdgeInsets.only(
+        bottom: 14,
+      ),
+
+      padding:
+      const EdgeInsets.all(14),
+
+      decoration: BoxDecoration(
+
+        color: Colors.white,
+
+        borderRadius:
+        BorderRadius.circular(18),
+      ),
+
+      child: Column(
+
+        children: [
+
+          Row(
+
+            children: [
+
+              Switch(
+
+                value: fee["enabled"],
+
+                onChanged: (value) {
+
+                  setBottomState(() {
+
+                    fee["enabled"] =
+                        value;
+
+                  });
+                },
+              ),
+              SizedBox(width: 10.0),
+
+              Icon(
+                fee["icon"],
+                color: fee["color"],
+              ),
+
+              const SizedBox(
+                width: 10,
+              ),
+
+              Expanded(
+                child: Text(
+                  fee["title"],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 15),
+
+          Row(
+
+            children: [
+
+              Expanded(
+
+                child: TextFormField(
+
+                  initialValue:
+                  fee["discount"]
+                      .toString(),
+
+                  keyboardType:
+                  TextInputType.number,
+
+                  decoration:
+                  const InputDecoration(
+                    labelText:
+                    "Discount",
+                  ),
+
+                  onChanged: (value) {
+
+                    double discount =
+                        double.tryParse(
+                            value) ??
+                            0;
+
+                    setBottomState(() {
+
+                      fee["discount"] =
+                          discount;
+
+                      fee["finalFee"] =
+                          fee["originalFee"] -
+                              discount;
+                    });
+                  },
+                ),
+              ),
+
+              const SizedBox(width: 10),
+
+              Expanded(
+
+                child: TextFormField(
+
+                  initialValue:
+                  fee["finalFee"]
+                      .toString(),
+
+                  keyboardType:
+                  TextInputType.number,
+
+                  decoration:
+                  const InputDecoration(
+                    labelText:
+                    "Final Fee",
+                  ),
+
+                  onChanged: (value) {
+
+                    double finalFee =
+                        double.tryParse(
+                            value) ??
+                            0;
+
+                    setBottomState(() {
+
+                      fee["finalFee"] =
+                          finalFee;
+
+                      fee["discount"] =
+                          fee["originalFee"] -
+                              finalFee;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeeSummary() {
+
+    double totalDiscount = 0;
+    double totalFee = 0;
+
+    for (var fee in editableFees) {
+
+      if (fee["enabled"]) {
+
+        totalDiscount +=
+        fee["discount"];
+
+        totalFee +=
+        fee["finalFee"];
+      }
+    }
+
+    return Container(
+
+      padding:
+      const EdgeInsets.all(16),
+
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius:
+        BorderRadius.circular(18),
+      ),
+
+      child: Column(
+
+        children: [
+
+          Row(
+            children: [
+
+              const Expanded(
+                child: Text(
+                    "Total Discount"),
+              ),
+
+              Text(
+                "₹${totalDiscount.toStringAsFixed(0)}",
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          Row(
+            children: [
+
+              const Expanded(
+                child:
+                Text("Final Fee"),
+              ),
+
+              Text(
+                "₹${totalFee.toStringAsFixed(0)}",
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9FC),
 
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            _buildHeader(),
+            Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    children: [
 
-          child: Column(
-            children: [
-              _buildHeader(),
-
-              /// STEP 2
-              const SizedBox(height: 15),
-              buildStudentProfileCard(),
-
-              const SizedBox(height: 10),
-
-              /// STEP 3
-              buildSummaryCards(),
-
-              const SizedBox(height: 10),
-
-              _buildFeeStructureCard(),
-
-              const SizedBox(height: 10),
-
-              buildCollectionProgressCard(),
-
-              const SizedBox(height: 10),
-
-              buildPendingDuesCard(),
-
-              const SizedBox(height: 10),
-
-              buildPaymentHistoryCard(),
-
-              const SizedBox(height: 100),
-
-              /// STEP 4
-              // Summary Cards
-
-              /// STEP 5
-              // Fee Structure
-
-              /// STEP 6
-              // Collection Progress
-
-              /// STEP 7
-              // Pending Dues
-
-              /// STEP 8
-              // Payment History
-
-              const SizedBox(height: 100),
-            ],
-          ),
+                      buildStudentProfileCard(),
+                      const SizedBox(height: 10),
+                      buildSummaryCards(),
+                      const SizedBox(height: 10),
+                      _buildFeeStructureCard(),
+                      const SizedBox(height: 10),
+                      buildCollectionProgressCard(),
+                      const SizedBox(height: 10),
+                      buildPendingDuesCard(),
+                      const SizedBox(height: 10),
+                      buildPaymentHistoryCard(),
+                      const SizedBox(height: 100)
+                    ],
+                  ),
+                )
+            )
+          ],
         ),
       ),
       floatingActionButton: _buildCollectFeeButton() ,

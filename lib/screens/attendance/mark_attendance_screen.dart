@@ -1,26 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:school_management_app/core/constants/app_colors.dart';
+import 'package:school_management_app/models/section_with_class.dart';
 
 import '../../models/active_academic_year_response.dart';
 import '../../models/student_attendance_model.dart';
 import '../../models/students_response.dart';
 import '../../services/academic_year_service.dart';
+import '../../services/firebase_attendance_service.dart';
 import '../../services/students_service.dart';
 
 class MarkAttendanceScreen extends StatefulWidget {
-  final String accessToken;
 
+  final String accessToken;
+  final SectionWithClass section;
+  final DateTime attendanceDate;
   const MarkAttendanceScreen({
     super.key,
     required this.accessToken,
+    required this.section,
+    required this.attendanceDate
   });
+
 
   @override
   State<MarkAttendanceScreen> createState() => _MarkAttendanceScreenState();
 }
 
 class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
+
+  bool get isAttendanceAlreadyCaptured {
+
+    if (attendanceSession == "FN") {
+      return widget.section.fnCaptured;
+    }
+
+    return widget.section.anCaptured;
+  }
+
+  bool isEditMode = false;
+
   String? selectedClass;
 
   String? selectedSections;
@@ -31,15 +51,9 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
   bool issearchTapped = false;
 
-  bool markAbsentOnly = true;
-
-  bool markPresentOnly = false;
-
-  String? selectedAcademicYear;
+  String attendanceSession = "FN";
 
   String? selectedClassroom;
-
-  SectionData? selectedSection;
 
   List<ClassroomData> classrooms = [];
 
@@ -140,23 +154,21 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
 
   int get absentCount {
-    if(markAbsentOnly){
-      return currentsectionstudents.where((e) => e.isAbsent).length;
-    }
-    else{
-      return totalStudents - presentCount;
-    }
+
+    return totalStudents - presentCount;
   }
 
   int get presentCount {
 
-    if (markAbsentOnly) {
+    if (attendanceSession == "FN") {
 
-      return totalStudents - absentCount;
+      return currentsectionstudents
+          .where((e) => e.isFnPresent)
+          .length;
     }
 
     return currentsectionstudents
-        .where((e) => e.isPresent)
+        .where((e) => e.isAnPresent)
         .length;
   }
 
@@ -167,286 +179,6 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
     }
 
     return (presentCount / totalStudents) * 100;
-  }
-  Widget _buildClassDropdown() {
-
-    return DropdownButtonFormField<String>(
-
-      value: selectedClass,
-
-      decoration: const InputDecoration(
-        labelText: "Class",
-        border: OutlineInputBorder(),
-      ),
-
-      items: const [
-
-        DropdownMenuItem(
-          value: "Class 1",
-          child: Text("Class 1"),
-        ),
-
-        DropdownMenuItem(
-          value: "Class 2",
-          child: Text("Class 2"),
-        ),
-      ],
-
-      onChanged: (value) {
-
-        setState(() {
-
-          selectedClass = value;
-        });
-      },
-    );
-  }
-
-  Widget _buildSectionDropdown() {
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-
-      children: [
-
-        const Text(
-          "Section",
-
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF5B6475),
-          ),
-        ),
-
-        const SizedBox(height: 10),
-
-        DropdownButtonFormField<SectionData>(
-
-          value: selectedSection,
-
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-
-            contentPadding:
-            const EdgeInsets.symmetric(
-              horizontal: 18,
-              vertical: 16,
-            ),
-
-            enabledBorder: OutlineInputBorder(
-              borderRadius:
-              BorderRadius.circular(18),
-
-              borderSide: const BorderSide(
-                color: Color(0xFFDCE4F2),
-              ),
-            ),
-
-            focusedBorder: OutlineInputBorder(
-              borderRadius:
-              BorderRadius.circular(18),
-
-              borderSide: const BorderSide(
-                color: Color(0xFF2457FF),
-              ),
-            ),
-          ),
-
-          hint: const Text(
-            "Select section",
-          ),
-
-          items: sections.map((section) {
-
-            return DropdownMenuItem<SectionData>(
-
-              value: section,
-
-              child: Text(section.name),
-            );
-
-          }).toList(),
-
-          onChanged: (value) {
-
-            setState(() {
-
-              selectedSection = value;
-            });
-          },
-        ),
-      ],
-    );
-  }
-
-
-  Widget _buildStringDropdownField({
-
-    required String label,
-
-    required String hint,
-
-    required List<String> items,
-
-    required String? value,
-
-    required Function(String?) onChanged,
-  }) {
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-
-      children: [
-
-        Text(
-          label,
-
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF5B6475),
-          ),
-        ),
-
-        const SizedBox(height: 10),
-
-        DropdownButtonFormField<String>(
-
-          value: value,
-
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-
-            contentPadding:
-            const EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 10,
-            ),
-
-            enabledBorder: OutlineInputBorder(
-              borderRadius:
-              BorderRadius.circular(18),
-
-              borderSide: const BorderSide(
-                color: Color(0xFFDCE4F2),
-              ),
-            ),
-
-            focusedBorder: OutlineInputBorder(
-              borderRadius:
-              BorderRadius.circular(18),
-
-              borderSide: const BorderSide(
-                color: Color(0xFF2457FF),
-              ),
-            ),
-          ),
-
-          hint: Text(hint),
-
-          items: items.map((item) {
-
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(item),
-            );
-
-          }).toList(),
-
-          onChanged: onChanged,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDateField() {
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-
-      children: [
-
-        const Text(
-          "Attendance Date",
-
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF5B6475),
-          ),
-        ),
-
-        const SizedBox(height: 10),
-
-        TextField(
-          controller: attendancecontroller,
-          readOnly: true,
-
-          decoration: InputDecoration(
-
-            hintText: "Select Attendance Date",
-
-            suffixIcon: const Icon(
-              Icons.calendar_today_outlined,
-            ),
-
-            filled: true,
-            fillColor: Colors.white,
-
-            contentPadding:
-            const EdgeInsets.symmetric(
-              horizontal: 18,
-              vertical: 16,
-            ),
-
-            enabledBorder: OutlineInputBorder(
-              borderRadius:
-              BorderRadius.circular(18),
-
-              borderSide: const BorderSide(
-                color: Color(0xFFDCE4F2),
-              ),
-            ),
-
-            focusedBorder: OutlineInputBorder(
-              borderRadius:
-              BorderRadius.circular(18),
-
-              borderSide: const BorderSide(
-                color: Color(0xFF2457FF),
-              ),
-            ),
-          ),
-
-          onTap: () async {
-
-            final pickedDate =
-            await showDatePicker(
-
-              context: context,
-
-              initialDate: DateTime.now(),
-
-              firstDate: DateTime(2000),
-
-              lastDate: DateTime.now(),
-            );
-
-            if (pickedDate != null) {
-
-              attendancecontroller.text =
-                  pickedDate
-                      .toIso8601String()
-                      .split("T")
-                      .first;
-            }
-          },
-        ),
-      ],
-    );
   }
 
   Widget _buildSummaryCards() {
@@ -527,6 +259,11 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
       StudentData student,
       int id
       ) {
+
+    final isPresent =
+    attendanceSession == "FN"
+        ? student.isFnPresent
+        : student.isAnPresent;
 
     return Container(
 
@@ -615,131 +352,182 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
           ),
 
           /// STATUS LABEL
-          if (student.isAbsent)
+          /// Container(
+          //
+          //     padding: const EdgeInsets.symmetric(
+          //     horizontal: 10,
+          //     vertical: 5,
+          //     ),
+          //
+          //     decoration: BoxDecoration(
+          //
+          //     color: isPresent
+          //     ? Colors.green.shade50
+          //         : Colors.red.shade50,
+          //
+          //     borderRadius:
+          //     BorderRadius.circular(20),
+          //     ),
+          //
+          //     child: Text(
+          //
+          //     isPresent
+          //     ? "Present"
+          //         : "Absent",
+          //
+          //     style: TextStyle(
+          //
+          //     color: isPresent
+          //     ? Colors.green
+          //         : Colors.red,
+          //
+          //     fontWeight: FontWeight.w600,
+          //     fontSize: 11,
+          //     ),
+          //     ),
+          //     ),
 
-            Container(
 
-              padding:
-              const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 5,
-              ),
 
-              decoration: BoxDecoration(
-
-                color: Colors.red.shade50,
-
-                borderRadius:
-                BorderRadius.circular(20),
-              ),
-
-              child: const Text(
-
-                "Absent",
-
-                style: TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 11,
-                ),
-              ),
-            ),
-
-          if(student.isPresent)
-            Container(
-
-              padding:
-              const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 5,
-              ),
-
-              decoration: BoxDecoration(
-
-                color: Colors.green.shade50,
-
-                borderRadius:
-                BorderRadius.circular(20),
-              ),
-
-              child: const Text(
-
-                "Present",
-
-                style: TextStyle(
-                  color: Colors.green,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 11,
-                ),
-              ),
-            ),
-
-          const SizedBox(width: 8),
 
           /// CHECKBOX
-          if(markAbsentOnly)
-          Transform.scale(
+          GestureDetector(
 
-            scale: 1.1,
+            onTap: () {
 
-            child: Checkbox(
+              setState(() {
 
-              activeColor:
-              Colors.red,
+                if (attendanceSession == "FN") {
 
-              value:
-              student.isAbsent,
+                  student.isFnPresent =
+                  !student.isFnPresent;
 
-              onChanged: (value) {
+                } else {
 
-                setState(() {
+                  student.isAnPresent =
+                  !student.isAnPresent;
+                }
+              });
+            },
 
-                  student.isAbsent =
-                      value ?? false;
-                });
-              },
-            ),
-          ),
-          if(markPresentOnly)
-            Transform.scale(
+            child: Container(
 
-              scale: 1.1,
+              padding:
+              const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 8,
+              ),
 
-              child: Checkbox(
+              decoration: BoxDecoration(
 
-                activeColor:
-                Colors.green,
+                color: isPresent
+                    ? const Color(0xFF22C55E)
+                    : const Color(0xFFEF4444),
 
-                value:
-                student.isPresent,
+                borderRadius:
+                BorderRadius.circular(20),
+              ),
 
-                onChanged: (value) {
+              child: Row(
 
-                  setState(() {
+                mainAxisSize: MainAxisSize.min,
 
-                    student.isPresent =
-                        value ?? false;
-                  });
-                },
+                children: [
+
+                  Icon(
+
+                    isPresent
+                        ? Icons.check
+                        : Icons.close,
+
+                    color: Colors.white,
+                    size: 16,
+                  ),
+
+                  const SizedBox(width: 4),
+
+                  Text(
+
+                    isPresent
+                        ? "Present"
+                        : "Absent",
+
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ),
+          )
         ],
       ),
     );
   }
 
-  void _saveAttendance() {
-    Navigator.pop(context);
+  Future<void> _saveAttendance() async {
 
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
+    try {
 
-      const SnackBar(
-        content: Text(
-          "Attendance Saved",
-        ),
-      ),
-    );
+      setState(() {
+
+        isLoading = true;
+      });
+
+      await FirebaseAttendanceService()
+          .saveAttendance(
+
+        className:
+        widget.section.className,
+
+        sectionName:
+        widget.section.section.name,
+
+        attendanceDate:
+        widget.attendanceDate,
+
+        session:
+        attendanceSession,
+
+        students:
+        currentsectionstudents,
+      );
+
+      setState(() {
+
+        if (attendanceSession == "FN") {
+
+          widget.section.fnCaptured =
+          true;
+        }
+
+        if (attendanceSession == "AN") {
+
+          widget.section.anCaptured =
+          true;
+        }
+
+        isEditMode = false;
+
+        isLoading = false;
+      });
+
+      Navigator.pop(
+        context,
+        widget.section.fnCaptured || widget.section.anCaptured,
+      );
+
+    } catch (e) {
+
+      setState(() {
+
+        isLoading = false;
+      });
+
+      print(e);
+    }
   }
 
   Widget _buildHeader() {
@@ -805,7 +593,7 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
     );
   }
 
-  Widget _buildAttendanceCard() {
+  Widget _buildSessionSelector() {
 
     return Container(
 
@@ -815,104 +603,6 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
         color: Colors.white,
 
-        borderRadius:
-        BorderRadius.circular(24),
-      ),
-
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-
-        children: [
-          /// ACADEMIC YEAR
-          _buildStringDropdownField(
-            label: "Academic Year",
-
-            value: selectedAcademicYear,
-
-            hint: "Select academic year",
-
-            items: academicYears
-                .map((e) => e.name)
-                .toList(),
-
-            onChanged: (value) {
-
-              setState(() {
-
-                selectedAcademicYear = value;
-
-                final year =
-                academicYears.firstWhere(
-                      (e) => e.name == value,
-                );
-
-                classrooms = year.classrooms;
-
-                selectedClassroom = null;
-                selectedSection = null;
-
-                sections = [];
-              });
-            },
-          ),
-
-          const SizedBox(height: 10),
-
-          /// CLASS
-          _buildStringDropdownField(
-            label: "Class",
-
-            value: selectedClassroom,
-
-            hint: "Select class",
-
-            items: classrooms
-                .map((e) => e.name)
-                .toList(),
-
-            onChanged: (value) {
-
-              setState(() {
-
-                selectedClassroom = value;
-
-                final classroom =
-                classrooms.firstWhere(
-                      (e) => e.name == value,
-                );
-
-                sections =
-                    classroom.sections;
-
-                selectedSection = null;
-              });
-            },
-          ),
-
-          const SizedBox(height: 10),
-
-          /// SECTION
-          _buildSectionDropdown(),
-
-
-          const SizedBox(height: 12),
-
-          _buildDateField(),
-
-          _buildSaveButton("Search Attendance"),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMarkingMode() {
-
-    return Container(
-
-      padding: const EdgeInsets.all(16),
-
-      decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius:
         BorderRadius.circular(24),
       ),
@@ -923,31 +613,27 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
           Expanded(
 
-            child: RadioListTile<bool>(
+            child: RadioListTile<String>(
 
-              contentPadding: EdgeInsets.zero,
+              contentPadding:
+              EdgeInsets.zero,
 
-              value: true,
+              value: "FN",
 
-              groupValue: markAbsentOnly,
+              groupValue:
+              attendanceSession,
 
               title: const Text(
-                "Mark Absent Only",
-                style: TextStyle(fontSize: 13),
+                "Forenoon",
               ),
 
               onChanged: (value) {
 
                 setState(() {
 
-                  markAbsentOnly = true;
-                  markPresentOnly = false;
-
-                  /// CLEAR OLD PRESENT DATA
-                  for (final student in students) {
-
-                    student.isPresent = false;
-                  }
+                  attendanceSession =
+                  value!;
+                  isEditMode = false;
                 });
               },
             ),
@@ -955,39 +641,36 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
           Expanded(
 
-            child: RadioListTile<bool>(
+            child: RadioListTile<String>(
 
-              contentPadding: EdgeInsets.zero,
+              contentPadding:
+              EdgeInsets.zero,
 
-              value: false,
+              value: "AN",
 
-              groupValue: markAbsentOnly,
+              groupValue:
+              attendanceSession,
 
               title: const Text(
-                "Mark Present Only",
-                style: TextStyle(fontSize: 13),
+                "Afternoon",
               ),
 
               onChanged: (value) {
 
                 setState(() {
 
-                  markPresentOnly = true;
-                  markAbsentOnly = false;
-
-                  /// CLEAR OLD ABSENT DATA
-                  for (final student in students) {
-
-                    student.isAbsent = false;
-                  }
+                  attendanceSession =
+                  value!;
                 });
               },
             ),
           ),
         ],
-      )
+      ),
     );
   }
+
+
 
   Widget _buildInfoBanner() {
 
@@ -1103,7 +786,7 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
             ),
           ),
 
-          onPressed: () {
+          onPressed: () async {
 
             if (buttonText ==
                 "Search Attendance") {
@@ -1111,7 +794,6 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
               setState(() {
                 isLoading = true;
-
                 issearchTapped = true;
               });
             }
@@ -1119,7 +801,7 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
             if (buttonText ==
                 "Save Attendance") {
 
-              _saveAttendance();
+              await _saveAttendance();
             }
           },
 
@@ -1153,7 +835,36 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
     super.initState();
 
+    if (widget.section.fnCaptured &&
+        !widget.section.anCaptured) {
+
+      attendanceSession = "AN";
+    }
+
+    else if (!widget.section.fnCaptured &&
+        widget.section.anCaptured) {
+
+      attendanceSession = "FN";
+    }
+
+    else {
+
+      attendanceSession = "FN";
+    }
+
     loadAcademicYear();
+
+    loadStudents();
+
+    selectedClassroom =
+        widget.section.className;
+
+    attendancecontroller.text =
+        DateFormat(
+          'dd MMM yyyy',
+        ).format(
+          widget.attendanceDate,
+        );
   }
 
   Future<void> loadAcademicYear() async {
@@ -1172,7 +883,7 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
         academicYears = [response];
 
-        selectedAcademicYear = "2026-2027";
+
 
         classrooms = response.classrooms;
 
@@ -1200,7 +911,7 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
         widget.accessToken,
       );
 
-      print(response);
+      print(widget);
 
       setState(() {
 
@@ -1222,16 +933,18 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
         response.students.length,
       );
       print(
-        response.students.first.fullName,
+        response.students.first.parentName,
       );
 
      setState(() {
        currentsectionstudents = studentsList.where(
              (student) =>
          student.className == selectedClassroom &&
-             student.sectionName == selectedSection?.name,
+             student.sectionName == widget.section.section.name,
        ).toList();
      });
+     print("current section students are ");
+     print(currentsectionstudents);
 
     } catch (e) {
 
@@ -1241,11 +954,401 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
       print(e);
 
+      print(widget.accessToken);
+
       setState(() {
         isLoading = false;
       });
     }
   }
+
+  Widget _buildAttendanceToggle({
+
+    required bool isPresent,
+
+    required VoidCallback onTap,
+  }) {
+
+    return GestureDetector(
+
+      onTap: onTap,
+
+      child: AnimatedContainer(
+
+        duration:
+        const Duration(
+          milliseconds: 250,
+        ),
+
+        height: 40,
+        width: 110,
+
+        padding:
+        const EdgeInsets.all(4),
+
+        decoration: BoxDecoration(
+
+          color: isPresent
+              ? const Color(0xFF22C55E)
+              : const Color(0xFFEF4444),
+
+          borderRadius:
+          BorderRadius.circular(
+              25),
+
+          boxShadow: [
+
+            BoxShadow(
+
+              color:
+              (isPresent
+                  ? const Color(
+                  0xFF22C55E)
+                  : const Color(
+                  0xFFEF4444))
+                  .withOpacity(
+                  0.25),
+
+              blurRadius: 12,
+
+              offset:
+              const Offset(0, 4),
+            ),
+          ],
+        ),
+
+        child: AnimatedAlign(
+
+          duration:
+          const Duration(
+            milliseconds: 250,
+          ),
+
+          alignment: isPresent
+              ? Alignment.centerLeft
+              : Alignment.centerRight,
+
+          child: Container(
+
+            width: 60,
+
+            decoration: BoxDecoration(
+
+              color: Colors.white,
+
+              borderRadius:
+              BorderRadius.circular(
+                  20),
+            ),
+
+            child: Row(
+
+              mainAxisAlignment:
+              MainAxisAlignment.center,
+
+              children: [
+
+                Icon(
+
+                  isPresent
+                      ? Icons.check_circle
+                      : Icons.cancel,
+
+                  size: 16,
+
+                  color: isPresent
+                      ? const Color(
+                      0xFF22C55E)
+                      : const Color(
+                      0xFFEF4444),
+                ),
+
+                const SizedBox(width: 4),
+
+                Text(
+
+                  isPresent
+                      ? "P"
+                      : "A",
+
+                  style: TextStyle(
+
+                    fontWeight:
+                    FontWeight.bold,
+
+                    color: isPresent
+                        ? const Color(
+                        0xFF22C55E)
+                        : const Color(
+                        0xFFEF4444),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAttendanceBody() {
+
+    /// FN already captured
+
+    if (attendanceSession == "FN" &&
+        widget.section.fnCaptured &&
+        !isEditMode) {
+
+      return buildAttendanceCapturedCard(
+        "Forenoon",
+      );
+    }
+
+    /// AN already captured
+
+    if (attendanceSession == "AN" &&
+        widget.section.anCaptured &&
+        !isEditMode) {
+
+      return buildAttendanceCapturedCard(
+        "Afternoon",
+      );
+    }
+
+    /// Show student list
+
+    return _buildStudentList();
+  }
+
+  Widget buildAttendanceCapturedCard(
+      String session,
+      ) {
+
+    return Container(
+
+      width: double.infinity,
+
+      padding:
+      const EdgeInsets.all(24),
+
+      decoration: BoxDecoration(
+
+        borderRadius:
+        BorderRadius.circular(30),
+
+        gradient: const LinearGradient(
+
+          begin: Alignment.topLeft,
+
+          end: Alignment.bottomRight,
+
+          colors: [
+
+            Color(0xFF2457FF),
+
+            Color(0xFF4B7BFF),
+          ],
+        ),
+
+        boxShadow: [
+
+          BoxShadow(
+
+            color: const Color(
+              0xFF2457FF,
+            ).withOpacity(0.25),
+
+            blurRadius: 24,
+
+            offset: const Offset(
+              0,
+              10,
+            ),
+          ),
+        ],
+      ),
+
+      child: Column(
+
+        children: [
+
+          Container(
+
+            height: 70,
+            width: 70,
+
+            decoration: BoxDecoration(
+
+              color:
+              Colors.white
+                  .withOpacity(
+                0.15,
+              ),
+
+              shape:
+              BoxShape.circle,
+            ),
+
+            child: const Icon(
+
+              Icons.check_circle,
+
+              color: Colors.white,
+
+              size: 42,
+            ),
+          ),
+
+          const SizedBox(height: 18),
+
+          const Text(
+
+            "Attendance Captured",
+
+            style: TextStyle(
+
+              color: Colors.white,
+
+              fontSize: 22,
+
+              fontWeight:
+              FontWeight.w700,
+            ),
+          ),
+          SizedBox(height: 10),
+
+          SizedBox(
+
+            width:
+            double.infinity,
+
+            child: ElevatedButton.icon(
+
+              onPressed: () async {
+
+                await loadCapturedAttendance();
+
+                setState(() {
+
+                  isEditMode = true;
+                });
+              },
+
+              style:
+              ElevatedButton.styleFrom(
+
+                backgroundColor:
+                Colors.white,
+
+                foregroundColor:
+                const Color(
+                  0xFF2457FF,
+                ),
+
+                elevation: 0,
+
+                shape:
+                RoundedRectangleBorder(
+
+                  borderRadius:
+                  BorderRadius.circular(
+                      16),
+                ),
+              ),
+
+              icon: const Icon(
+                Icons.edit_outlined,
+              ),
+
+              label: const Text(
+                "Edit Attendance",
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> loadCapturedAttendance() async {
+
+    try {
+
+      setState(() {
+
+        isLoading = true;
+      });
+
+      final studentsData =
+
+      await FirebaseAttendanceService()
+          .getAttendanceStudents(
+
+        className:
+        widget.section.className,
+
+        sectionName:
+        widget.section.section.name,
+
+        attendanceDate:
+        widget.attendanceDate,
+      );
+
+      if (studentsData == null) {
+
+        setState(() {
+
+          isLoading = false;
+        });
+
+        return;
+      }
+
+      for (final student
+      in currentsectionstudents) {
+
+        final firebaseStudent =
+
+        studentsData[
+        student.id.toString()
+        ];
+
+        if (firebaseStudent == null) {
+          continue;
+        }
+
+        student.isFnPresent =
+
+            firebaseStudent[
+            "fnPresent"] ??
+                false;
+
+        student.isAnPresent =
+
+            firebaseStudent[
+            "anPresent"] ??
+                false;
+      }
+
+      setState(() {
+
+        isLoading = false;
+      });
+
+    } catch (e) {
+
+      print(
+        "Load Attendance Error: $e",
+      );
+
+      setState(() {
+
+        isLoading = false;
+      });
+    }
+  }
+
+
 
 
 
@@ -1285,241 +1388,187 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
 
                   children: [
-                    Visibility(
-                      visible: issearchTapped,
-                      child: Row(
-                        children: [
-                          Chip(
+                    Row(
+                      children: [
+                        Chip(
 
-                            label: Text(
+                          label: Text(
 
-                              "$selectedClassroom",
+                            widget.section.className,
 
-                              style: const TextStyle(
+                            style: const TextStyle(
 
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                              ),
-                            ),
-
-                            backgroundColor:
-                            const Color(0xFFEFF4FF),
-
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-
-                            shape: RoundedRectangleBorder(
-
-                              borderRadius:
-                              BorderRadius.circular(30),
-
-                              side: const BorderSide(
-                                color: Color(0xFFD6E4FF),
-                                width: 1,
-                              ),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
                             ),
                           ),
-                          SizedBox(width: 5.0),
-                          Chip(
 
-                            label: Text(
+                          backgroundColor:
+                          const Color(0xFFEFF4FF),
 
-                              "Section ${selectedSection?.name}",
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
 
-                              style: TextStyle(
+                          shape: RoundedRectangleBorder(
 
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                              ),
-                            ),
+                            borderRadius:
+                            BorderRadius.circular(30),
 
-                            backgroundColor:
-                            const Color(0xFFEFF4FF),
-
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-
-                            shape: RoundedRectangleBorder(
-
-                              borderRadius:
-                              BorderRadius.circular(30),
-
-                              side: const BorderSide(
-                                color: Color(0xFFD6E4FF),
-                                width: 1,
-                              ),
+                            side: const BorderSide(
+                              color: Color(0xFFD6E4FF),
+                              width: 1,
                             ),
                           ),
-                          SizedBox(width: 5.0),
-                          Chip(
+                        ),
+                        SizedBox(width: 5.0),
+                        Chip(
 
-                            label: Text(
+                          label: Text(
 
-                              "${attendancecontroller.text}",
+                            "Section ${widget.section.section.name}",
 
-                              style: const TextStyle(
-
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                              ),
-                            ),
-
-                            backgroundColor:
-                            const Color(0xFFEFF4FF),
-
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-
-                            shape: RoundedRectangleBorder(
-
-                              borderRadius:
-                              BorderRadius.circular(30),
-
-                              side: const BorderSide(
-                                color: Color(0xFFD6E4FF),
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                          Spacer(),
-                          InkWell(
-                            onTap: (){
-                              HapticFeedback.lightImpact();
-                              setState(() {
-                                issearchTapped = false;
-                              });
-                            },
-                            child: Container(
-                                decoration: BoxDecoration(
-
-                                  color: attendanceMarked
-                                      ? Colors.green.shade50
-                                      : Colors.white,
-
-                                  borderRadius:
-                                  BorderRadius.circular(20),
-                                ),
-
-                                child:Icon(Icons.edit,
-                                    size: 20
-                                )
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 10.0),
-
-                    Visibility(
-                      visible: !issearchTapped,
-                        child: _buildAttendanceCard()
-                    ),
-                    Visibility(
-                      visible: issearchTapped,
-                      child: Row(
-
-                        children: [
-
-                          const Text(
-                            "Attendance Marked",
                             style: TextStyle(
-                              fontWeight: FontWeight.bold,
+
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
                             ),
                           ),
-                          Spacer(),
 
-                          Container(
+                          backgroundColor:
+                          const Color(0xFFEFF4FF),
 
-                            padding:
-                            const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
 
-                            decoration: BoxDecoration(
+                          shape: RoundedRectangleBorder(
 
-                              color: attendanceMarked
-                                  ? Colors.green.shade50
-                                  : Colors.red.shade50,
+                            borderRadius:
+                            BorderRadius.circular(30),
 
-                              borderRadius:
-                              BorderRadius.circular(20),
-                            ),
-
-                            child: Text(
-                              attendanceMarked
-                                  ? "Yes"
-                                  : "No",
+                            side: const BorderSide(
+                              color: Color(0xFFD6E4FF),
+                              width: 1,
                             ),
                           ),
-                          SizedBox(width: 5.0),
+                        ),
+                        SizedBox(width: 5.0),
+                        Chip(
 
-                          Visibility(
-                            visible: attendanceMarked,
-                            child: InkWell(
-                              onTap: (){
-                                HapticFeedback.lightImpact();
-                              },
-                              child: Container(
-                                  decoration: BoxDecoration(
+                          label: Text(
 
-                                    color: attendanceMarked
-                                        ? Colors.green.shade50
-                                        : Colors.white,
+                            attendancecontroller.text,
 
-                                    borderRadius:
-                                    BorderRadius.circular(20),
-                                  ),
+                            style: const TextStyle(
 
-                                  child:Icon(Icons.edit,
-                                      size: 20
-                                  )
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+
+                          backgroundColor:
+                          const Color(0xFFEFF4FF),
+
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+
+                          shape: RoundedRectangleBorder(
+
+                            borderRadius:
+                            BorderRadius.circular(30),
+
+                            side: const BorderSide(
+                              color: Color(0xFFD6E4FF),
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                        Spacer(),
+                        InkWell(
+                          onTap: (){
+                            HapticFeedback.lightImpact();
+                            setState(() {
+                              issearchTapped = false;
+                            });
+                          },
+                          child: Container(
+                              decoration: BoxDecoration(
+
+                                color: attendanceMarked
+                                    ? Colors.green.shade50
+                                    : Colors.white,
+
+                                borderRadius:
+                                BorderRadius.circular(20),
                               ),
-                            ),
+
+                              child:Icon(Icons.edit,
+                                  size: 20
+                              )
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 10.0),
 
-                    Visibility(
-                      visible: issearchTapped,
-                        child: _buildSummaryCards()
+                    Row(
+
+                      children: [
+
+                        const Text(
+                          "Capture Attendance",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      ],
                     ),
+                    SizedBox(height: 10.0),
+                    _buildSummaryCards(),
+
                   SizedBox(height: 10.0),
 
-                  Visibility(
-                    visible: !attendanceMarked && issearchTapped,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SizedBox(height: 5.0),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(height: 5.0),
 
-                        _buildMarkingMode(),
+                      _buildSessionSelector(),
 
-                       // const SizedBox(height: 16),
+                     // const SizedBox(height: 16),
 
-                       // _buildInfoBanner(),
+                     // _buildInfoBanner(),
 
-                        const SizedBox(height: 16),
+                      const SizedBox(height: 16),
+
+                      if (isAttendanceAlreadyCaptured &&
+                          !isEditMode)
+
+                        buildAttendanceCapturedCard(
+                            attendanceSession == "AN"
+                                ? "Afternoon"
+                                : "Forenoon"
+                        )
+
+                      else ...[
+
 
                         _buildStudentList(),
 
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 10),
 
                         _buildBottomSummary(),
 
-                     //   const SizedBox(height: 90),
+                        const SizedBox(height: 16),
 
                         _buildSaveButton("Save Attendance"),
-                      ],
-                    ),
+                      ]
+                    ],
                   )
 
                   ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:school_management_app/screens/attendance/attendance_summary_screen.dart';
 import 'package:school_management_app/screens/attendance/mark_attendance_screen.dart';
 import 'package:school_management_app/screens/parents/parents_screen.dart';
 import 'package:school_management_app/screens/teachers/add_teacher_screen.dart';
@@ -16,6 +17,8 @@ import 'package:flutter/services.dart';
 
 
 class HomeScreen extends StatefulWidget {
+
+
 
   final String accessToken;
 
@@ -41,13 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
   int _selectedIndex = 0;
   HomeResponse? homeResponse;
-
   bool isLoading = true;
-
-  @override
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -253,6 +250,124 @@ class HomeContent extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget buildSummaryCards() {
+
+    return GridView.count(
+      shrinkWrap: true,
+
+      physics:
+      const NeverScrollableScrollPhysics(),
+
+      crossAxisCount: 3,
+
+      crossAxisSpacing: 12,
+      mainAxisSpacing: 12,
+
+      childAspectRatio: 0.5,
+
+      children: [
+
+        buildSummaryCard(
+          title: "Total Students",
+          value: "",
+          icon: Icons.account_balance_wallet_outlined,
+          iconColor: AppColors.primaryBlue,
+          bgColor: const Color(0xFFF5F8FF),
+        ),
+
+        buildSummaryCard(
+          title: "Total Parents",
+          value: "₹10,000",
+          icon: Icons.account_balance_wallet,
+          iconColor: const Color(0xFF22C55E),
+          bgColor: const Color(0xFFF1FCF5),
+        ),
+
+        buildSummaryCard(
+          title: "Total Teachers",
+          value: "₹5,000",
+          icon: Icons.receipt_long_outlined,
+          iconColor: const Color(0xFFF97316),
+          bgColor: const Color(0xFFFFF8F2),
+        )
+      ],
+    );
+  }
+
+
+
+  Widget buildSummaryCard({
+    required String title,
+    required String value,
+    required IconData icon,
+    required Color iconColor,
+    required Color bgColor,
+  }) {
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+
+      decoration: BoxDecoration(
+        color: bgColor,
+
+        borderRadius:
+        BorderRadius.circular(24),
+
+        border: Border.all(
+          color: Colors.white,
+        ),
+      ),
+
+      child: Column(
+        mainAxisAlignment:
+        MainAxisAlignment.center,
+
+        children: [
+
+          Container(
+            height: 52,
+            width: 52,
+
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+
+            child: Icon(
+              icon,
+              color: iconColor,
+              size: 28,
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          Text(
+            title,
+
+            style: const TextStyle(
+              fontSize: 14,
+              color: Color(0xFF344054),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+         const SizedBox(height: 8),
+
+          Text(
+            value,
+
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: iconColor,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -483,9 +598,9 @@ class HomeContent extends StatelessWidget {
                       children: [
 
                         _buildHeroStat(
-                          icon: Icons.groups_rounded,
-                          value: "91%",
-                          label: "Attendance",
+                          icon: Icons.account_balance_wallet_outlined,
+                          value: "3,55,000",
+                          label: "Total Fee",
                           color: AppColors.primaryBlue,
                         ),
                         SizedBox(width: 3.0),
@@ -493,28 +608,19 @@ class HomeContent extends StatelessWidget {
                         _buildDivider(),
 
                         _buildHeroStat(
-                          icon: Icons.currency_rupee_rounded,
-                          value: "₹8.2L",
-                          label: "Fees",
-                          color: Colors.green,
+                          icon: Icons.account_balance_wallet,
+                          value: "50,000",
+                          label: "Paid",
+                          color: Color(0xFF22C55E),
                         ),
 
                         _buildDivider(),
 
                         _buildHeroStat(
-                          icon: Icons.assignment_rounded,
-                          value: "28",
-                          label: "Tasks",
-                          color: Colors.deepPurple,
-                        ),
-
-                        _buildDivider(),
-
-                        _buildHeroStat(
-                          icon: Icons.notifications_active_rounded,
-                          value: "05",
-                          label: "Alerts",
-                          color: Colors.orange,
+                          icon: Icons.receipt_long_outlined,
+                          value: "3,05,000",
+                          label: "Pending",
+                          color:  Color(0xFFF97316),
                         ),
                       ],
                     ),
@@ -730,8 +836,8 @@ class HomeContent extends StatelessWidget {
 
                                 crossAxisCount: 4,
 
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
+                                crossAxisSpacing: 5,
+                                mainAxisSpacing: 5,
 
                                 mainAxisExtent: 90,
                               ),
@@ -798,9 +904,9 @@ class HomeContent extends StatelessWidget {
 
                                           MaterialPageRoute(
 
-                                            builder: (_) => MarkAttendanceScreen(
+                                            builder: (_) => AttendanceSummaryScreen(
                                               accessToken: accessToken,
-                                            ),
+                                            )
                                           ),
                                         );
                                       }
@@ -1316,7 +1422,7 @@ class HomeContent extends StatelessWidget {
                           ],
                         );
                       }
-                      else if (section.sectionType == "CAROUSEL_BANNER"
+                      else if (section.sectionType == "CAROUSEL_BANNERS"
                       ) {
 
                         return Column(
@@ -1556,6 +1662,8 @@ class HomeContent extends StatelessWidget {
                     },
 
                   ).toList(),
+                 // SizedBox(height: 10),
+                  //buildSummaryCards()
 
                 ],
               ),

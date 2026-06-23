@@ -108,6 +108,9 @@ class _SectionScreenState
                 (section) => SectionWithClass(
               className: classroom.name,
               section: section,
+                  anCaptured: false,
+                  fnCaptured: false,
+                  presentCount: 100
             ),
           ),
         )

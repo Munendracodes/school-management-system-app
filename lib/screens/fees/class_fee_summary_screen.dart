@@ -81,7 +81,7 @@ class _ClassFeeSummaryScreenState
           child: Container(
 
             padding:
-            const EdgeInsets.all(10),
+            const EdgeInsets.all(20),
 
             decoration: BoxDecoration(
 
@@ -925,7 +925,7 @@ class _ClassFeeSummaryScreenState
         ),
 
         label: const Text(
-          "Collect Fee",
+          "Update Fee Structure",
 
           style: TextStyle(
             color: Colors.white,
@@ -943,75 +943,83 @@ class _ClassFeeSummaryScreenState
   Widget build(BuildContext context) {
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9FC),
+
 
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(10.0),
-            child: Column(
-              children: [
-                _buildHeader(),
-                SizedBox(height: 15.0),
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              _buildHeader(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(5),
+                  child:Column(
+                    children: [
+                      SizedBox(height: 15.0),
+                      GridView.count(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
 
-                  crossAxisCount: 2,
+                        crossAxisCount: 2,
 
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
 
-                  childAspectRatio: 1.2,
+                        childAspectRatio: 1.2,
 
-                  children: [
+                        children: [
 
-                    buildSummaryCard(
-                      title: "Total Students",
-                      value: "25",
-                      icon: Icons.groups_rounded,
-                      iconColor: const Color(0xFF2457FF),
-                      bgColor: const Color(0xFFF4F6FF),
-                    ),
+                          buildSummaryCard(
+                            title: "Total Students",
+                            value: "25",
+                            icon: Icons.groups_rounded,
+                            iconColor: const Color(0xFF2457FF),
+                            bgColor: const Color(0xFFF4F6FF),
+                          ),
 
-                    buildSummaryCard(
-                      title: "Total Fees",
-                      value: "₹75,000",
-                      icon: Icons.currency_rupee_rounded,
-                      iconColor: const Color(0xFFF97316),
-                      bgColor: const Color(0xFFFFF8F2),
-                    ),
+                          buildSummaryCard(
+                            title: "Total Fees",
+                            value: "₹75,000",
+                            icon: Icons.currency_rupee_rounded,
+                            iconColor: const Color(0xFFF97316),
+                            bgColor: const Color(0xFFFFF8F2),
+                          ),
 
-                    buildSummaryCard(
-                      title: "Collected",
-                      value: "₹60,000",
-                      percentage: "80%",
-                      icon: Icons.check_circle_rounded,
-                      iconColor: const Color(0xFF22C55E),
-                      bgColor: const Color(0xFFF2FCF5),
-                    ),
+                          buildSummaryCard(
+                            title: "Collected",
+                            value: "₹60,000",
+                            percentage: "80%",
+                            icon: Icons.check_circle_rounded,
+                            iconColor: const Color(0xFF22C55E),
+                            bgColor: const Color(0xFFF2FCF5),
+                          ),
 
-                    buildSummaryCard(
-                      title: "Pending",
-                      value: "₹15,000",
-                      percentage: "20%",
-                      icon: Icons.account_balance_wallet_rounded,
-                      iconColor: const Color(0xFFEC4899),
-                      bgColor: const Color(0xFFFFF3F7),
-                    ),
-                  ],
+                          buildSummaryCard(
+                            title: "Pending",
+                            value: "₹15,000",
+                            percentage: "20%",
+                            icon: Icons.account_balance_wallet_rounded,
+                            iconColor: const Color(0xFFEC4899),
+                            bgColor: const Color(0xFFFFF3F7),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10.0),
+                      _buildFeeStructureCard(),
+                      const SizedBox(height: 10),
+                      buildSectionSummary(),
+                      const SizedBox(height: 5),
+                      buildCollectionProgressCard(),
+                      const SizedBox(height: 10),
+
+                    ],
+                  ),
                 ),
-                SizedBox(height: 10.0),
-                _buildFeeStructureCard(),
-                const SizedBox(height: 10),
-                buildSectionSummary(),
-                const SizedBox(height: 5),
-                buildCollectionProgressCard(),
-                const SizedBox(height: 10),
+              )
 
 
-              ],
-            ),
+            ],
           ),
         ),
       ),

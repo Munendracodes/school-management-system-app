@@ -850,7 +850,7 @@ class _FeesScreenState extends State<FeesScreen> {
         ),
 
         label: const Text(
-          "Collect Fee",
+          "Add Fee Structure",
 
           style: TextStyle(
             color: Colors.white,
@@ -979,8 +979,7 @@ class _FeesScreenState extends State<FeesScreen> {
             ],
           ),
         ),
-      ),
-      floatingActionButton: _buildCollectFeeButton()
+      )
     );
   }
 }

@@ -35,9 +35,17 @@ class StudentData {
 
   final String profileImage;
 
+  final String mobileNumber;
+
   bool isAbsent;
 
   bool isPresent;
+
+  bool isFnPresent;
+
+  bool isAnPresent;
+
+  String parentName;
 
 
   StudentData({
@@ -47,7 +55,11 @@ class StudentData {
     required this.sectionName,
     required this.profileImage,
     required this.isAbsent,
-    required this.isPresent
+    required this.isPresent,
+    this.isFnPresent = true,
+    this.isAnPresent = true,
+    required this.mobileNumber,
+    required this.parentName
   });
 
   factory StudentData.fromJson(
@@ -75,6 +87,26 @@ class StudentData {
       false,
       isPresent:
       false,
+      mobileNumber:
+
+      (json["parents"] != null &&
+          json["parents"] is List &&
+          json["parents"].isNotEmpty)
+
+          ? (json["parents"][0]
+      ["mobile_number"] ??
+          "")
+
+          : "",
+      parentName:  (json["parents"] != null &&
+          json["parents"] is List &&
+          json["parents"].isNotEmpty)
+
+          ? (json["parents"][0]
+      ["full_name"] ??
+          "")
+
+          : "",
     );
   }
 }

@@ -1069,7 +1069,6 @@ class _SectionFeeSummaryScreenState
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: const Color(0xFFF7F9FC),
 
       body: SafeArea(
         child: CustomScrollView(
@@ -1215,8 +1214,7 @@ class _SectionFeeSummaryScreenState
             ),
             ],
           ),
-        ),
-      floatingActionButton: _buildCollectFeeButton() ,
+        )
       );
 
   }

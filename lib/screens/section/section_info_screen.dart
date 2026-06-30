@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:school_management_app/models/section_with_class.dart';
+import 'package:school_management_app/screens/diary/diary_screen.dart';
+import 'package:school_management_app/screens/homework/home_work_screen.dart';
 import 'package:school_management_app/screens/students/student_info_screen.dart';
 import '../../models/active_academic_year_response.dart';
 import '../../services/academic_year_service.dart';
@@ -176,6 +178,84 @@ class _SectionInfoScreenState
         isLoading = false;
       });
     }
+  }
+
+  Widget buildQuickCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Container(
+
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: const Color(0xFFE7ECF5),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                height: 46,
+                width: 46,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 24,
+                ),
+              ),
+
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment:
+                  CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                        color: Color(0xFF081B5C),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF667085),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -653,7 +733,7 @@ class _SectionInfoScreenState
                       Expanded(
 
                         child: Text(
-                          "${widget.selectedClass} - Section ${widget.selectedSection}",
+                          "${widget.selectedClass} - ${widget.selectedSection}",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -767,6 +847,71 @@ class _SectionInfoScreenState
                 ],
               ),
             ),
+
+            const SizedBox(height: 5),
+
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 7),
+              child: Row(
+                children: [
+
+                  buildQuickCard(
+
+                    icon: Icons.menu_book_rounded,
+
+                    title: "Homework",
+
+                    subtitle: "12 Pending",
+
+                    color: Colors.deepOrange,
+
+                    onTap: () async {
+                      HapticFeedback.lightImpact();
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => HomeWorkScreen(
+                                accessToken: widget.accessToken,
+                                backgroundColor: widget.backgroundColor,
+                              className: widget.selectedClass,
+                              sectionName: widget.selectedSection,
+
+                            )
+                        )
+                      );
+
+                    },
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  buildQuickCard(
+
+                    icon: Icons.auto_stories_rounded,
+
+                    title: "Diary",
+
+                    subtitle: "3 New Notes",
+
+                    color: Colors.green,
+
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_)=>DiaryScreen(accessToken: widget.accessToken,
+                              className: widget.selectedClass,
+                              sectionName: widget.selectedSection,)
+                        )
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 18),
 
             /// STUDENTS LIST
             Expanded(

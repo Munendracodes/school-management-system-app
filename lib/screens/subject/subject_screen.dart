@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:school_management_app/screens/subject/add_subject_screen.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../models/subject_model.dart';
+import '../../services/subject_service.dart';
 
 class SubjectScreen extends StatefulWidget {
   const SubjectScreen({super.key});
@@ -14,26 +18,9 @@ class SubjectScreen extends StatefulWidget {
 class _SubjectScreenState
     extends State<SubjectScreen> {
 
-  final List<Map<String, dynamic>> subjects = [
+  List<SubjectModel> subjects = [];
 
-    {
-      "name": "Telugu",
-      "className": "Class 1 - Class 10",
-      "createdAt": "2026-05-26",
-    },
-
-    {
-      "name": "English",
-      "className": "Class 1 - Class 10",
-      "createdAt": "2026-05-26",
-    },
-
-    {
-      "name": "Mathematics",
-      "className": "Class 1 - Class 10",
-      "createdAt": "2026-05-26",
-    }
-  ];
+  bool isLoading = true;
 
   String formatDate(String date) {
     return DateFormat(
@@ -44,9 +31,61 @@ class _SubjectScreenState
   }
 
   @override
+  void initState() {
+
+    super.initState();
+
+    loadSubjects();
+  }
+  Future<void> loadSubjects() async {
+
+    try {
+
+      final response =
+      await SubjectService.getSubjects();
+
+      setState(() {
+
+        subjects = response;
+
+        isLoading = false;
+
+      });
+
+    } catch (e) {
+
+      setState(() {
+
+        isLoading = false;
+
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+
+        SnackBar(
+
+          content: Text(e.toString()),
+        ),
+      );
+    }
+  }
+
+
+  @override
   Widget build(BuildContext context) {
 
     const String academicYear = "2026-2027";
+
+    if (isLoading) {
+
+      return const Scaffold(
+
+        body: Center(
+
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     return Scaffold(
 
@@ -59,10 +98,30 @@ class _SubjectScreenState
         backgroundColor:
         AppColors.primaryBlue,
 
-        onPressed: () {
+        onPressed: () async {
+          HapticFeedback.lightImpact();
+          final result = await Navigator.push(
 
-          /// TODO:
-          /// Navigate Add Section Screen
+            context,
+
+            MaterialPageRoute(
+
+              builder: (_) => AddSubjectScreen(
+
+                accessToken: "",
+
+                academicYear: academicYear,
+              ),
+            ),
+          );
+
+          if (result == true) {
+
+            loadSubjects();
+
+            if (!mounted) return;
+
+          }
         },
 
         icon: const Icon(
@@ -302,16 +361,22 @@ class _SubjectScreenState
                                       height: 8),
 
                                   Text(
-                                    subjects.length
+
+                                    subjects
+
+                                        .where((e) => e.isActive)
+
+                                        .length
+
                                         .toString(),
 
-                                    style:
-                                    const TextStyle(
-                                      color:
-                                      Colors.white,
+                                    style: const TextStyle(
+
+                                      color: Colors.white,
+
                                       fontSize: 15,
-                                      fontWeight:
-                                      FontWeight.bold,
+
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ],
@@ -337,7 +402,7 @@ class _SubjectScreenState
                                 children: [
 
                                   const Text(
-                                    "Classes Covered",
+                                    "Active Subjects",
 
                                     style: TextStyle(
                                       color:
@@ -374,7 +439,7 @@ class _SubjectScreenState
                     children: [
                       const Expanded(
                         child: Text(
-                          "All Classes",
+                          "All Subjects",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight:
@@ -400,9 +465,9 @@ class _SubjectScreenState
                   /// LIST
                   ...subjects.map(
 
-                        (year) =>
-                        _buildSectionCard(
-                          year,
+                        (subject) =>
+                        __buildSubjectCard(
+                          subject,
                         ),
                   ),
                 ],
@@ -414,8 +479,8 @@ class _SubjectScreenState
     );
   }
 
-  Widget _buildSectionCard(
-      Map<String, dynamic> section,
+  Widget __buildSubjectCard(
+      SubjectModel subject,
       ) {
 
     final bool isActive =false;
@@ -494,7 +559,7 @@ class _SubjectScreenState
                     Expanded(
 
                       child: Text(
-                        section["name"],
+                        subject.name,
 
                         style:
                         const TextStyle(
@@ -518,24 +583,39 @@ class _SubjectScreenState
                   ],
                 ),
                 SizedBox(height: 10.0),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.greenCard,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    section["className"],
-                    style: const TextStyle(
-                      color: Colors.green,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 12,
+                if (subject.teachers.isEmpty)
+
+                  Container(
+
+                    padding: const EdgeInsets.symmetric(
+
+                      horizontal: 12,
+
+                      vertical: 6,
+                    ),
+
+                    decoration: BoxDecoration(
+
+                      color: Colors.orange.shade50,
+
+                      borderRadius:
+                      BorderRadius.circular(20),
+                    ),
+
+                    child: const Text(
+
+                      "No Teachers Assigned",
+
+                      style: TextStyle(
+
+                        color: Colors.orange,
+
+                        fontWeight: FontWeight.w700,
+
+                        fontSize: 12,
+                      ),
                     ),
                   ),
-                ),
                 /*     SizedBox(height: 5.0),
                 _infoRow(
                   Icons.access_time_rounded,

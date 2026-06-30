@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:school_management_app/screens/class/add_class_screen.dart';
 import 'package:school_management_app/screens/students/students_screen.dart';
 
 import '../../core/constants/app_colors.dart';
@@ -129,10 +130,17 @@ class _ClassScreenState
         backgroundColor:
         AppColors.primaryBlue,
 
-        onPressed: () {
+        onPressed: () async {
 
-          /// TODO:
-          /// Navigate Add Class Scree
+          HapticFeedback.lightImpact();
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => AddClassScreen(accessToken: widget.accessToken)
+            )
+          );
+          if(result == true)
+            await loadAcademicYear();
         },
 
         icon: const Icon(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:school_management_app/screens/section/add_section_screen.dart';
 import 'package:school_management_app/screens/section/section_info_screen.dart';
-
 import '../../core/constants/app_colors.dart';
 import '../../models/active_academic_year_response.dart';
 import '../../models/section_with_class.dart';
@@ -154,10 +154,18 @@ class _SectionScreenState
         backgroundColor:
         AppColors.primaryBlue,
 
-        onPressed: () {
+        onPressed: () async {
 
-          /// TODO:
-          /// Navigate Add Section Screen
+          HapticFeedback.lightImpact();
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => AddSectionScreen(accessToken: widget.accessToken)
+            )
+          );
+          if(result == true)
+            loadAcademicYear();
+
         },
 
         icon: const Icon(
@@ -593,8 +601,7 @@ class _SectionScreenState
 
               child: Column(
 
-                crossAxisAlignment:
-                CrossAxisAlignment.center,
+
 
                 children: [
 
@@ -602,21 +609,6 @@ class _SectionScreenState
 
                     children: [
 
-                      Expanded(
-
-                        child: Text(
-                          "Section ${section.name}",
-
-                          style:
-                          const TextStyle(
-                            fontSize: 15,
-                            fontWeight:
-                            FontWeight.bold,
-                            color:
-                            AppColors.darkText,
-                          ),
-                        ),
-                      ),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -631,10 +623,32 @@ class _SectionScreenState
                           style: const TextStyle(
                             color: Colors.green,
                             fontWeight: FontWeight.w700,
-                            fontSize: 12,
+                            fontSize: 14
                           ),
                         ),
                       ),
+
+                      SizedBox(width: 50),
+
+
+                      Expanded(
+
+                        child: Text(
+                          "Section ${section.name}",
+
+                          style:
+                          const TextStyle(
+                            fontSize: 14,
+                            fontWeight:
+                            FontWeight.bold,
+                            color:
+                            AppColors.darkText,
+                          ),
+                        ),
+                      ),
+
+
+
 
                       const Icon(
                         Icons.more_vert_rounded,

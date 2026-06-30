@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import '../../widgets/profile_photo_widget.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/teacher_info_response.dart';
 import '../../services/teachers_service.dart';
@@ -232,21 +232,20 @@ class _TeacherInfoScreenState
                         children: [
 
                           /// IMAGE
-                          Container(
-                            height: 60,
-                            width: 60,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 4,
-                              ),
-                              image: const DecorationImage(
-                                image: NetworkImage(
-                                  "https://i.pravatar.cc/300?img=12",
-                                ),
-                                fit: BoxFit.cover,
-                              ),
+                          SizedBox(
+
+                            width: 110,
+
+                            child: Column(
+
+                              children: [
+
+                                ProfilePhotoWidget.teacher(
+                                    teacherId: widget.teacherId,
+                                  radius: 38,
+
+                                )
+                              ],
                             ),
                           ),
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:school_management_app/screens/fees/student_fee_summary_screen.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/student_info_response.dart';
 import '../../services/student_info_service.dart';
@@ -10,6 +12,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:gallery_saver_plus/gallery_saver.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../widgets/profile_photo_widget.dart';
 
 
 class StudentInfoScreen extends StatefulWidget {
@@ -30,6 +33,8 @@ class StudentInfoScreen extends StatefulWidget {
 
 class _StudentInfoScreenState
     extends State<StudentInfoScreen> {
+
+
   final ScreenshotController screenshotController =
   ScreenshotController();
 
@@ -135,8 +140,6 @@ class _StudentInfoScreenState
       );
     }
   }
-
-
   Future<void> getStudentInfo() async {
 
     try {
@@ -150,6 +153,9 @@ class _StudentInfoScreenState
         studentId:
         widget.studentId,
       );
+
+
+
 
       setState(() {
 
@@ -175,6 +181,540 @@ class _StudentInfoScreenState
 
     await getStudentInfo();
   }
+  Widget _buildStudentIdCard() {
+
+    return Container(
+
+      decoration: BoxDecoration(
+
+        color: Colors.white,
+
+        borderRadius: BorderRadius.circular(26),
+
+        boxShadow: [
+
+          BoxShadow(
+
+            color: Colors.black.withOpacity(.08),
+
+            blurRadius: 20,
+
+            offset: const Offset(0,8),
+          )
+        ],
+      ),
+
+      child: Column(
+
+        children: [
+
+          _buildIdCardHeader(),
+
+          _buildStudentSection(),
+        SizedBox(height: 10)
+
+        // _buildAddressSection(),
+        ],
+      ),
+    );
+  }
+  Widget _buildIdCardHeader() {
+
+    return Container(
+
+      padding: const EdgeInsets.all(18),
+
+      decoration: const BoxDecoration(
+
+        gradient: LinearGradient(
+
+          colors: [
+
+            Color(0xFF081B5C),
+
+            Color(0xFF2457FF),
+          ],
+        ),
+
+        borderRadius: BorderRadius.only(
+
+          topLeft: Radius.circular(26),
+
+          topRight: Radius.circular(26),
+        ),
+      ),
+
+      child: Column(
+
+        children: [
+
+          Row(
+
+            children: [
+
+              Container(
+
+                height: 50,
+
+                width: 50,
+
+                decoration: BoxDecoration(
+
+                  color: Colors.white,
+
+                  borderRadius:
+                  BorderRadius.circular(14),
+                ),
+
+                child: Image.asset(
+                  "assets/images/logo.png",
+
+                  width: 100,
+
+                  fit: BoxFit.contain,
+                ),
+              ),
+
+              const SizedBox(width: 14),
+
+              Expanded(
+
+                child: Column(
+
+                  crossAxisAlignment:
+                  CrossAxisAlignment.start,
+
+                  children: [
+
+                    const Text(
+
+                      "SUNSHINE PUBLIC SCHOOL",
+
+                      style: TextStyle(
+
+                        color: Colors.white,
+
+                        fontWeight: FontWeight.w800,
+
+                        fontSize: 17,
+                      ),
+                    ),
+
+                    const SizedBox(height: 3),
+
+                    Text(
+
+                      "Learn • Grow • Excel",
+
+                      style: TextStyle(
+
+                        color: Colors.white70,
+
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+        ],
+      ),
+    );
+  }
+  Widget _buildStudentSection() {
+
+    return Padding(
+
+      padding: const EdgeInsets.all(18),
+
+      child: Row(
+
+        crossAxisAlignment: CrossAxisAlignment.start,
+
+        children: [
+
+          ///==========================
+          /// LEFT SIDE
+          ///==========================
+
+          SizedBox(
+
+            width: 110,
+
+            child: Column(
+
+              children: [
+
+                ProfilePhotoWidget.student(
+                  studentId: widget.studentId,
+                  radius: 38,
+                ),
+
+                const SizedBox(height: 10),
+
+                Text(
+
+                  student?.fullName ?? "",
+
+                  textAlign: TextAlign.center,
+
+                  maxLines: 2,
+
+                  overflow: TextOverflow.ellipsis,
+
+                  style: const TextStyle(
+
+                    fontSize: 15,
+
+                    fontWeight: FontWeight.bold,
+
+                    color: Color(0xFF081B5C),
+                  ),
+                ),
+
+                const SizedBox(height: 6),
+
+                Container(
+
+                  padding: const EdgeInsets.symmetric(
+
+                    horizontal: 10,
+
+                    vertical: 5,
+                  ),
+
+                  decoration: BoxDecoration(
+
+                    color: const Color(0xFFEAF1FF),
+
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+
+                  child: Text(
+
+                    "${student?.classroom.name} • ${student?.section.name}",
+
+                    style: const TextStyle(
+
+                      color: Color(0xFF2457FF),
+
+                      fontWeight: FontWeight.bold,
+
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 18),
+
+          ///==========================
+          /// RIGHT SIDE
+          ///==========================
+
+          Expanded(
+
+            child: Column(
+
+              children: [
+
+                _buildProfileInfo(
+
+                  "Parent Name",
+
+                  student!.parents.isNotEmpty
+
+                      ? student!.parents.first.fullName
+
+                      : "-",
+
+                  Icons.person_outline,
+                ),
+
+                const SizedBox(height: 12),
+
+                _buildProfileInfo(
+
+                  "Phone Number",
+
+                  student!.parents.isNotEmpty
+
+                      ? student!.parents.first.mobileNumber
+
+                      : "-",
+
+                  Icons.phone,
+                ),
+
+                const SizedBox(height: 12),
+
+                _buildProfileInfo(
+
+                  "Academic Year",
+
+                  student!.academicYear.name,
+
+                  Icons.calendar_today,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _buildStudentInfoTile(
+
+      IconData icon,
+
+      String title,
+
+      String value) {
+
+    return Row(
+
+      children: [
+
+        Container(
+
+          padding: const EdgeInsets.all(10),
+
+          decoration: BoxDecoration(
+
+            color: const Color(0xFFEAF1FF),
+
+            borderRadius: BorderRadius.circular(12),
+          ),
+
+          child: Icon(
+
+            icon,
+
+            color: const Color(0xFF2457FF),
+
+            size: 18,
+          ),
+        ),
+
+        const SizedBox(width: 14),
+
+        Expanded(
+
+          child: Column(
+
+            crossAxisAlignment:
+            CrossAxisAlignment.start,
+
+            children: [
+
+              Text(
+
+                title,
+
+                style: const TextStyle(
+
+                  color: Color(0xFF667085),
+
+                  fontSize: 12,
+                ),
+              ),
+
+              const SizedBox(height: 2),
+
+              Text(
+
+                value,
+
+                style: const TextStyle(
+
+                  color: Color(0xFF081B5C),
+
+                  fontWeight: FontWeight.w700,
+
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProfileInfo(
+
+      String title,
+
+      String value,
+
+      IconData icon) {
+
+    return Row(
+
+      crossAxisAlignment: CrossAxisAlignment.start,
+
+      children: [
+
+        Container(
+
+          padding: const EdgeInsets.all(8),
+
+          decoration: BoxDecoration(
+
+            color: const Color(0xFFEAF1FF),
+
+            borderRadius: BorderRadius.circular(10),
+          ),
+
+          child: Icon(
+
+            icon,
+
+            size: 18,
+
+            color: const Color(0xFF2457FF),
+          ),
+        ),
+
+        const SizedBox(width: 10),
+
+        Expanded(
+
+          child: Column(
+
+            crossAxisAlignment:
+            CrossAxisAlignment.start,
+
+            children: [
+
+              Text(
+
+                title,
+
+                style: const TextStyle(
+
+                  fontSize: 12,
+
+                  color: Color(0xFF667085),
+                ),
+              ),
+
+              const SizedBox(height: 2),
+
+              Text(
+
+                value,
+
+                maxLines: 2,
+
+                overflow: TextOverflow.ellipsis,
+
+                style: const TextStyle(
+
+                  fontWeight: FontWeight.w700,
+
+                  fontSize: 14,
+
+                  color: Color(0xFF081B5C),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAddressSection() {
+
+    return Padding(
+
+      padding: const EdgeInsets.fromLTRB(
+        18,
+        0,
+        18,
+        16,
+      ),
+
+      child: Column(
+
+        crossAxisAlignment:
+        CrossAxisAlignment.start,
+
+        children: [
+
+          const Divider(height: 8),
+
+          const SizedBox(height: 8),
+
+          Row(
+
+            children: const [
+
+              Icon(
+
+                Icons.location_on_rounded,
+
+                color: Color(0xFF2457FF),
+
+                size: 18,
+              ),
+
+              SizedBox(width: 6),
+
+              Text(
+
+                "Address",
+
+                style: TextStyle(
+
+                  fontWeight: FontWeight.w700,
+
+                  color: Color(0xFF081B5C),
+
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 6),
+
+          Padding(
+
+            padding: const EdgeInsets.only(left: 24),
+
+            child: Text(
+
+              "ANR Apartments, NGO Colony, Rayachoty",
+
+              maxLines: 2,
+
+              overflow: TextOverflow.ellipsis,
+
+              style: const TextStyle(
+
+                fontSize: 13,
+
+                height: 1.3,
+
+                color: Color(0xFF667085),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -382,68 +922,54 @@ class _StudentInfoScreenState
       double paidpercentage = (paidFee/totalFee)*100;
       pendingFee = totalFee - paidFee;
 
-      return Container(
+      return InkWell(
+        onTap: (){
+          HapticFeedback.lightImpact();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => StudentFeeSummaryScreen()
+            )
+          );
+        },
+        child: Container(
 
-        padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
 
-        decoration: BoxDecoration(
+          decoration: BoxDecoration(
 
-          color: const Color(0xFFF5F7FF),
+            color: const Color(0xFFF5F7FF),
 
-          borderRadius:
-          BorderRadius.circular(24),
+            borderRadius:
+            BorderRadius.circular(24),
 
-          border: Border.all(
-            color: const Color(0xFFE8ECF4),
+            border: Border.all(
+              color: const Color(0xFFE8ECF4),
+            ),
           ),
-        ),
 
-        child: Column(
+          child: Column(
 
-          children: [
+            children: [
 
-            Row(
+              Row(
 
-              mainAxisAlignment:
-              MainAxisAlignment.spaceBetween,
+                mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
 
-              children: [
+                children: [
 
-                const Text(
+                  const Text(
 
-                  "Fee Information",
+                    "Fee Information",
 
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF081B5C),
-                  ),
-                ),
-                if(pendingFee >0)
-                Container(
-
-                  padding:
-                  const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF4E5),
-                    borderRadius:
-                    BorderRadius.circular(30),
-                  ),
-
-                  child: Text(
-                    "PENDING",
                     style: TextStyle(
-                      color: Colors.orange,
+                      fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      fontSize: 12
+                      color: Color(0xFF081B5C),
                     ),
                   ),
-                ),
-                if(pendingFee <=0)
+                  if(pendingFee >0)
                   Container(
 
                     padding:
@@ -453,146 +979,171 @@ class _StudentInfoScreenState
                     ),
 
                     decoration: BoxDecoration(
-                      color: Colors.green,
+                      color: const Color(0xFFFFF4E5),
                       borderRadius:
                       BorderRadius.circular(30),
                     ),
 
                     child: Text(
-                      "PAID",
+                      "PENDING",
                       style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12
+                        color: Colors.orange,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12
                       ),
                     ),
                   ),
-              ],
-            ),
+                  if(pendingFee <=0)
+                    Container(
 
-            const SizedBox(height: 10),
+                      padding:
+                      const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
 
-            Row(
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius:
+                        BorderRadius.circular(30),
+                      ),
 
-              children: [
+                      child: Text(
+                        "PAID",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12
+                        ),
+                      ),
+                    ),
+                ],
+              ),
 
-            Expanded(
+              const SizedBox(height: 10),
 
-            child: Column(
-
-            children: [
-
-              SizedBox(
-              height: 110,
-              width: 110,
-
-              child: Stack(
-                alignment: Alignment.center,
+              Row(
 
                 children: [
 
-                  SizedBox(
-                    height: 100,
-                    width: 100,
+              Expanded(
 
-                    child: CircularProgressIndicator(
+              child: Column(
 
-                      value: paidpercentage/100,
+              children: [
 
-                      strokeWidth: 10,
+                SizedBox(
+                height: 110,
+                width: 110,
 
-                      backgroundColor:
-                      const Color(0xFFE5E7EB),
+                child: Stack(
+                  alignment: Alignment.center,
 
-                      valueColor:
-                      const AlwaysStoppedAnimation<Color>(
-                       AppColors.primaryBlue,
+                  children: [
+
+                    SizedBox(
+                      height: 100,
+                      width: 100,
+
+                      child: CircularProgressIndicator(
+
+                        value: paidpercentage/100,
+
+                        strokeWidth: 10,
+
+                        backgroundColor:
+                        const Color(0xFFE5E7EB),
+
+                        valueColor:
+                        const AlwaysStoppedAnimation<Color>(
+                         AppColors.primaryBlue,
+                        ),
                       ),
                     ),
+
+                    Column(
+                      mainAxisAlignment:
+                      MainAxisAlignment.center,
+
+                      children: [
+
+                        Text(
+                          "$paidpercentage%",
+
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primaryBlue,
+                          ),
+                        ),
+
+                        const SizedBox(height: 2),
+
+                        const Text(
+                          "Paid",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF667085),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+
+                  Container(
+                    width: 1,
+                    height: 100,
+                    color: Color(0xFFE5E7EB),
                   ),
 
-                  Column(
-                    mainAxisAlignment:
-                    MainAxisAlignment.center,
+                  const SizedBox(width: 20),
 
-                    children: [
+                  Expanded(
 
-                      Text(
-                        "$paidpercentage%",
+                    child: Column(
 
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.primaryBlue,
+                      crossAxisAlignment:
+                      CrossAxisAlignment.start,
+
+                      children: [
+
+                        Text(
+                          "Total Fees : ₹ $totalFee",
+                          style: const TextStyle(fontWeight: FontWeight.bold,color: Color(0xFF081B5C)),
                         ),
-                      ),
 
-                      const SizedBox(height: 2),
+                        const SizedBox(height: 10),
 
-                      const Text(
-                        "Paid",
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF667085),
+                        Text(
+                          "Paid : ₹ $paidFee",
+                          style: TextStyle(
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold
+                          ),
                         ),
-                      ),
-                    ],
+
+                        const SizedBox(height: 10),
+
+                        Text(
+                          "Pending : ₹ $pendingFee",
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
-            ),
-          ],
-        ),
-      ),
-
-                Container(
-                  width: 1,
-                  height: 100,
-                  color: Color(0xFFE5E7EB),
-                ),
-
-                const SizedBox(width: 20),
-
-                Expanded(
-
-                  child: Column(
-
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
-
-                    children: [
-
-                      Text(
-                        "Total Fees : ₹ $totalFee",
-                        style: const TextStyle(fontWeight: FontWeight.bold,color: Color(0xFF081B5C)),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      Text(
-                        "Paid : ₹ $paidFee",
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      Text(
-                        "Pending : ₹ $pendingFee",
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }
@@ -847,307 +1398,8 @@ class _StudentInfoScreenState
             Screenshot(
 
               controller: screenshotController,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFF0F2C8C),
-                      const Color(0xFF2457FF),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
 
-                  borderRadius: BorderRadius.circular(26),
-
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 18,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-
-                child: Column(
-
-                  children: [
-                    /// WHITE BODY
-                    Container(
-
-                      width: double.infinity,
-
-                      child: Padding(
-
-                        padding: const EdgeInsets.all(18),
-
-                        child: Column(
-
-                          children: [
-
-                        /// ACTION BUTTONS
-                       /* Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text("Sunshine Public School",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 20
-                            ),),
-
-                          ],
-                        ),
-                        SizedBox(height: 10.0),*/
-
-                  /// WHITE BODY
-
-                            /// TOP CONTENT
-                            Row(
-
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-
-                              children: [
-
-                                /// PHOTO
-                                Column(
-
-                                  children: [
-
-                                    Container(
-
-                                      height: 80,
-                                      width: 80,
-
-                                      decoration: BoxDecoration(
-
-                                        borderRadius:
-                                        BorderRadius.circular(18),
-
-                                        border: Border.all(
-                                          color: const Color(0xFF2457FF),
-                                          width: 2,
-                                        ),
-                                      ),
-
-                                      child: ClipRRect(
-
-                                        borderRadius:
-                                        BorderRadius.circular(16),
-
-                                        child: Image.network(
-
-                                          "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    Text(
-
-                                      student?.classroom.name ?? "",
-
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Text(
-                                      student?.academicYear.name ?? "",
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                   /* Container(
-
-                                      padding:
-                                      const EdgeInsets.symmetric(
-                                        horizontal: 14,
-                                        vertical: 7,
-                                      ),
-
-                                      decoration: BoxDecoration(
-
-                                        color: const Color(0xFF2457FF),
-
-                                        borderRadius:
-                                        BorderRadius.circular(30),
-                                      ),
-
-                                      child: Text(
-
-                                        student?.classroom.name ?? "",
-
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ),*/
-
-                                  ],
-                                ),
-
-                                const SizedBox(width: 18),
-
-                                /// DETAILS
-                                Expanded(
-
-                                  child: Column(
-
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-
-                                    children: [
-
-                                      Text(
-
-                                        student?.fullName ?? "",
-
-                                        maxLines: 2,
-
-                                        overflow: TextOverflow.ellipsis,
-
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w800,
-                                          color: Colors.white,
-                                          height: 1.1,
-                                        ),
-                                      ),
-
-                                      const SizedBox(height: 10),
-
-                                      _buildIdRow(
-                                        Icons.family_restroom_rounded,
-                                        Colors.white,
-                                       student!.gender.toLowerCase() == "male"?"S/O":"D/O",
-                                        student?.parents.isNotEmpty == true
-                                            ? student!.parents.first.fullName
-                                            : "-",
-                                      ),
-
-                                      const SizedBox(height: 12),
-
-                                      _buildIdRow(
-                                        Icons.bloodtype_rounded,
-                                        Colors.red,
-                                        "Blood Group",
-                                        "B+ve",
-                                      ),
-
-                                      const SizedBox(height: 12),
-
-                                      _buildIdRow(
-                                        Icons.calendar_month_rounded,
-                                        Colors.white,
-                                        "Mobile No ",
-                                        student?.parents.isNotEmpty == true
-                                            ? student!.parents.first.mobileNumber
-                                            : "-",
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 18),
-
-                            /// ADDRESS
-                            Container(
-
-                              width: double.infinity,
-
-                              padding: const EdgeInsets.all(14),
-
-                              decoration: BoxDecoration(
-
-                                color: const Color(0xFFF4F7FF),
-
-                                borderRadius:
-                                BorderRadius.circular(18),
-                              ),
-
-                              child: Row(
-
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
-
-                                children: [
-
-                                  Container(
-
-                                    padding: const EdgeInsets.all(10),
-
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFEAF1FF),
-                                      borderRadius:
-                                      BorderRadius.circular(14),
-                                    ),
-
-                                    child: const Icon(
-                                      Icons.location_on_rounded,
-                                      color: Color(0xFF2457FF),
-                                      size: 22,
-                                    ),
-                                  ),
-
-                                  const SizedBox(width: 5),
-
-                                  const Expanded(
-
-                                    child: Column(
-
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-
-                                      children: [
-
-                                        Text(
-
-                                          "Address",
-
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w700,
-                                            color: Color(0xFF2457FF),
-                                          ),
-                                        ),
-
-                                        SizedBox(height: 4),
-
-                                        Text(
-
-                                          "#37/15, Kothapeta, Rayachoty,\nAnnamayya District, Andhra Pradesh",
-
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            height: 1.5,
-                                            color: Color(0xFF475467),
-                                            fontWeight: FontWeight.normal,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              child: _buildStudentIdCard(),
             ),
 
             const SizedBox(height: 10),

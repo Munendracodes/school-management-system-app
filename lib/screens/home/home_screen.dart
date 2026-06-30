@@ -3,12 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:school_management_app/screens/attendance/attendance_summary_screen.dart';
 import 'package:school_management_app/screens/attendance/mark_attendance_screen.dart';
 import 'package:school_management_app/screens/parents/parents_screen.dart';
+import 'package:school_management_app/screens/reports/reports_screen.dart';
 import 'package:school_management_app/screens/teachers/add_teacher_screen.dart';
 import 'package:school_management_app/screens/teachers/teachers_screen.dart';
 import '../../core/utils/responsive.dart';
 import '../../core/widgets/app_logo.dart';
 import '../../core/constants/app_colors.dart';
 import '../../services/home_service.dart';
+import '../../widgets/app_drawer.dart';
 import '../manage/manage_screen.dart';
 import '../../models/home_response.dart';
 import '../students/add_student_screen.dart';
@@ -61,11 +63,56 @@ class _HomeScreenState extends State<HomeScreen> {
       ManageScreen(
           accessToken: widget.accessToken,
           backgroundColor: AppColors.primaryBlue
-
+      ),
+      ReportsScreen(
+          accessToken: widget.accessToken,
+          backgroundColor: AppColors.primaryBlue
       ),
     ];
 
     return Scaffold(
+
+      drawer: AppDrawer(
+
+        selectedMenu: "Home",
+
+        onMenuTap: (menu) {
+
+          switch (menu) {
+
+            case "Attendance":
+
+              Navigator.push(
+
+                context,
+
+                MaterialPageRoute(
+
+                  builder: (_) =>
+                      AttendanceSummaryScreen(
+
+                        accessToken:
+                        widget.accessToken,
+                      ),
+                ),
+              );
+
+              break;
+
+            case "Logout":
+
+            // Add logout logic here
+
+              break;
+
+            default:
+
+            // Do nothing for now
+
+              break;
+          }
+        },
+      ),
 
       backgroundColor: const Color(0xFFF9FBFF),
 
@@ -409,16 +456,23 @@ class HomeContent extends StatelessWidget {
                 children: [
 
                   /// MENU
-                  const Padding(
-                    padding: EdgeInsets.only(top: 10),
+                  IconButton(
 
-                    child: Icon(
-                      Icons.menu_rounded,
-                      size: 23
+                    icon: const Icon(
+                      Icons.person_2_rounded,
+                      size: 30,
+                      color: AppColors.primaryBlue,
+
                     ),
+
+                    onPressed: () {
+
+                      Scaffold.of(context)
+                          .openDrawer();
+                    },
                   ),
 
-                  const SizedBox(width: 10),
+
 
                   /// LOGO + SCHOOL
                   Expanded(

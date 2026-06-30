@@ -80,16 +80,23 @@ class ManageScreen extends StatelessWidget {
                 children: [
 
                   /// MENU
-                  const Padding(
-                    padding: EdgeInsets.only(top: 10),
+                  IconButton(
 
-                    child: Icon(
-                        Icons.menu_rounded,
-                        size: 23
+                    icon: const Icon(
+                      Icons.person_2_rounded,
+                      size: 30,
+                      color: AppColors.primaryBlue,
+
                     ),
+
+                    onPressed: () {
+
+                      Scaffold.of(context)
+                          .openDrawer();
+                    },
                   ),
 
-                  const SizedBox(width: 10),
+
 
                   /// LOGO + SCHOOL
                   Expanded(
@@ -350,7 +357,8 @@ class ManageScreen extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (_) =>
-                AcademicYearScreen(
+                AcademicYearScreen(accessToken: accessToken,
+
                 ),
           ),
         );

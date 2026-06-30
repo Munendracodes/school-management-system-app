@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:school_management_app/models/academic_year_response.dart';
+import 'package:school_management_app/screens/academicyear/add_academicyear_screen.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../models/active_academic_year_response.dart';
+import '../../services/academic_year_service.dart';
 
 class AcademicYearScreen extends StatefulWidget {
-  const AcademicYearScreen({super.key});
+  final String accessToken;
+  const AcademicYearScreen({
+    super.key,
+    required this.accessToken
+  });
 
   @override
   State<AcademicYearScreen> createState() =>
@@ -13,6 +22,10 @@ class AcademicYearScreen extends StatefulWidget {
 
 class _AcademicYearScreenState
     extends State<AcademicYearScreen> {
+  bool isLoading = true;
+
+  List<AcademicYearData> academicYears = [];
+
 
   final List<Map<String, dynamic>> _academicYears = [
 
@@ -52,14 +65,61 @@ class _AcademicYearScreenState
     );
   }
 
+  Future<void> loadAcademicYear() async {
+
+
+
+    try {
+
+      final response =
+      await AcademicYearService
+          .getAcademicYears(
+        accessToken:
+        widget.accessToken,
+      );
+
+      setState(() {
+
+        academicYears = response.academicYears;
+
+      });
+      print("academic years are");
+      print(academicYears);
+
+
+      setState(() {
+
+        isLoading = false;
+      });
+
+    } catch (e) {
+
+      setState(() {
+
+        isLoading = false;
+      });
+    }
+  }
+
+  void initState(){
+    super.initState();
+    loadAcademicYear();
+
+  }
+
   @override
   Widget build(BuildContext context) {
 
-    final activeYear =
-    _academicYears.firstWhere(
-          (e) => e["isActive"] == true,
-      orElse: () => {},
-    );
+   final activeYear =
+       academicYears.isNotEmpty ? academicYears.firstWhere(
+           (e) => e.isActive == true,
+         orElse: ()=> academicYears.first
+       ) : null;
+    if(isLoading){
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
 
@@ -72,10 +132,19 @@ class _AcademicYearScreenState
         backgroundColor:
         AppColors.primaryBlue,
 
-        onPressed: () {
-
-          /// TODO:
-          /// Navigate Add Academic Year Screen
+        onPressed: ()  async {
+          HapticFeedback.lightImpact();
+          final result = await
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_)=> AddAcademicyearScreen(
+                  accessToken: widget.accessToken
+                )
+            )
+          );
+          if(result == true)
+            await loadAcademicYear();
         },
 
         icon: const Icon(
@@ -315,7 +384,7 @@ class _AcademicYearScreenState
                                       height: 8),
 
                                   Text(
-                                    _academicYears.length
+                                    academicYears.length
                                         .toString(),
 
                                     style:
@@ -362,8 +431,8 @@ class _AcademicYearScreenState
                                       height: 8),
 
                                   Text(
-                                    activeYear["name"]
-                                        .toString(),
+                                    "${activeYear?.name
+                                        .toString()}",
 
                                     style:
                                     const TextStyle(
@@ -412,7 +481,7 @@ class _AcademicYearScreenState
                   const SizedBox(height: 5),
 
                   /// LIST
-                  ..._academicYears.map(
+                  ...academicYears.map(
 
                         (year) =>
                         _buildAcademicYearCard(
@@ -429,11 +498,11 @@ class _AcademicYearScreenState
   }
 
   Widget _buildAcademicYearCard(
-      Map<String, dynamic> year,
+      AcademicYearData year,
       ) {
 
     final bool isActive =
-    year["isActive"];
+    year.isActive;
 
     return Container(
 
@@ -481,7 +550,7 @@ class _AcademicYearScreenState
             decoration: BoxDecoration(
 
               color:
-              year["color"].withOpacity(0.10),
+              AppColors.primaryBlue.withOpacity(0.10),
 
               borderRadius:
               BorderRadius.circular(22),
@@ -490,7 +559,7 @@ class _AcademicYearScreenState
             child: Icon(
               Icons.calendar_month_rounded,
               size: 30,
-              color: year["color"],
+              color: AppColors.primaryBlue,
             ),
           ),
 
@@ -512,7 +581,7 @@ class _AcademicYearScreenState
                     Expanded(
 
                       child: Text(
-                        year["name"],
+                        year.name,
 
                         style:
                         const TextStyle(
@@ -559,7 +628,7 @@ class _AcademicYearScreenState
                   Icons.calendar_today_rounded,
                   "Start Date",
                   formatDate(
-                    year["startDate"],
+                    year.startdate,
                   ),
                 ),
 
@@ -569,7 +638,7 @@ class _AcademicYearScreenState
                   Icons.calendar_today_rounded,
                   "End Date",
                   formatDate(
-                    year["endDate"],
+                    year.enddate,
                   ),
                 ),
 

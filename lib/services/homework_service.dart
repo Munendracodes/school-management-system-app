@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
 import '../models/homework_model.dart';
+import '../models/student_homework_review_model.dart';
 
 class HomeworkService {
 
@@ -120,5 +121,144 @@ class HomeworkService {
     );
 
     return homeworks;
+  }
+
+  ///------------------------------------------
+  /// Save Homework Review
+  ///------------------------------------------
+  Future<void> saveHomeworkReview({
+
+    required String academicYearId,
+
+    required String className,
+
+    required String sectionName,
+
+    required DateTime assignedDate,
+
+    required String homeworkId,
+
+    required String reviewedBy,
+
+    required List<StudentHomeworkReviewModel> students,
+
+  }) async {
+
+    final ref = _getHomeworkReference(
+
+      academicYearId: academicYearId,
+
+      classId: className,
+
+      sectionId: sectionName,
+
+      date: assignedDate,
+
+    ).child(homeworkId);
+
+    int submittedStudents =
+
+        students.where(
+
+              (e) => e.isSubmitted,
+
+        ).length;
+
+    int pendingStudents =
+
+        students.length - submittedStudents;
+
+    final Map<String, dynamic> reviewStudents = {};
+
+    for (final student in students) {
+
+      reviewStudents[student.studentId] =
+
+          student.toJson();
+    }
+
+    await ref.child("review").set({
+
+      "isCompleted": true,
+
+      "reviewedBy": reviewedBy,
+
+      "reviewedAt":
+      DateTime.now().toIso8601String(),
+
+      "students": reviewStudents,
+    });
+
+    await ref.update({
+
+      "submittedStudents": submittedStudents,
+
+      "pendingStudents": pendingStudents,
+
+      "totalStudents": students.length,
+
+    });
+  }
+
+  ///------------------------------------------
+  /// Get Homework Review
+  ///------------------------------------------
+  Future<List<StudentHomeworkReviewModel>>
+  getHomeworkReview({
+
+    required String academicYearId,
+
+    required String className,
+
+    required String sectionName,
+
+    required DateTime assignedDate,
+
+    required String homeworkId,
+
+  }) async {
+
+    final snapshot =
+
+    await _getHomeworkReference(
+
+      academicYearId: academicYearId,
+
+      classId: className,
+
+      sectionId: sectionName,
+
+      date: assignedDate,
+
+    ).child(homeworkId)
+
+        .child("review")
+
+        .child("students")
+
+        .get();
+
+    if (!snapshot.exists) {
+
+      return [];
+    }
+
+    final map = Map<dynamic, dynamic>.from(
+
+      snapshot.value as Map,
+
+    );
+
+    return map.values
+
+        .map(
+
+          (e) => StudentHomeworkReviewModel.fromJson(
+
+        Map<dynamic, dynamic>.from(e),
+      ),
+    )
+
+        .toList();
   }
 }

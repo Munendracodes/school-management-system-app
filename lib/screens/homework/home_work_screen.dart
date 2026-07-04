@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:school_management_app/models/homework_model.dart';
 import 'package:school_management_app/screens/homework/add_homework_screen.dart';
+import 'package:school_management_app/screens/homework/homework_info_screen.dart';
 import 'package:school_management_app/screens/section/add_section_screen.dart';
 import 'package:school_management_app/screens/section/section_info_screen.dart';
 import 'package:school_management_app/services/homework_service.dart';
@@ -688,6 +689,18 @@ class _HomeWorkScreenState
     return InkWell(
       onTap: (){
         HapticFeedback.lightImpact();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_)=>HomeworkInfoScreen(
+                  accessToken: widget.accessToken,
+                  backgroundColor: widget.backgroundColor,
+                  selectedClass: widget.className,
+                  selectedSection: widget.sectionName,
+                subject: homework.subjectName, homeWorkTitle: homework.title, homeWorkDescription: homework.description, academicYearId: homework.academicYearId, assignedDate: selectedDate, homeWorkId: homework.id,
+              )
+          )
+        );
       },
       child: Container(
 
